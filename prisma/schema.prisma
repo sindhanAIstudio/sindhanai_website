@@ -1,0 +1,103 @@
+// Prisma Schema for SindhanAI CMS & Dynamic Engine
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model NewsPost {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  summary     String
+  content     String
+  category    String   @default("Announcement") // Announcement, Tech, SOI Hackathon, Workshop
+  imageUrl    String?
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id            String              @id @default(uuid())
+  title         String
+  slug          String              @unique
+  date          String              // e.g. "August 28, 2026"
+  time          String              // e.g. "10:00 AM - 4:00 PM"
+  venue         String              // e.g. "AI & Data Science Lab, KGISL Campus" or "Online"
+  description   String
+  isPast        Boolean             @default(false)
+  imageUrl      String?
+  registrations EventRegistration[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+}
+
+model EventRegistration {
+  id             String   @id @default(uuid())
+  eventId        String
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name           String
+  email          String
+  phone          String
+  institution    String   // College / Organization
+  role           String   // Student / Faculty / Industry Professional / Other
+  additionalInfo String?
+  createdAt      DateTime @default(now())
+}
+
+model DynamicForm {
+  id          String           @id @default(uuid())
+  title       String
+  slug        String           @unique
+  description String?
+  fields      String           // JSON string of array of fields [{name, label, type, required, options}]
+  submissions FormSubmission[]
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model FormSubmission {
+  id        String       @id @default(uuid())
+  formId    String?
+  form      DynamicForm? @relation(fields: [formId], references: [id], onDelete: Cascade)
+  name      String?
+  email     String?
+  responses String       // JSON string storing field key-value responses
+  createdAt DateTime     @default(now())
+}
+
+model TeamMember {
+  id          String   @id @default(uuid())
+  name        String
+  designation String
+  category    String   // "Industry Professional", "Faculty", "Student"
+  labGroup    String?  // "AI & Data Science Lab", "Generative AI Lab", "SCOPE"
+  domain      String?  // e.g. "Computer Vision", "LLM Systems", "DevOps"
+  linkedinUrl String?
+  imageUrl    String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model ClientLogo {
+  id        String   @id @default(uuid())
+  name      String
+  logoUrl   String?
+  website   String?
+  createdAt DateTime @default(now())
+}
+
+model GalleryItem {
+  id        String   @id @default(uuid())
+  title     String
+  category  String   // "Workshops", "Hackathons", "Lab Sessions", "Awards"
+  imageUrl  String
+  eventDate String?
+  createdAt DateTime @default(now())
+}
