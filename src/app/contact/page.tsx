@@ -12,10 +12,10 @@ export default async function ContactPage() {
     return (
         <div className="w-full space-y-12 py-8 md:py-14">
 
-            {/* Pixfort Pastel Hero Banner */}
+            {/* SindhanAI Pastel Hero Banner */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="pixfort-hero-bg rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full pixfort-frosted-pill text-xs font-bold uppercase tracking-wider">
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
                         <Sparkle className="w-4 h-4 text-white" /> Connect With Us
                     </div>
                     <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
@@ -33,7 +33,7 @@ export default async function ContactPage() {
 
                     {/* Left Column: Direct Contact Info (5 Cols) */}
                     <div className="lg:col-span-5 space-y-8">
-                        <div className="pixfort-card p-8 space-y-6">
+                        <div className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-8 space-y-6">
                             <h2 className="text-2xl font-extrabold text-slate-900">Direct Contact Details</h2>
 
                             <div className="space-y-6 text-xs text-slate-600">
@@ -82,7 +82,7 @@ export default async function ContactPage() {
                         </div>
 
                         {/* Backing Box */}
-                        <div className="pixfort-card-grey p-8 space-y-2 border-l-4 border-l-black">
+                        <div className="bg-slate-50 rounded-[24px] border border-slate-200 p-8 space-y-2 border-l-4 border-l-black">
                             <h3 className="text-lg font-extrabold text-slate-900">Backed by KGISL & KGISL SOI</h3>
                             <p className="text-xs text-slate-600 leading-relaxed font-medium">
                                 Operating with institutional infrastructure and industry backing from KGISL Educational Institutions.

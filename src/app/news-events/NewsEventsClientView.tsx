@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import EventRegistrationModal from "@/components/EventRegistrationModal";
+import BrandTicker from "@/components/BrandTicker";
+import CTASection from "@/components/CTASection";
 import {
     MagnifyingGlass,
     Calendar,
@@ -45,10 +47,10 @@ export default function NewsEventsClientView({
     return (
         <div className="w-full space-y-12 py-8 md:py-14">
 
-            {/* Pixfort Pastel Hero Banner */}
+            {/* SindhanAI Pastel Hero Banner */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="pixfort-hero-bg rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full pixfort-frosted-pill text-xs font-bold uppercase tracking-wider">
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
                         <Sparkle className="w-4 h-4 text-white" /> Lab Bulletins
                     </div>
                     <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
@@ -76,7 +78,7 @@ export default function NewsEventsClientView({
                     {upcomingEvents.map((evt) => (
                         <div
                             key={evt.id}
-                            className="pixfort-card p-8 space-y-6 flex flex-col justify-between border-l-4 border-l-black"
+                            className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-8 space-y-6 flex flex-col justify-between border-l-4 border-l-black"
                         >
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -107,7 +109,7 @@ export default function NewsEventsClientView({
                             <div className="pt-4">
                                 <button
                                     onClick={() => setSelectedEventForModal(evt)}
-                                    className="pixfort-btn-black w-full py-3.5 text-xs font-bold flex items-center justify-center gap-2"
+                                    className="bg-black hover:bg-slate-900 text-white rounded-xl w-full py-3.5 text-xs font-bold flex items-center justify-center gap-2 transition-colors"
                                 >
                                     Register Now <ArrowRight className="w-4 h-4" />
                                 </button>
@@ -147,7 +149,7 @@ export default function NewsEventsClientView({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {filteredNews.map((post) => (
-                        <div key={post.id} className="pixfort-card p-6 space-y-4 flex flex-col justify-between">
+                        <div key={post.id} className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-6 space-y-4 flex flex-col justify-between">
                             <div className="space-y-3">
                                 <div className="flex items-center justify-between text-[11px]">
                                     <span className="font-extrabold text-slate-900 uppercase tracking-wider">{post.category}</span>
@@ -175,7 +177,7 @@ export default function NewsEventsClientView({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     {initialGallery.map((item) => (
-                        <div key={item.id} className="pixfort-card p-5 space-y-3">
+                        <div key={item.id} className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-5 space-y-3">
                             <div className="h-44 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-semibold text-xs text-center p-4">
                                 {item.title}
                             </div>
@@ -195,6 +197,10 @@ export default function NewsEventsClientView({
                     onClose={() => setSelectedEventForModal(null)}
                 />
             )}
+
+            {/* Global Footer Callouts */}
+            <BrandTicker />
+            <CTASection />
 
         </div>
     );

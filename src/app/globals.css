@@ -33,7 +33,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-manrope), "Manrope", system-ui, sans-serif;
-  color: #0f172a;
+  color: inherit;
 }
 
 /* ── Scrollbar ── */
@@ -71,7 +71,7 @@ h6 {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 32s linear infinite;
+  animation: marquee 55s linear infinite;
   will-change: transform;
 }
 

@@ -7,7 +7,7 @@ function AnimatedOrb({ className }: { className: string }) {
     return <div className={`absolute rounded-full blur-3xl pointer-events-none opacity-30 animate-pulse ${className}`} />;
 }
 
-export default function CTASection() {
+export default function CTASection({ bgClass = "bg-white" }: { bgClass?: string }) {
     const ref = useRef<HTMLDivElement>(null);
     const [visible, setVisible] = useState(false);
 
@@ -21,7 +21,7 @@ export default function CTASection() {
     }, []);
 
     return (
-        <section className="w-full bg-white py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+        <section className={`w-full ${bgClass} py-16 sm:py-20 px-4 sm:px-6 lg:px-8`}>
             <div
                 ref={ref}
                 style={{

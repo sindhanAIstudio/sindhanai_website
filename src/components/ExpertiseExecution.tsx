@@ -52,7 +52,7 @@ export default function ExpertiseExecution() {
         <section className="bg-white py-20 lg:py-28 text-slate-900 overflow-hidden">
             <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
 
-                {/* ── Section Header (Exact Pixfort Template Alignment) ── */}
+                {/* ── Section Header (SindhanAI Template Alignment) ── */}
                 <AnimatedElement className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-12 lg:pb-16">
                     <div className="max-w-3xl space-y-2">
                         {/* Main Headline */}
@@ -77,7 +77,7 @@ export default function ExpertiseExecution() {
                     </div>
                 </AnimatedElement>
 
-                {/* ── 3 Distinct Visual Cards (Matching Pixfort Template Cards) ── */}
+                {/* ── 3 Distinct Visual Cards (Matching SindhanAI Template Cards) ── */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 pt-4">
 
                     {/* ── CARD 1: Industry Professionals (Sleek Light Card with Stat Highlight) ── */}

@@ -216,10 +216,10 @@ export default function HighlightFeatures() {
                                     <div className="flex items-center justify-between gap-2 overflow-hidden py-1">
                                         <div className="flex items-center -space-x-2">
                                             <div className="w-8 h-8 rounded-full bg-slate-300 border-2 border-white overflow-hidden relative">
-                                                <Image src="/images/pixfort/person-image-4.webp" alt="Team member" width={32} height={32} className="object-cover" />
+                                                <Image src="/images/sindhanai/person-image-4.webp" alt="Team member" width={32} height={32} className="object-cover" />
                                             </div>
                                             <div className="w-8 h-8 rounded-full bg-slate-400 border-2 border-white overflow-hidden relative">
-                                                <Image src="/images/pixfort/circles-image-7.webp" alt="Team avatar" width={32} height={32} className="object-cover" />
+                                                <Image src="/images/sindhanai/circles-image-7.webp" alt="Team avatar" width={32} height={32} className="object-cover" />
                                             </div>
                                         </div>
                                         <div className="bg-slate-100 px-3 py-1 rounded-xl flex items-center gap-1.5 border border-black/5 shadow-2xs">
