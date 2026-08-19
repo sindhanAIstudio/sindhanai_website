@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { User, Briefcase, GraduationCap, Sparkle } from "@phosphor-icons/react";
+import BrandTicker from "@/components/BrandTicker";
+import CTASection from "@/components/CTASection";
 
 interface TeamClientViewProps {
     initialMembers: any[];
@@ -21,10 +23,10 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
     return (
         <div className="w-full space-y-12 py-8 md:py-14">
 
-            {/* Pixfort Pastel Hero Banner */}
+            {/* SindhanAI Pastel Hero Banner */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="pixfort-hero-bg rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full pixfort-frosted-pill text-xs font-bold uppercase tracking-wider">
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
                         <Sparkle className="w-4 h-4 text-white" /> People & Roster
                     </div>
                     <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
@@ -60,7 +62,7 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
                     {filteredMembers.map((member) => (
                         <div
                             key={member.id}
-                            className="pixfort-card p-6 flex flex-col justify-between space-y-4"
+                            className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col justify-between space-y-4"
                         >
                             <div className="space-y-4">
                                 <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center font-extrabold text-base shadow-md">
@@ -97,6 +99,10 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
                     ))}
                 </div>
             </section>
+
+            {/* Global Footer Callouts */}
+            <BrandTicker />
+            <CTASection />
 
         </div>
     );

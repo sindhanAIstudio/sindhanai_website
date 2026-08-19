@@ -21,9 +21,9 @@ const GreenCheckSVG = () => (
 const grayList = [...grayIconSVGs, ...grayIconSVGs, ...grayIconSVGs, ...grayIconSVGs];
 const greenList = Array(24).fill(null);
 
-export default function BrandTicker() {
+export default function BrandTicker({ bgClass = "bg-white" }: { bgClass?: string }) {
     return (
-        <section className="w-full bg-white py-6">
+        <section className={`w-full ${bgClass} py-6`}>
             <style>{`
                 @keyframes scroll-ltr-loop {
                     0%   { transform: translateX(-50%); }

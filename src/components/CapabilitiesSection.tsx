@@ -151,7 +151,7 @@ export default function CapabilitiesSection() {
                                         <span className="w-10 h-10 rounded-2xl bg-slate-950 text-white font-extrabold text-sm flex items-center justify-center">
                                             01
                                         </span>
-                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-slate-200/90 border border-black/5 text-slate-800">
+                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-[6px] bg-slate-200/90 border border-black/5 text-slate-800">
                                             Intelligence Systems
                                         </span>
                                     </div>
@@ -194,7 +194,7 @@ export default function CapabilitiesSection() {
                                                 <div className="text-[11px] text-slate-500">Active Inference Node v4.2</div>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-full border border-black/5">
+                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-sm border border-black/5">
                                             99.4% Precision
                                         </span>
                                     </div>
@@ -238,7 +238,7 @@ export default function CapabilitiesSection() {
                                         <span className="w-10 h-10 rounded-2xl bg-slate-950 text-white font-extrabold text-sm flex items-center justify-center">
                                             02
                                         </span>
-                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-slate-200/90 border border-black/5 text-slate-800">
+                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-[6px] bg-slate-200/90 border border-black/5 text-slate-800">
                                             Enterprise Engineering
                                         </span>
                                     </div>
@@ -280,7 +280,7 @@ export default function CapabilitiesSection() {
                                                 <div className="text-[11px] text-slate-500">Multi-tenant Cloud Ecosystem</div>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-full border border-black/5">
+                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-sm border border-black/5">
                                             DevOps Ready
                                         </span>
                                     </div>
@@ -324,7 +324,7 @@ export default function CapabilitiesSection() {
                                         <span className="w-10 h-10 rounded-2xl bg-slate-950 text-white font-extrabold text-sm flex items-center justify-center">
                                             03
                                         </span>
-                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full bg-slate-200/90 border border-black/5 text-slate-800">
+                                        <span className="text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-[6px] bg-slate-200/90 border border-black/5 text-slate-800">
                                             Academic & Upskilling
                                         </span>
                                     </div>
@@ -366,7 +366,7 @@ export default function CapabilitiesSection() {
                                                 <div className="text-[11px] text-slate-500">Industry-Aligned Curriculum</div>
                                             </div>
                                         </div>
-                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-full border border-black/5">
+                                        <span className="text-[11px] font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-sm border border-black/5">
                                             Live Mentorship
                                         </span>
                                     </div>

@@ -1,11 +1,27 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import BrandTicker from "@/components/BrandTicker";
+import CTASection from "@/components/CTASection";
+import MeshGradientCanvas from "@/components/MeshGradientCanvas";
+import AboutHighlightSection from "@/components/AboutHighlightSection";
+import AboutLabsSection from "@/components/AboutLabsSection";
+import AboutClientsSection from "@/components/AboutClientsSection";
 import {
     Sparkle,
     Target,
     Compass,
     Cpu,
+    Brain,
+    Code,
+    GraduationCap,
     ArrowRight,
+    CheckCircle,
+    Users,
+    Lightning,
+    Rocket,
+    Globe,
+    Medal,
 } from "@phosphor-icons/react/dist/ssr";
 
 export const revalidate = 0;
@@ -13,146 +29,146 @@ export const revalidate = 0;
 export default async function AboutPage() {
     const clientLogos = await prisma.clientLogo.findMany();
 
+    // Marquee images from sindhanai template assets
+    const marqueeImages = [
+        "/images/sindhanai/image-15.webp",
+        "/images/sindhanai/image-16.webp",
+        "/images/sindhanai/image-17.webp",
+        "/images/sindhanai/image-18.webp",
+        "/images/sindhanai/image-19.webp",
+    ];
+
+    // Double loop for seamless infinite animation
+    const imageLoop = [...marqueeImages, ...marqueeImages];
+
     return (
-        <div className="w-full space-y-12 py-8 md:py-14">
+        <div className="w-full bg-white min-h-screen py-0 overflow-x-hidden">
 
-            {/* Pixfort Pastel Hero Banner */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="pixfort-hero-bg rounded-[32px] p-8 md:p-14 space-y-6 text-center relative overflow-hidden shadow-xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full pixfort-frosted-pill text-xs font-bold uppercase tracking-wider mx-auto">
-                        <Sparkle className="w-4 h-4 text-white" /> About SindhanAI
-                    </div>
-                    <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
-                        The Applied AI & Software Lab Backed by KGISL
+            {/* ELEMENTOR-STYLE LIGHT ABOUT HERO SECTION WITH MESH GRADIENT */}
+            <section className="relative w-full min-h-[90vh] bg-[#f4f3ef] pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-20 overflow-hidden flex flex-col justify-between">
+
+                {/* Animated WebGL Mesh Gradient Canvas */}
+                <div className="absolute inset-0 w-full h-full opacity-100 pointer-events-none">
+                    <MeshGradientCanvas
+                        colors={[
+                            [0.0, 0.0, 0.0, 0.08],         // #00000010
+                            [0.10, 0.10, 0.15, 0.12],      // dark-opacity-3
+                            [0.0, 0.0, 0.0, 0.08],         // #00000010
+                            [0.62, 0.31, 0.82, 0.05],      // #9f50d3 faint ambient purple accent
+                        ]}
+                        distortion={1.0}
+                        swirl={1.0}
+                        grainMixer={0.0}
+                        grainOverlay={0.0}
+                        speed={1.0}
+                    />
+                </div>
+
+                {/* Bottom Fade Overlay — Blends Grey Mesh Seamlessly into Next White Section */}
+                <div className="absolute bottom-0 left-0 right-0 h-48 sm:h-64 bg-gradient-to-b from-transparent via-white/40 to-white pointer-events-none z-[1]" />
+
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6 my-auto">
+
+                    {/* Centered Main Title (Reduced font size and weight) */}
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-slate-900 tracking-tight leading-[1.14] max-w-4xl mx-auto">
+                        Bridging Industry Practice and Academic Innovation
                     </h1>
-                    <p className="text-base sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed font-medium">
-                        Operating at the intersection of industry engineering standards and academic research. We build production-ready AI systems while empowering students and faculty.
+
+                    {/* Centered Subtitle Description */}
+                    <p className="text-slate-600 text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                        We are KGISL&apos;s applied technology lab — uniting industry professionals, faculty experts, and student builders to solve real problems through AI and software.
                     </p>
-                </div>
-            </section>
 
-            {/* Vision & Mission Split */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Icons + Mission CTA Button Row */}
+                    <div className="pt-4 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
 
-                    <div className="pixfort-card p-8 space-y-4 border-l-4 border-l-black">
-                        <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center shadow-md">
-                            <Compass className="w-7 h-7" />
-                        </div>
-                        <h3 className="text-2xl font-extrabold text-slate-900">Our Vision</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed">
-                            To position KGISL & KGISL SOI as a premier hub for applied artificial intelligence in South India, translating cutting-edge deep learning research into scalable enterprise solutions.
-                        </p>
-                    </div>
-
-                    <div className="pixfort-card p-8 space-y-4 border-l-4 border-l-black">
-                        <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center shadow-md">
-                            <Target className="w-7 h-7" />
-                        </div>
-                        <h3 className="text-2xl font-extrabold text-slate-900">Our Mission</h3>
-                        <p className="text-sm text-slate-600 leading-relaxed">
-                            Bridge academia and industry through hands-on AI project incubation, faculty upskilling bootcamps, and full-stack software development for regional and global clients.
-                        </p>
-                    </div>
-
-                </div>
-            </section>
-
-            {/* TWO DEDICATED INNOVATION LABS */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-                <div className="text-center max-w-2xl mx-auto space-y-2">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-slate-600">
-                        Laboratory Infrastructure
-                    </span>
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">
-                        Our Two Dedicated Innovation Labs
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                    {/* Lab 1 */}
-                    <div className="pixfort-card p-8 space-y-6 flex flex-col justify-between">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center shadow-md">
-                                    <Cpu className="w-7 h-7" />
-                                </div>
-                                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
-                                    Vertical Focus Lab
-                                </span>
+                        {/* Overlapping Standalone Themed Icon Circles: AI, Software, Training */}
+                        <div className="flex items-center -space-x-3.5">
+                            <div title="AI" className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900 text-white flex items-center justify-center border-2 border-white shadow-md hover:z-10 hover:scale-105 transition-transform">
+                                <Brain className="w-6 h-6 text-indigo-300" weight="bold" />
                             </div>
-
-                            <h3 className="text-2xl font-extrabold text-slate-900">AI & Data Science Lab</h3>
-                            <p className="text-sm text-slate-600 leading-relaxed">
-                                Focuses on computer vision models (YOLO, OpenCV), edge AI deployments (NVIDIA Jetson), time-series analytics, and industrial predictive maintenance pipelines.
-                            </p>
-                        </div>
-
-                        <div className="space-y-2 pt-4 border-t border-slate-100 text-xs">
-                            <div className="font-bold text-slate-800">Tech Stack & Tools:</div>
-                            <div className="flex flex-wrap gap-2">
-                                {["PyTorch", "TensorRT", "OpenCV", "YOLOv8", "FastAPI", "Docker"].map((tech) => (
-                                    <span key={tech} className="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold">
-                                        {tech}
-                                    </span>
-                                ))}
+                            <div title="Software" className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900 text-white flex items-center justify-center border-2 border-white shadow-md hover:z-10 hover:scale-105 transition-transform">
+                                <Code className="w-6 h-6 text-purple-300" weight="bold" />
+                            </div>
+                            <div title="Training" className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900 text-white flex items-center justify-center border-2 border-white shadow-md hover:z-10 hover:scale-105 transition-transform">
+                                <GraduationCap className="w-6 h-6 text-pink-300" weight="bold" />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Lab 2 */}
-                    <div className="pixfort-card p-8 space-y-6 flex flex-col justify-between">
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center shadow-md">
-                                    <Sparkle className="w-7 h-7" />
-                                </div>
-                                <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
-                                    Horizontal Focus Lab
-                                </span>
-                            </div>
-
-                            <h3 className="text-2xl font-extrabold text-slate-900">Generative AI Lab</h3>
-                            <p className="text-sm text-slate-600 leading-relaxed">
-                                Specializes in enterprise RAG knowledge bases, vector search indexing, custom LLM fine-tuning, autonomous agent workflows, and prompt engineering.
-                            </p>
-                        </div>
-
-                        <div className="space-y-2 pt-4 border-t border-slate-100 text-xs">
-                            <div className="font-bold text-slate-800">Tech Stack & Tools:</div>
-                            <div className="flex flex-wrap gap-2">
-                                {["LlamaIndex", "LangChain", "Qdrant", "Pinecone", "Ollama", "Llama-3"].map((tech) => (
-                                    <span key={tech} className="px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-800 font-mono text-[11px] font-semibold">
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            {/* CLIENT / PARTNER LOGOS */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-                <div className="text-center text-xs font-extrabold uppercase tracking-widest text-slate-500">
-                    Backed & Trusted By Leading Entities
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {clientLogos.map((client) => (
-                        <div
-                            key={client.id}
-                            className="pixfort-card p-5 text-center text-sm font-bold text-slate-800 hover:text-black transition-colors"
+                        {/* Standard Theme Button (rounded-[10px]) */}
+                        <a
+                            href="#pix_section_mission"
+                            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-[10px] bg-slate-950 text-white font-semibold text-sm sm:text-[15px] hover:bg-slate-800 transition-all shadow-md hover:shadow-lg hover:scale-[1.02] group"
                         >
-                            {client.name}
-                        </div>
-                    ))}
+                            <span>Explore Our Mission</span>
+                            <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" weight="bold" />
+                        </a>
+
+                    </div>
+
                 </div>
+
+                {/* CONTINUOUS PHOTO MARQUEE STRIP — 100% Full Opacity, Vivid & Clear */}
+                <div className="relative z-10 mt-12 sm:mt-16 w-full overflow-hidden">
+                    <style>{`
+                        @keyframes hero-photo-marquee {
+                            0%   { transform: translateX(0%); }
+                            100% { transform: translateX(-50%); }
+                        }
+                        .animate-hero-marquee {
+                            animation: hero-photo-marquee 30s linear infinite;
+                            will-change: transform;
+                        }
+                        .animate-hero-marquee:hover {
+                            animation-play-state: paused;
+                        }
+                    `}</style>
+
+                    <div className="flex items-center gap-5 sm:gap-6 animate-hero-marquee w-max px-4">
+                        {[
+                            "/images/sindhanai/image-15.webp",
+                            "/images/sindhanai/image-34.webp",
+                            "/images/sindhanai/image-19.webp",
+                            "/images/sindhanai/image-16.webp",
+                            "/images/sindhanai/image-15.webp",
+                            "/images/sindhanai/image-34.webp",
+                            "/images/sindhanai/image-19.webp",
+                            "/images/sindhanai/image-16.webp",
+                        ].map((src, idx) => (
+                            <div
+                                key={idx}
+                                className="relative w-60 h-60 sm:w-80 sm:h-80 rounded-2xl overflow-hidden border border-slate-200/60 shadow-md shrink-0 group opacity-100 bg-white"
+                            >
+                                <Image
+                                    src={src}
+                                    alt={`SindhanAI Showcase ${idx + 1}`}
+                                    fill
+                                    className="object-cover opacity-100 group-hover:scale-105 transition-transform duration-500"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
             </section>
+
+
+            {/* SECOND SECTION — Full Width Highlight Features Section */}
+            <AboutHighlightSection />
+
+
+            {/* THIRD SECTION — Our Labs (Vertical & Horizontal Labs) */}
+            <AboutLabsSection />
+
+
+            {/* FOURTH SECTION — Our Clients & Industry Partners (9:16 Reel Cards) */}
+            <AboutClientsSection />
+
+
+            {/* GLOBAL FOOTER CALLOUTS — White Background */}
+            <BrandTicker />
+            <CTASection />
 
         </div>
     );
 }
-

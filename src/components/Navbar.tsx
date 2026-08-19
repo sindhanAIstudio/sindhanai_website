@@ -44,12 +44,12 @@ export default function Navbar() {
         { name: "Home", href: "/" },
         { name: "Services", href: "/services", isMega: true },
         { name: "About", href: "/about" },
-        { name: "News & Events", href: "/news-events" },
-        { name: "Team", href: "/team" },
-        { name: "Contact", href: "/contact" },
+        { name: "News & Events", href: "#" },
+        { name: "Team", href: "#" },
+        { name: "Contact", href: "#" },
     ];
 
-    // Mega menu interactive content definitions matching Pixfort design
+    // Mega menu interactive content definitions matching SindhanAI design
     const megaMenuData = {
         "ai-technology": {
             title: "AI and Technology",
@@ -113,11 +113,13 @@ export default function Navbar() {
 
     const currentData = megaMenuData[activeCategory];
 
-    return (
-        <div className="w-full z-50 transition-all duration-300">
+    const isHomePage = pathname === "/";
 
-            {/* 1. Top Header Bar (Pixfort Style) */}
-            <div className={`hidden md:flex items-center justify-between max-w-[1360px] mx-auto py-2 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full h-0 py-0 overflow-hidden border-transparent" : "opacity-100 translate-y-0 border-slate-100/80"}`}>
+    return (
+        <div className={`w-full z-50 transition-all duration-300 ${isScrolled ? "fixed top-0 left-0 right-0 pointer-events-none" : isHomePage ? "relative bg-white" : "absolute top-0 left-0 right-0 bg-transparent pointer-events-auto"}`}>
+
+            {/* 1. Top Header Bar (SindhanAI Style) */}
+            <div className={`hidden md:flex items-center justify-between max-w-[1360px] mx-auto py-2 px-4 sm:px-6 lg:px-8 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full max-h-0 py-0 overflow-hidden border-transparent pointer-events-none" : isHomePage ? "opacity-100 translate-y-0 max-h-12 border-slate-100/60 bg-white pointer-events-auto" : "opacity-100 translate-y-0 max-h-12 border-slate-900/10 bg-transparent pointer-events-auto"}`}>
                 <div className="flex items-center gap-3">
                     <span className="text-slate-700 font-semibold text-[14px]">Follow us on</span>
                     <div className="flex items-center gap-3 text-slate-900">
@@ -136,12 +138,14 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* 2. Main Floating Sticky Navbar — 1360px max-width, smooth centered transition */}
-            <div className={`w-full z-50 transition-all duration-300 ease-in-out ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6" : "relative bg-white px-4 sm:px-6 lg:px-8"}`}>
+            {/* 2. Main Floating Sticky Navbar */}
+            <div className={`w-full transition-all duration-300 ease-in-out pointer-events-auto ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6 z-50" : isHomePage ? "relative bg-white px-4 sm:px-6 lg:px-8" : "relative bg-transparent px-4 sm:px-6 lg:px-8"}`}>
                 <header
                     className={`max-w-[1360px] mx-auto flex items-center justify-between transition-all duration-300 ease-in-out ${isScrolled
                         ? "bg-white/85 backdrop-saturate-[1.8] backdrop-blur-[20px] border border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-[16px] px-6 h-[65px]"
-                        : "border border-transparent py-3.5 bg-white"
+                        : isHomePage
+                            ? "border border-transparent py-3.5 bg-white"
+                            : "border border-transparent py-3.5 bg-transparent"
                         }`}
                 >
 
@@ -183,7 +187,7 @@ export default function Navbar() {
                                                 <CaretDown className={`w-4 h-4 transition-transform ${megaMenuOpen ? "rotate-180" : ""}`} weight="bold" />
                                             </button>
 
-                                            {/* Pixfort AI Agency Exact 30/70 Mega Menu Dropdown */}
+                                            {/* SindhanAI AI Agency 30/70 Mega Menu Dropdown */}
                                             {megaMenuOpen && (
                                                 <div className="absolute top-full left-0 w-[840px] pt-3 z-50">
                                                     <div className="rounded-[28px] p-6 border border-slate-200/80 shadow-2xl bg-[#FAF8F5] grid grid-cols-12 gap-6">
@@ -202,15 +206,17 @@ export default function Navbar() {
                                                                         const isActive = activeCategory === key;
 
                                                                         return (
-                                                                            <div
+                                                                            <Link
                                                                                 key={key}
+                                                                                href={item.href}
+                                                                                onClick={() => setMegaMenuOpen(false)}
                                                                                 onMouseEnter={() => setActiveCategory(key)}
                                                                                 className={`p-3 rounded-2xl flex items-center gap-3 cursor-pointer transition-all ${isActive
                                                                                     ? "bg-[#ECE8E1] text-slate-950 shadow-xs border border-slate-300/40"
                                                                                     : "text-slate-700 hover:bg-[#F2EFE9]"
                                                                                     }`}
                                                                             >
-                                                                                {/* Neutral Gray Icon Outer Container — Pixfort exact style */}
+                                                                                {/* Neutral Gray Icon Outer Container — SindhanAI style */}
                                                                                 <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-white text-slate-950 shadow-2xs" : "bg-slate-200/70 text-slate-700"}`}>
                                                                                     <CategoryIcon className="w-4 h-4" weight="bold" />
                                                                                 </div>
@@ -222,7 +228,7 @@ export default function Navbar() {
                                                                                         {item.subtitle}
                                                                                     </div>
                                                                                 </div>
-                                                                            </div>
+                                                                            </Link>
                                                                         );
                                                                     })}
                                                                 </div>
@@ -270,6 +276,7 @@ export default function Navbar() {
                                                                     <div className="pt-3">
                                                                         <Link
                                                                             href={currentData.href}
+                                                                            onClick={() => setMegaMenuOpen(false)}
                                                                             className="bg-[#ECE9E3] hover:bg-[#DFDCD5] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs inline-flex items-center gap-2 transition-colors shadow-2xs"
                                                                         >
                                                                             {currentData.buttonText} <ArrowRight className="w-3.5 h-3.5" />
@@ -312,7 +319,7 @@ export default function Navbar() {
                     <div className="flex items-center gap-4">
                         <Link
                             href="/contact"
-                            className="bg-black hover:bg-slate-900 text-white font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-xs"
+                            className="hidden sm:inline-flex bg-black hover:bg-slate-900 text-white font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all items-center gap-2 shadow-xs"
                         >
                             Get in Touch <ChatTeardropText className="w-4 h-4 fill-white" />
                         </Link>

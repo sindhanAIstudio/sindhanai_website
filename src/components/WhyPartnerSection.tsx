@@ -39,7 +39,7 @@ export default function WhyPartnerSection() {
         <section className="w-full bg-white py-16 sm:py-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
                 <div className="max-w-3xl space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-[6px] bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold uppercase tracking-wider">
                         <Sparkle className="w-3.5 h-3.5 text-purple-600 fill-purple-600" weight="fill" />
                         <span>Why Sindhanai</span>
                     </div>

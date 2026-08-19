@@ -1,13 +1,9 @@
 "use client";
 
 /**
- * MeshGradientCanvas — Exact Pixfort AI Agency WebGL2 mesh-gradient.
+ * MeshGradientCanvas — SindhanAI WebGL2 mesh-gradient.
  *
- * Fragment shader extracted verbatim from:
- *   wp-content/plugins/pixfort-core/dist/front/shader-vendors.a1d3a3332da59f0386e6.js
- *   (module 9198, variable `r`)
- *
- * Parameters from agency Elementor config:
+ * Parameters:
  *   speed=1, color_count=4, distortion=0.6, swirl=0.25,
  *   grain_mixer=0.05, grain_overlay=0.05
  *   color1=#FFDA8D  color2=#EF8CF8  color3=#A7C6FF  color4=#7783F5
@@ -41,7 +37,7 @@ void main() {
 }
 `;
 
-// ── Fragment shader — verbatim Pixfort GLSL (module 9198) ──
+// ── Fragment shader — verbatim GLSL ──
 const FRAG_SRC = `#version 300 es
 precision mediump float;
 
@@ -86,7 +82,7 @@ float noise(vec2 n, vec2 seedOffset) {
   return valueNoise(n + seedOffset);
 }
 
-// ── blob positions (same formula as Pixfort) ──
+// ── blob positions ──
 vec2 getPosition(int i, float t) {
   float a = float(i) * 0.37;
   float b = 0.6 + fract(float(i) / 3.0) * 0.9;
@@ -162,138 +158,155 @@ void main() {
 `;
 
 function compileShader(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader | null {
-    const s = gl.createShader(type);
-    if (!s) return null;
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
-        console.error("Shader compile error:", gl.getShaderInfoLog(s));
-        gl.deleteShader(s);
-        return null;
-    }
-    return s;
+  const s = gl.createShader(type);
+  if (!s) return null;
+  gl.shaderSource(s, src);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error("Shader compile error:", gl.getShaderInfoLog(s));
+    gl.deleteShader(s);
+    return null;
+  }
+  return s;
 }
 
 function createProgram(gl: WebGL2RenderingContext, vert: string, frag: string): WebGLProgram | null {
-    const vs = compileShader(gl, gl.VERTEX_SHADER, vert);
-    const fs = compileShader(gl, gl.FRAGMENT_SHADER, frag);
-    if (!vs || !fs) return null;
-    const prog = gl.createProgram()!;
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-        console.error("Program link error:", gl.getProgramInfoLog(prog));
-        return null;
-    }
-    gl.deleteShader(vs);
-    gl.deleteShader(fs);
-    return prog;
+  const vs = compileShader(gl, gl.VERTEX_SHADER, vert);
+  const fs = compileShader(gl, gl.FRAGMENT_SHADER, frag);
+  if (!vs || !fs) return null;
+  const prog = gl.createProgram()!;
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.error("Program link error:", gl.getProgramInfoLog(prog));
+    return null;
+  }
+  gl.deleteShader(vs);
+  gl.deleteShader(fs);
+  return prog;
 }
 
-export default function MeshGradientCanvas() {
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+export interface MeshGradientProps {
+  colors?: number[][];
+  speed?: number;
+  distortion?: number;
+  swirl?: number;
+  grainMixer?: number;
+  grainOverlay?: number;
+}
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+export default function MeshGradientCanvas({
+  colors = [COLOR1, COLOR2, COLOR3, COLOR4],
+  speed = SPEED,
+  distortion = DISTORTION,
+  swirl = SWIRL,
+  grainMixer = GRAIN_MIXER,
+  grainOverlay = GRAIN_OVERLAY,
+}: MeshGradientProps) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-        // Request WebGL2
-        const gl = canvas.getContext("webgl2", { antialias: false, alpha: true });
-        if (!gl) {
-            console.warn("WebGL2 not supported, mesh gradient disabled.");
-            return;
-        }
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-        const prog = createProgram(gl, VERT_SRC, FRAG_SRC);
-        if (!prog) return;
+    // Request WebGL2
+    const gl = canvas.getContext("webgl2", { antialias: false, alpha: true });
+    if (!gl) {
+      console.warn("WebGL2 not supported, mesh gradient disabled.");
+      return;
+    }
 
-        // Full-screen quad
-        const buf = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            -1, -1, 1, -1, -1, 1,
-            -1, 1, 1, -1, 1, 1,
-        ]), gl.STATIC_DRAW);
-        const posLoc = gl.getAttribLocation(prog, "a_position");
-        gl.enableVertexAttribArray(posLoc);
-        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+    const prog = createProgram(gl, VERT_SRC, FRAG_SRC);
+    if (!prog) return;
 
-        // Uniform locations
-        gl.useProgram(prog);
-        const uTime = gl.getUniformLocation(prog, "u_time");
-        const uColors = gl.getUniformLocation(prog, "u_colors");
-        const uColorsCount = gl.getUniformLocation(prog, "u_colorsCount");
-        const uDistortion = gl.getUniformLocation(prog, "u_distortion");
-        const uSwirl = gl.getUniformLocation(prog, "u_swirl");
-        const uGrainMixer = gl.getUniformLocation(prog, "u_grainMixer");
-        const uGrainOverlay = gl.getUniformLocation(prog, "u_grainOverlay");
+    // Full-screen quad
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1, -1, 1, -1, -1, 1,
+      -1, 1, 1, -1, 1, 1,
+    ]), gl.STATIC_DRAW);
+    const posLoc = gl.getAttribLocation(prog, "a_position");
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-        // Upload static uniforms
-        // Flatten the 4 colors into a Float32Array of length MAX_COLORS*4 (pad with zeros)
-        const colorsFlat = new Float32Array(MAX_COLORS * 4);
-        const palette = [COLOR1, COLOR2, COLOR3, COLOR4];
-        palette.forEach((c, i) => {
-            colorsFlat[i * 4 + 0] = c[0];
-            colorsFlat[i * 4 + 1] = c[1];
-            colorsFlat[i * 4 + 2] = c[2];
-            colorsFlat[i * 4 + 3] = c[3];
-        });
-        gl.uniform4fv(uColors, colorsFlat);
-        gl.uniform1f(uColorsCount, COLOR_COUNT);
-        gl.uniform1f(uDistortion, DISTORTION);
-        gl.uniform1f(uSwirl, SWIRL);
-        gl.uniform1f(uGrainMixer, GRAIN_MIXER);
-        gl.uniform1f(uGrainOverlay, GRAIN_OVERLAY);
+    // Uniform locations
+    gl.useProgram(prog);
+    const uTime = gl.getUniformLocation(prog, "u_time");
+    const uColors = gl.getUniformLocation(prog, "u_colors");
+    const uColorsCount = gl.getUniformLocation(prog, "u_colorsCount");
+    const uDistortion = gl.getUniformLocation(prog, "u_distortion");
+    const uSwirl = gl.getUniformLocation(prog, "u_swirl");
+    const uGrainMixer = gl.getUniformLocation(prog, "u_grainMixer");
+    const uGrainOverlay = gl.getUniformLocation(prog, "u_grainOverlay");
 
-        // Resize canvas to parent size
-        const resize = () => {
-            const p = canvas.parentElement;
-            if (p) {
-                const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
-                canvas.width = Math.round(p.clientWidth * dpr);
-                canvas.height = Math.round(p.clientHeight * dpr);
-                gl.viewport(0, 0, canvas.width, canvas.height);
-            }
-        };
-        resize();
-        const ro = new ResizeObserver(resize);
-        ro.observe(canvas.parentElement!);
+    // Upload static uniforms
+    // Flatten the colors into a Float32Array of length MAX_COLORS*4 (pad with zeros)
+    const colorsFlat = new Float32Array(MAX_COLORS * 4);
+    colors.forEach((c, i) => {
+      if (i < MAX_COLORS) {
+        colorsFlat[i * 4 + 0] = c[0];
+        colorsFlat[i * 4 + 1] = c[1];
+        colorsFlat[i * 4 + 2] = c[2];
+        colorsFlat[i * 4 + 3] = c[3] ?? 1.0;
+      }
+    });
+    gl.uniform4fv(uColors, colorsFlat);
+    gl.uniform1f(uColorsCount, colors.length);
+    gl.uniform1f(uDistortion, distortion);
+    gl.uniform1f(uSwirl, swirl);
+    gl.uniform1f(uGrainMixer, grainMixer);
+    gl.uniform1f(uGrainOverlay, grainOverlay);
 
-        // RAF loop — t in seconds-ish, matches Pixfort's `currentFrame += dt * speed`
-        let rafId: number;
-        let lastTime: number | null = null;
-        let currentFrame = 1200; // skip to frame 1200ms like Pixfort (avoids flash of wrong colors)
+    // Resize canvas to parent size
+    const resize = () => {
+      const p = canvas.parentElement;
+      if (p) {
+        const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
+        canvas.width = Math.round(p.clientWidth * dpr);
+        canvas.height = Math.round(p.clientHeight * dpr);
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      }
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas.parentElement!);
 
-        const draw = (now: number) => {
-            if (lastTime === null) lastTime = now;
-            const dt = now - lastTime;
-            lastTime = now;
-            currentFrame += dt * SPEED;
+    // RAF loop — t in seconds-ish
+    let rafId: number;
+    let lastTime: number | null = null;
+    let currentFrame = 1200; // skip to frame 1200ms (avoids flash of wrong colors)
 
-            gl.useProgram(prog);
-            gl.uniform1f(uTime, currentFrame * 0.001);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
+    const draw = (now: number) => {
+      if (lastTime === null) lastTime = now;
+      const dt = now - lastTime;
+      lastTime = now;
+      currentFrame += dt * speed;
 
-            rafId = requestAnimationFrame(draw);
-        };
-        rafId = requestAnimationFrame(draw);
+      gl.useProgram(prog);
+      gl.uniform1f(uTime, currentFrame * 0.001);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-        return () => {
-            cancelAnimationFrame(rafId);
-            ro.disconnect();
-            gl.deleteProgram(prog);
-            gl.deleteBuffer(buf);
-        };
-    }, []);
+      rafId = requestAnimationFrame(draw);
+    };
+    rafId = requestAnimationFrame(draw);
 
-    return (
-        <canvas
-            ref={canvasRef}
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full"
-            style={{ zIndex: 0, display: "block" }}
-        />
-    );
+    return () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      gl.deleteProgram(prog);
+      gl.deleteBuffer(buf);
+    };
+  }, [colors, speed, distortion, swirl, grainMixer, grainOverlay]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="absolute inset-0 w-full h-full"
+      style={{ zIndex: 0, display: "block" }}
+    />
+  );
 }
