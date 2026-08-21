@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { Clock, EnvelopeSimple, MapPin, CaretRight, ArrowUp, FacebookLogo, XLogo, InstagramLogo, DribbbleLogo, YoutubeLogo } from "@phosphor-icons/react";
 
 export default function Footer() {
@@ -19,15 +20,18 @@ export default function Footer() {
             <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pt-20 pb-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-14 pb-14 border-b border-slate-200">
                     <div className="md:col-span-4 space-y-5">
-                        <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white" />
-                                </svg>
-                            </div>
-                            <span className="font-extrabold text-xl tracking-tight text-slate-950">
-                                Sindhan<span className="text-slate-600">ai</span>
-                            </span>
+                        <div className="flex items-center">
+                            {/* Logo Place holder */}
+                            <Link
+                                href="/"
+                                className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
+                            >
+                                <img
+                                    src="/sindhanai-logo.png"
+                                    alt="SindhanAI"
+                                    className="w-auto h-8 sm:h-10 md:h-12 object-contain"
+                                />
+                            </Link>
                         </div>
 
                         <p className="text-base text-slate-600 font-normal leading-relaxed max-w-xs">
