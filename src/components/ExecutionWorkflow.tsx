@@ -1,17 +1,25 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Sparkle, CaretRight } from "@phosphor-icons/react";
+import {
+    Lightbulb,
+    Cpu,
+    GraduationCap,
+    RocketLaunch,
+    MagnifyingGlass,
+    PenNib,
+    CodeSimple,
+    CloudArrowUp,
+    Pulse
+} from "@phosphor-icons/react";
 
-function FadeInCard({
-    children,
-    className = "",
-    delay = 0,
-}: {
+interface FadeInProps {
     children: React.ReactNode;
     className?: string;
     delay?: number;
-}) {
+}
+
+function FadeIn({ children, className = "", delay = 0 }: FadeInProps) {
     const ref = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -22,290 +30,276 @@ function FadeInCard({
                     setTimeout(() => setIsVisible(true), delay);
                 }
             },
-            { threshold: 0.05 }
+            { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
         );
+
         if (ref.current) observer.observe(ref.current);
-        return () => { if (ref.current) observer.unobserve(ref.current); };
+        return () => {
+            if (ref.current) observer.unobserve(ref.current);
+        };
     }, [delay]);
 
     return (
-        <div className="w-full">
-            <div
-                ref={ref}
-                style={{
-                    opacity: isVisible ? 1 : 0,
-                    transform: isVisible ? "translateY(0px)" : "translateY(24px)",
-                    transition: `opacity 0.6s ease-out ${delay}ms, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${delay}ms`,
-                }}
-                className={`will-change-transform ${className}`}
-            >
-                {children}
-            </div>
+        <div
+            ref={ref}
+            style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0px)" : "translateY(20px)",
+                transition: `opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
+            }}
+            className={`will-change-transform ${className}`}
+        >
+            {children}
         </div>
     );
 }
 
 export default function ExecutionWorkflow() {
-    // Made Changes
-    // Multi-colored icon badges matching the site's template palette (Pink, Blue, Amber, Emerald, Purple, Cyan)
-    const teamSteps = [
+    const teamWorkflow = [
         {
             num: "01",
             title: "Learn",
             description: "Stay current with industry AI & tech advancements",
-            iconBg: "bg-pink-500/15 border-pink-500/30 text-pink-400",
-            hoverBorder: "hover:border-pink-500/50",
-            path: (
-                <path
-                    d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7zM9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9v1z"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-            )
+            icon: Lightbulb,
         },
         {
             num: "02",
             title: "Build",
             description: "Apply learning directly to active real-world projects",
-            iconBg: "bg-blue-500/15 border-blue-500/30 text-blue-400",
-            hoverBorder: "hover:border-blue-500/50",
-            path: (
-                <>
-                    <rect x="4" y="4" width="16" height="16" rx="2" strokeWidth="1.8" />
-                    <rect x="9" y="9" width="6" height="6" strokeWidth="1.8" />
-                    <path d="M15 2v2M9 2v2M15 20v2M9 20v2M20 15h2M20 9h2M2 15h2M2 9h2" strokeWidth="1.8" strokeLinecap="round" />
-                </>
-            )
+            icon: Cpu,
         },
         {
             num: "03",
             title: "Train",
             description: "Upskill students & faculty through live technical work",
-            iconBg: "bg-amber-500/15 border-amber-500/30 text-amber-400",
-            hoverBorder: "hover:border-amber-500/50",
-            path: (
-                <>
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M6 12v5c0 2 6 2 6 2s6 0 6-2v-5" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </>
-            )
+            icon: GraduationCap,
         },
         {
             num: "04",
             title: "Deliver",
             description: "Deliver enterprise-grade results to our partners",
-            iconBg: "bg-emerald-500/15 border-emerald-500/30 text-emerald-400",
-            hoverBorder: "hover:border-emerald-500/50",
-            path: (
-                <>
-                    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" strokeWidth="1.8" />
-                    <path d="M12 15l-3-3a22 2 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.95 11a22.35 22.35 0 0 1-3.05 2l-3-3z" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </>
-            )
-        }
+            icon: RocketLaunch,
+        },
     ];
 
-    const projectSteps = [
+    const projectWorkflow = [
         {
             num: "01",
             title: "Discover",
             description: "Understand domain & pinpoint requirements",
-            iconBg: "bg-pink-500/15 border-pink-500/30 text-pink-400",
-            hoverBorder: "hover:border-pink-500/50",
-            path: (
-                <>
-                    <circle cx="11" cy="11" r="8" strokeWidth="1.8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" strokeWidth="2" strokeLinecap="round" />
-                </>
-            )
+            detail: "In-depth problem decomposition, stakeholder alignment, data audit, and technical feasibility assessment.",
+            icon: MagnifyingGlass,
         },
         {
             num: "02",
             title: "Design",
             description: "Design optimal AI & cloud architecture",
-            iconBg: "bg-purple-500/15 border-purple-500/30 text-purple-400",
-            hoverBorder: "hover:border-purple-500/50",
-            path: (
-                <>
-                    <rect x="3" y="3" width="18" height="18" rx="3" strokeWidth="1.8" />
-                    <path d="M3 9h18M9 21V9" strokeWidth="1.8" strokeLinecap="round" />
-                </>
-            )
+            detail: "Model selection, pipeline architecture, latency benchmarking, security controls, and infrastructure blueprint.",
+            icon: PenNib,
         },
         {
             num: "03",
             title: "Develop",
             description: "Build solution with continuous integration",
-            iconBg: "bg-blue-500/15 border-blue-500/30 text-blue-400",
-            hoverBorder: "hover:border-blue-500/50",
-            path: (
-                <>
-                    <polyline points="16 18 22 12 16 6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                    <polyline points="8 6 2 12 8 18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </>
-            )
+            detail: "Iterative sprints, rigorous unit & evaluation testing, human-in-the-loop validation, and clean version control.",
+            icon: CodeSimple,
         },
         {
             num: "04",
             title: "Deploy",
             description: "Deploy securely to target environment",
-            iconBg: "bg-cyan-500/15 border-cyan-500/30 text-cyan-400",
-            hoverBorder: "hover:border-cyan-500/50",
-            path: (
-                <>
-                    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </>
-            )
+            detail: "Containerized deployment, air-gapped or VPC hosting, automated failover, and strict enterprise IAM integration.",
+            icon: CloudArrowUp,
         },
         {
             num: "05",
             title: "Monitor",
             description: "Continuous telemetry & post-delivery support",
-            iconBg: "bg-emerald-500/15 border-emerald-500/30 text-emerald-400",
-            hoverBorder: "hover:border-emerald-500/50",
-            path: (
-                <>
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </>
-            )
-        }
+            detail: "Real-time drift detection, accuracy tracking, SLA monitoring, and scheduled model retraining loops.",
+            icon: Pulse,
+        },
     ];
 
     return (
-        <section className="w-full bg-[#080c14] py-16 sm:py-24 relative overflow-hidden border-y border-slate-800/80">
-            {/* Ambient background glows */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-900/20 rounded-full blur-[100px] pointer-events-none" />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-12 sm:space-y-16">
-                {/* Header */}
-                <div className="max-w-3xl space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-950/80 border border-purple-700/60 text-purple-300 text-xs font-extrabold uppercase tracking-wider">
-                        <Sparkle className="w-3.5 h-3.5 text-purple-400" weight="fill" />
-                        <span>Structured Execution</span>
+        <section
+            id="execution-workflow"
+            aria-label="Execution Workflow"
+            className="w-full bg-[#000000] text-[#F5F5F5] py-24 sm:py-32 lg:py-40 border-y border-[#222222] relative selection:bg-[#F5F5F5] selection:text-[#000000]"
+        >
+            <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 space-y-24 sm:space-y-32">
+                {/* SECTION HEADER: Editorial Asymmetric Layout */}
+                <FadeIn>
+                    <div className="max-w-3xl space-y-2">
+                        {/* Main Headline */}
+                        <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-slate-950 tracking-tight leading-[1.12]">
+                             Structured execution <br className="hidden sm:inline" />
+                                from concept to delivery.
+                        </h2>
+                        {/* Light Grey Sub-text */}
+                        <p className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-[#949494] tracking-tight leading-[1.2]">
+                            Industry practice, academic rigor, and student innovation working together.
+                        </p>
                     </div>
+                </FadeIn>
 
-                    <h2
-                        className="text-3xl sm:text-4xl lg:text-[42px] font-bold leading-tight tracking-tight !text-white"
-                        style={{ color: "#ffffff", fontFamily: "'Manrope', 'Google Sans', system-ui, sans-serif" }}
-                    >
-                        Structured execution from concept to delivery.
-                    </h2>
-
-                    <p className="text-base sm:text-lg font-medium leading-relaxed text-slate-400">
-                        How we operate as a team and execute for client projects.
-                    </p>
-                </div>
-
-                {/* Block 1: As a Team */}
-                <FadeInCard>
-                    <div className="rounded-3xl bg-[#111827]/90 border border-slate-800 p-6 sm:p-8 lg:p-10 shadow-2xl space-y-8 backdrop-blur-md">
-                        <div className="space-y-2 border-b border-slate-800/80 pb-6">
-                            <div className="text-xs font-extrabold uppercase tracking-widest text-purple-400">
-                                Internal Methodology
+                {/* WORKFLOW 01: AS A TEAM (Horizontal Editorial Grid) */}
+                <div className="space-y-8 sm:space-y-12">
+                    <FadeIn delay={100}>
+                        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pb-6">
+                            <div className="space-y-2">
+                                {/* <div className="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-[#666666]">
+                                    INTERNAL METHODOLOGY
+                                </div> */}
+                                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-medium tracking-tight text-[#F5F5F5]">
+                                    As a Team
+                                </h3>
                             </div>
-                            <h3
-                                className="text-2xl sm:text-3xl font-bold tracking-tight !text-white"
-                                style={{ color: "#ffffff" }}
-                            >
-                                As a Team
-                            </h3>
-                            <p className="text-sm sm:text-base font-medium leading-relaxed max-w-2xl text-slate-400">
+                            <p className="text-base sm:text-lg text-[#9A9A9A] max-w-xl font-normal leading-relaxed">
                                 We stay current with industry, apply what we learn to real work, upskill our students through that work, and deliver results to our partners.
                             </p>
                         </div>
+                    </FadeIn>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {teamSteps.map((step, idx) => (
-                                <div key={step.num} className="group">
-                                    <div className={`h-full rounded-2xl bg-[#1f293d]/80 p-5 border border-slate-700/70 shadow-lg flex flex-col justify-between space-y-5 ${step.hoverBorder} transition-all duration-300 hover:bg-[#1f293d]`}>
+                    {/* Horizontal 4-Stage Grid with Greyish Glassmorphism */}
+                    <FadeIn delay={150}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/[0.08] divide-y md:divide-y-0 md:divide-x divide-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-2xl">
+                            {teamWorkflow.map((step) => {
+                                const IconComponent = step.icon;
+                                return (
+                                    <div
+                                        key={step.num}
+                                        className="group relative p-8 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] bg-gradient-to-b from-white/[0.03] to-transparent hover:from-white/[0.07] hover:to-white/[0.02] backdrop-blur-md transition-all duration-300"
+                                    >
+                                        {/* Top Row: Step number & subtle monochromatic icon */}
                                         <div className="flex items-center justify-between">
-                                            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all ${step.iconBg}`}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                    {step.path}
-                                                </svg>
-                                            </div>
-                                            <span className="text-xs font-extrabold tracking-wider text-slate-400">
+                                            <span className="text-base sm:text-lg font-medium tracking-widest text-[#777777] group-hover:text-[#F5F5F5] transition-colors duration-300">
                                                 {step.num}
                                             </span>
+                                            <IconComponent
+                                                className="w-6 h-6 text-[#777777] group-hover:text-[#F5F5F5] group-hover:scale-110 transition-all duration-300"
+                                                weight="light"
+                                            />
                                         </div>
 
-                                        <div className="space-y-1.5">
-                                            <h4
-                                                className="text-base font-bold !text-white flex items-center justify-between"
-                                                style={{ color: "#ffffff" }}
-                                            >
-                                                <span>{step.title}</span>
-                                                {idx < teamSteps.length - 1 && (
-                                                    <CaretRight className="w-4 h-4 text-slate-500 hidden lg:block group-hover:text-purple-400 transition-colors" weight="bold" />
-                                                )}
-                                            </h4>
-                                            <p className="text-xs font-normal leading-relaxed text-slate-300">
+                                        {/* Content */}
+                                        <div className="space-y-3 pt-12">
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="text-xl sm:text-2xl font-medium tracking-wide text-[#F5F5F5] group-hover:translate-x-1 transition-transform duration-300">
+                                                    {step.title}
+                                                </h4>
+                                            </div>
+                                            <p className="text-sm sm:text-base text-[#9A9A9A] group-hover:text-[#D4D4D4] leading-relaxed transition-colors duration-300">
                                                 {step.description}
                                             </p>
                                         </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </FadeInCard>
 
-                {/* Block 2: For Your Project */}
-                <FadeInCard delay={150}>
-                    <div className="rounded-3xl bg-[#111827]/90 border border-slate-800 p-6 sm:p-8 lg:p-10 shadow-2xl space-y-8 backdrop-blur-md">
-                        <div className="space-y-2 border-b border-slate-800/80 pb-6">
-                            <div className="text-xs font-extrabold uppercase tracking-widest text-purple-400">
-                                Client Delivery Model
+                                        {/* Subtle animated bottom line indicator */}
+                                        <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-white/70 transition-all duration-500 ease-out group-hover:w-full" />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </FadeIn>
+                </div>
+
+                {/* WORKFLOW 02: FOR YOUR PROJECT (Vertical Editorial Engineering Timeline) */}
+                <div className="pt-8 sm:pt-12">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+                        {/* Left Column: Context & Overview */}
+                        <div className="lg:col-span-4">
+                            <div className="lg:sticky lg:top-28 space-y-8">
+                                <FadeIn delay={100}>
+                                    <div className="space-y-3">
+                                        {/* <div className="text-xs sm:text-sm uppercase tracking-[0.2em] font-semibold text-[#666666]">
+                                            CLIENT DELIVERY MODEL
+                                        </div> */}
+                                        <h3 className="text-3xl sm:text-4xl lg:text-[40px] font-medium tracking-tight text-[#F5F5F5] leading-tight">
+                                            For Your Project
+                                        </h3>
+                                    </div>
+                                    <p className="text-base sm:text-lg text-[#9A9A9A] font-normal leading-relaxed pt-3">
+                                        We start by understanding your problem, design the right approach, build the solution, deploy it to your environment, and support it post-delivery.
+                                    </p>
+                                </FadeIn>
+
+                                <FadeIn delay={150}>
+                                    <div className="p-6 sm:p-7 rounded-2xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl space-y-4">
+                                        <div className="text-xs sm:text-sm uppercase tracking-wider text-[#888888] font-semibold">
+                                            Delivery Tenets
+                                        </div>
+                                        <ul className="space-y-3 text-sm sm:text-[15px] text-[#A5A5A5]">
+                                            <li className="flex items-center gap-2.5">
+                                                <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0" />
+                                                Full IP & repository ownership transfer
+                                            </li>
+                                            <li className="flex items-center gap-2.5">
+                                                <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0" />
+                                                Milestone-based delivery & verification
+                                            </li>
+                                            <li className="flex items-center gap-2.5">
+                                                <span className="w-1.5 h-1.5 bg-white/40 rounded-full shrink-0" />
+                                                Production telemetry & SLA guarantees
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </FadeIn>
                             </div>
-                            <h3
-                                className="text-2xl sm:text-3xl font-bold tracking-tight !text-white"
-                                style={{ color: "#ffffff" }}
-                            >
-                                For Your Project
-                            </h3>
-                            <p className="text-sm sm:text-base font-medium leading-relaxed max-w-2xl text-slate-400">
-                                We start by understanding your problem, design the right approach, build the solution, deploy it to your environment, and support it post-delivery.
-                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            {projectSteps.map((step, idx) => (
-                                <div key={step.num} className="group">
-                                    <div className={`h-full rounded-2xl bg-[#1f293d]/80 p-5 border border-slate-700/70 shadow-lg flex flex-col justify-between space-y-4 ${step.hoverBorder} transition-all duration-300 hover:bg-[#1f293d]`}>
-                                        <div className="flex items-center justify-between">
-                                            <div className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-all ${step.iconBg}`}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                    {step.path}
-                                                </svg>
-                                            </div>
-                                            <span className="text-xs font-extrabold tracking-wider text-slate-400">
-                                                {step.num}
-                                            </span>
-                                        </div>
+                        {/* Right Column: Vertical Timeline Sequence */}
+                        <div className="lg:col-span-8">
+                            <div className="relative">
+                                {/* Perfectly centered continuous vertical timeline line */}
+                                <div className="absolute left-[14px] sm:left-[16px] top-6 bottom-6 w-[1px] bg-white/10 -translate-x-1/2" />
 
-                                        <div className="space-y-1.5">
-                                            <h4
-                                                className="text-base font-bold !text-white flex items-center justify-between"
-                                                style={{ color: "#ffffff" }}
-                                            >
-                                                <span>{step.title}</span>
-                                                {idx < projectSteps.length - 1 && (
-                                                    <CaretRight className="w-3.5 h-3.5 text-slate-500 hidden lg:block group-hover:text-purple-400 transition-colors" weight="bold" />
-                                                )}
-                                            </h4>
-                                            <p className="text-xs font-normal leading-relaxed text-slate-300">
-                                                {step.description}
-                                            </p>
-                                        </div>
-                                    </div>
+                                <div className="space-y-8 sm:space-y-10">
+                                    {projectWorkflow.map((stage, idx) => {
+                                        const IconComponent = stage.icon;
+                                        return (
+                                            <FadeIn key={stage.num} delay={idx * 80}>
+                                                <div className="group relative flex items-start gap-5 sm:gap-8">
+                                                    {/* Timeline Node marker perfectly aligned on the line */}
+                                                    <div className="relative z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#0a0a0a] border border-white/20 group-hover:border-white flex items-center justify-center shrink-0 mt-6 shadow-md transition-colors duration-300">
+                                                        <div className="w-2.5 h-2.5 rounded-full bg-white/40 group-hover:bg-white transition-colors duration-300" />
+                                                    </div>
+
+                                                    {/* Glassmorphic Stage Card */}
+                                                    <div className="flex-1 p-7 sm:p-9 rounded-2xl border border-white/[0.08] group-hover:border-white/[0.18] bg-gradient-to-b from-white/[0.04] to-white/[0.01] hover:from-white/[0.07] hover:to-white/[0.03] backdrop-blur-xl shadow-2xl transition-all duration-300 space-y-4">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+                                                            <div className="flex items-center gap-3.5">
+                                                                <span className="text-xs sm:text-sm font-semibold tracking-widest text-[#888888] group-hover:text-[#B5B5B5] transition-colors">
+                                                                    STAGE {stage.num}
+                                                                </span>
+                                                                <span className="text-white/20 hidden sm:inline">/</span>
+                                                                <h4 className="text-xl sm:text-2xl font-medium tracking-tight text-[#F5F5F5] group-hover:translate-x-0.5 transition-transform duration-200">
+                                                                    {stage.title}
+                                                                </h4>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 text-[#777777] group-hover:text-[#F5F5F5] transition-colors">
+                                                                <IconComponent className="w-6 h-6" weight="light" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="space-y-2.5">
+                                                            <p className="text-base sm:text-lg font-normal text-[#EDEDED] leading-relaxed">
+                                                                {stage.description}
+                                                            </p>
+                                                            <p className="text-sm sm:text-[15px] text-[#9A9A9A] leading-relaxed group-hover:text-[#BBBBBB] transition-colors">
+                                                                {stage.detail}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </FadeIn>
+                                        );
+                                    })}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
-                </FadeInCard>
+                </div>
             </div>
         </section>
     );
 }
+
