@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import bcrypt from "bcryptjs";
 import path from "path";
 
 const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
@@ -143,32 +144,199 @@ async function main() {
         ],
     });
 
-    // 6. Seed Gallery Items
-    await prisma.galleryItem.deleteMany();
-    await prisma.galleryItem.createMany({
-        data: [
-            {
-                title: "Generative AI Lab Sprint",
-                category: "Lab Sessions",
-                imageUrl: "/logo.png",
-                eventDate: "August 2026",
-            },
-            {
-                title: "Hands-on Student Hackathon",
-                category: "Hackathons",
-                imageUrl: "/logo.png",
-                eventDate: "July 2026",
-            },
-            {
-                title: "Faculty Upskilling Workshop",
-                category: "Workshops",
-                imageUrl: "/logo.png",
-                eventDate: "June 2026",
-            },
-        ],
+    // 0. Truncate existing relational records for a clean seed
+    console.log("Truncating existing records for fresh seed...");
+    await prisma.studentSkill.deleteMany();
+    await prisma.attendanceRecord.deleteMany();
+    await prisma.classroomSession.deleteMany();
+    await prisma.formSubmission.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.rolePermission.deleteMany();
+    await prisma.permission.deleteMany();
+    await prisma.role.deleteMany();
+    await prisma.department.deleteMany();
+    await prisma.classGroup.deleteMany();
+    await prisma.slotTiming.deleteMany();
+    await prisma.soiDomain.deleteMany();
+    await prisma.domainPlacement.deleteMany();
+    await prisma.batch.deleteMany();
+    await prisma.academicYear.deleteMany();
+    await prisma.interestedRole.deleteMany();
+
+    // 7. Seed Dynamic Metadata Categories
+    console.log("Seeding Dynamic Metadata Categories...");
+    const batch1 = await prisma.batch.create({
+        data: { name: "2023-2027", code: "BATCH_2023_2027", startYear: 2023, endYear: 2027, isActive: true } as any,
     });
 
-    console.log("Database seeded successfully!");
+    const batch2 = await prisma.batch.create({
+        data: { name: "2024-2028", code: "BATCH_2024_2028", startYear: 2024, endYear: 2028, isActive: true } as any,
+    });
+
+    const year3 = await prisma.academicYear.create({
+        data: { name: "3rd Year", code: "YEAR_3", isActive: true } as any,
+    });
+
+    const deptCse = await prisma.department.create({
+        data: { name: "Computer Science & Engineering", code: "CSE", isActive: true } as any,
+    });
+
+    const deptEce = await prisma.department.create({
+        data: { name: "Electronics & Communication Engineering", code: "ECE", isActive: true } as any,
+    });
+
+    const domainAids = await prisma.soiDomain.create({
+        data: { name: "AI & Data Science", code: "AIDS", isActive: true } as any,
+    });
+
+    const placementGenAi = await prisma.domainPlacement.create({
+        data: { name: "Generative AI Engineer", code: "GENAI_ENG", isActive: true } as any,
+    });
+
+    const classA = await prisma.classGroup.create({
+        data: { name: "Section A", code: "CLASS_A", isActive: true } as any,
+    });
+
+    const classB = await prisma.classGroup.create({
+        data: { name: "Section B", code: "CLASS_B", isActive: true } as any,
+    });
+
+    const slotMorning = await prisma.slotTiming.create({
+        data: { name: "Morning Slot A (09:00 AM - 11:30 AM)", code: "SLOT_MORNING_A", isActive: true } as any,
+    });
+
+    const slotAfternoon = await prisma.slotTiming.create({
+        data: { name: "Afternoon Slot B (01:30 PM - 04:00 PM)", code: "SLOT_AFTERNOON_B", isActive: true } as any,
+    });
+
+    const roleAiEngineer = await prisma.interestedRole.create({
+        data: { name: "AI / ML Engineer", code: "ROLE_AI_ENG", isActive: true } as any,
+    });
+
+    const roleFullstack = await prisma.interestedRole.create({
+        data: { name: "Fullstack Web Engineer", code: "ROLE_FULLSTACK", isActive: true } as any,
+    });
+
+    // 8. Seed Roles
+    console.log("Seeding Dynamic Roles...");
+    const roleSuperAdmin = await prisma.role.create({
+        data: { name: "SUPER_ADMIN", description: "Super Admin with unrestricted systemic privileges", isSystem: true },
+    });
+
+    const roleAdmin = await prisma.role.create({
+        data: { name: "ADMIN", description: "Administrator managing users, sessions, and forms", isSystem: true },
+    });
+
+    const roleInstructor = await prisma.role.create({
+        data: { name: "INSTRUCTOR", description: "Instructor generating TOTP QR codes and running sessions", isSystem: true },
+    });
+
+    const roleAuthor = await prisma.role.create({
+        data: { name: "AUTHOR", description: "Content author for news, events, and dynamic forms", isSystem: true },
+    });
+
+    const roleStudent = await prisma.role.create({
+        data: { name: "STUDENT", description: "Student scanning attendance and maintaining portfolio", isSystem: true },
+    });
+
+    // 9. Seed System Permissions
+    console.log("Seeding Permissions...");
+    const permissionsData = [
+        { key: "users:manage", name: "Manage System Users", category: "Users" },
+        { key: "rbac:manage", name: "Manage Roles & Permissions", category: "RBAC" },
+        { key: "metadata:manage", name: "Manage Metadata Categories", category: "Metadata" },
+        { key: "attendance:create", name: "Create Classroom Sessions", category: "Attendance" },
+        { key: "qr:generate", name: "Generate Dynamic TOTP QR Codes", category: "Attendance" },
+        { key: "attendance:mark", name: "Mark Session Attendance", category: "Attendance" },
+        { key: "content:write", name: "Write News & Event Posts", category: "Content" },
+        { key: "forms:manage", name: "Manage Dynamic Forms", category: "Forms" },
+        { key: "profile:sync", name: "Sync Developer Platform Portfolios", category: "Integrations" },
+    ];
+
+    for (const permData of permissionsData) {
+        const perm = await prisma.permission.create({
+            data: permData,
+        });
+
+        // Grant all permissions to SUPER_ADMIN
+        await prisma.rolePermission.create({
+            data: { roleId: roleSuperAdmin.id, permissionId: perm.id },
+        });
+    }
+
+    // 10. Seed Default Test Users (Both .com and .ac.in)
+    console.log("Seeding Default System Users with Complete Metadata Bindings...");
+    const defaultPasswordHash = await bcrypt.hash("SuperAdminPass123!", 10);
+    const adminPasswordHash = await bcrypt.hash("AdminPass123!", 10);
+    const instructorPasswordHash = await bcrypt.hash("InstructorPass123!", 10);
+    const studentPasswordHash = await bcrypt.hash("StudentPass123!", 10);
+
+    const userCredentials = [
+        { email: "superadmin@sindhanai.com", name: "Super Admin", roleId: roleSuperAdmin.id, passwordHash: defaultPasswordHash },
+        { email: "superadmin@sindhanai.ac.in", name: "Super Admin", roleId: roleSuperAdmin.id, passwordHash: defaultPasswordHash },
+        { email: "admin@sindhanai.com", name: "System Admin", roleId: roleAdmin.id, passwordHash: adminPasswordHash },
+        { email: "admin@sindhanai.ac.in", name: "System Admin", roleId: roleAdmin.id, passwordHash: adminPasswordHash },
+        { email: "instructor@sindhanai.com", name: "Dr. K. Ashok Kumar", roleId: roleInstructor.id, passwordHash: instructorPasswordHash, departmentId: deptCse.id, soiDomainId: domainAids.id },
+        { email: "instructor@sindhanai.ac.in", name: "Dr. K. Ashok Kumar", roleId: roleInstructor.id, passwordHash: instructorPasswordHash, departmentId: deptCse.id, soiDomainId: domainAids.id },
+        {
+            email: "student@sindhanai.com",
+            name: "Deepak Raj",
+            rollNumber: "73772321001",
+            registrationNumber: "REG2023001",
+            roleId: roleStudent.id,
+            passwordHash: studentPasswordHash,
+            batchId: batch1.id,
+            academicYearId: year3.id,
+            departmentId: deptCse.id,
+            soiDomainId: domainAids.id,
+            domainPlacementId: placementGenAi.id,
+            classGroupId: classA.id,
+            slotTimingId: slotMorning.id,
+            interestedRoleId: roleAiEngineer.id,
+        },
+        {
+            email: "student@sindhanai.ac.in",
+            name: "Deepak Raj",
+            rollNumber: "73772321001",
+            registrationNumber: "REG2023001",
+            roleId: roleStudent.id,
+            passwordHash: studentPasswordHash,
+            batchId: batch1.id,
+            academicYearId: year3.id,
+            departmentId: deptCse.id,
+            soiDomainId: domainAids.id,
+            domainPlacementId: placementGenAi.id,
+            classGroupId: classA.id,
+            slotTimingId: slotMorning.id,
+            interestedRoleId: roleAiEngineer.id,
+        },
+        {
+            email: "student2@sindhanai.com",
+            name: "Priya Sharma",
+            rollNumber: "73772321002",
+            registrationNumber: "REG2023002",
+            roleId: roleStudent.id,
+            passwordHash: studentPasswordHash,
+            batchId: batch2.id,
+            academicYearId: year3.id,
+            departmentId: deptEce.id,
+            soiDomainId: domainAids.id,
+            domainPlacementId: placementGenAi.id,
+            classGroupId: classB.id,
+            slotTimingId: slotAfternoon.id,
+            interestedRoleId: roleFullstack.id,
+        },
+    ];
+
+    for (const u of userCredentials) {
+        await prisma.user.create({
+            data: u,
+        });
+    }
+
+    console.log("Database successfully truncated and seeded with full metadata relation bindings!");
+
+    console.log("Database seeded successfully with Metadata, RBAC, and System Users!");
 }
 
 main()

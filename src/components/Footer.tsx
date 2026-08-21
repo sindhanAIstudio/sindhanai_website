@@ -52,13 +52,13 @@ export default function Footer() {
                         <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Product</h4>
                         <ul className="space-y-2.5">
                             {[
-                                "AI & Technology",
-                                "Software Solutions",
-                                "Training & Up-Skilling"
+                                { name: "AI & Technology", href: "/services/ai-technology" },
+                                { name: "Software Solutions", href: "/services/software-solutions" },
+                                { name: "Training & Up-Skilling", href: "/services/training" }
                             ].map((item) => (
-                                <li key={item}>
-                                    <a href="#services" className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
-                                        <span>{item}</span>
+                                <li key={item.name}>
+                                    <a href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
+                                        <span>{item.name}</span>
                                         <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
                                     </a>
                                 </li>

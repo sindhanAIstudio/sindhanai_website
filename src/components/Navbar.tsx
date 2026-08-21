@@ -44,9 +44,9 @@ export default function Navbar() {
         { name: "Home", href: "/" },
         { name: "Services", href: "/services", isMega: true },
         { name: "About", href: "/about" },
-        { name: "News & Events", href: "#" },
-        { name: "Team", href: "#" },
-        { name: "Contact", href: "#" },
+        { name: "News & Events", href: "/news-events" },
+        { name: "Team", href: "/team" },
+        { name: "Contact", href: "/contact" },
     ];
 
     // Mega menu interactive content definitions matching SindhanAI design
