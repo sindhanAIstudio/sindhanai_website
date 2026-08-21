@@ -46,6 +46,7 @@ function FadeInCard({
 }
 
 export default function ExecutionWorkflow() {
+    // Made Changes
     // Multi-colored icon badges matching the site's template palette (Pink, Blue, Amber, Emerald, Purple, Cyan)
     const teamSteps = [
         {
