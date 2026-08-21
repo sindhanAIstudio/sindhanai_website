@@ -152,9 +152,15 @@ export default function Navbar() {
                     {/* Left Group: Capital Text Logo + Vertical Separator + Left-Aligned Nav Menu */}
                     <div className="flex items-center gap-4">
 
-                        {/* Capital Text Logo */}
-                        <Link href="/" className="text-2xl font-black tracking-tight text-slate-950 font-sans hover:opacity-90 transition-opacity">
-                            SINTHAN<span className="text-indigo-600">AI</span>
+                        <Link
+                            href="/"
+                            className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
+                        >
+                            <img
+                                src="/sindhanai-logo.png"
+                                alt="SindhanAI"
+                                className="w-auto h-5 sm:h-6 md:h-7 object-contain"
+                            />
                         </Link>
 
                         {/* Vertical Separator Line */}
