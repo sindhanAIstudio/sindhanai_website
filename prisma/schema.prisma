@@ -101,3 +101,240 @@ model GalleryItem {
   eventDate String?
   createdAt DateTime @default(now())
 }
+
+// ──────────────────────────────────────────────────────────
+// PROJECT ANTIGRAVITY HUB — ENTERPRISE ENGINE MODELS
+// ──────────────────────────────────────────────────────────
+
+// 1. Dynamic Metadata Category Entities
+model Batch {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "2023-2027"
+  code      String    @unique // e.g. "BATCH_2023_2027"
+  startYear Int
+  endYear   Int
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model AcademicYear {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "1st Year", "2nd Year"
+  code      String    @unique // e.g. "YEAR_1"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "Computer Science & Engineering"
+  code      String    @unique // e.g. "CSE"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SoiDomain {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "AI & Data Science"
+  code      String    @unique // e.g. "AIDS"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model DomainPlacement {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "Generative AI"
+  code      String    @unique // e.g. "GENAI"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ClassGroup {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "Section A"
+  code      String    @unique // e.g. "CLASS_A"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SlotTiming {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "Morning Slot A (09:00 AM - 11:00 AM)"
+  code      String    @unique // e.g. "SLOT_MORNING_A"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model InterestedRole {
+  id        String    @id @default(uuid())
+  name      String    @unique // e.g. "AI Engineer", "Fullstack Developer"
+  code      String    @unique // e.g. "ROLE_AI_ENG"
+  isActive  Boolean   @default(true)
+  deletedAt DateTime?
+  users     User[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model StudentSkill {
+  id                     String   @id @default(uuid())
+  studentId              String
+  student                User     @relation("StudentSkills", fields: [studentId], references: [id], onDelete: Cascade)
+  skillName              String
+  category               String?  // e.g. "Languages", "Frameworks", "AI/ML"
+  endorsedByInstructorId String?
+  endorsedByInstructor   User?    @relation("InstructorSkillEndorsements", fields: [endorsedByInstructorId], references: [id], onDelete: SetNull)
+  createdAt              DateTime @default(now())
+}
+
+// 2. Dynamic RBAC Models
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique // SUPER_ADMIN, ADMIN, INSTRUCTOR, AUTHOR, STUDENT
+  description String?
+  isSystem    Boolean          @default(true)
+  permissions RolePermission[]
+  users       User[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  key         String           @unique // e.g. "attendance:mark", "qr:generate", "users:manage"
+  name        String
+  description String?
+  category    String           @default("System") // Attendance, RBAC, Users, Content
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// 3. User Entity & Metadata Relationships
+model User {
+  id                  String                 @id @default(uuid())
+  email               String                 @unique // Institutional SOI Email
+  personalEmail       String?
+  name                String
+  passwordHash        String?                // Nullable for uninitialized onboarding users
+  rollNumber          String?
+  registrationNumber  String?
+  yearOfPassing       Int?
+  mobileNumber        String?                // e.g. +919876543210
+  tenthPercentage     Float?
+  twelfthPercentage   Float?
+  currentCgpa         Float?
+  githubUrl           String?
+  kaggleUrl           String?
+  leetcodeUrl         String?
+  linkedinUrl         String?
+  residentialStatus   String?                // "Dayscholar" | "Hosteller"
+  address             String?
+  resumeUrl           String?
+  profilePicUrl       String?
+  roleId              String
+  role                Role                   @relation(fields: [roleId], references: [id])
+  deviceFingerprint   String?                // Encrypted/Hashed device signature
+  sessionToken        String?
+  batchId             String?
+  batch               Batch?                 @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  academicYearId      String?
+  academicYear        AcademicYear?          @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  departmentId        String?
+  department          Department?            @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  soiDomainId         String?
+  soiDomain           SoiDomain?             @relation(fields: [soiDomainId], references: [id], onDelete: SetNull)
+  domainPlacementId   String?
+  domainPlacement     DomainPlacement?       @relation(fields: [domainPlacementId], references: [id], onDelete: SetNull)
+  classGroupId        String?
+  classGroup          ClassGroup?            @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
+  slotTimingId        String?
+  slotTiming          SlotTiming?            @relation(fields: [slotTimingId], references: [id], onDelete: SetNull)
+  interestedRoleId    String?
+  interestedRole      InterestedRole?        @relation(fields: [interestedRoleId], references: [id], onDelete: SetNull)
+  skills              StudentSkill[]         @relation("StudentSkills")
+  endorsedSkills      StudentSkill[]         @relation("InstructorSkillEndorsements")
+  classroomSessions   ClassroomSession[]     @relation("InstructorSessions")
+  attendanceRecords   AttendanceRecord[]     @relation("StudentAttendance")
+  platformProfile     StudentPlatformProfile?
+  statusNote          String?                // Optional reason/note for active or inactive status
+  deletedAt           DateTime?              // Soft delete timestamp
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @updatedAt
+}
+
+// 4. Anti-Spoofing Dynamic QR Attendance Engine Models
+model ClassroomSession {
+  id                String             @id @default(uuid())
+  title             String
+  instructorId      String
+  instructor        User               @relation("InstructorSessions", fields: [instructorId], references: [id], onDelete: Cascade)
+  sessionSecret     String             // TOTP secret seed string
+  activeFrom        DateTime           @default(now())
+  activeUntil       DateTime
+  status            String             @default("ACTIVE") // ACTIVE, EXPIRED, CLOSED
+  attendanceRecords AttendanceRecord[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+
+model AttendanceRecord {
+  id                String           @id @default(uuid())
+  sessionId         String
+  session           ClassroomSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  studentId         String
+  student           User             @relation("StudentAttendance", fields: [studentId], references: [id], onDelete: Cascade)
+  scannedAt         DateTime         @default(now())
+  deviceFingerprint String
+  requestIp         String?
+  status            String           @default("VERIFIED") // VERIFIED, REJECTED_FINGERPRINT_MISMATCH, EXPIRED_TOKEN
+  createdAt         DateTime         @default(now())
+
+  @@unique([sessionId, studentId])
+}
+
+// 5. Developer Platform Integration Profiles (GitHub, LeetCode, Kaggle)
+model StudentPlatformProfile {
+  id               String    @id @default(uuid())
+  studentId        String    @unique
+  student          User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  githubUsername   String?
+  githubData       String?   // JSON payload of commit footprints & repos
+  leetcodeUsername String?
+  leetcodeData     String?   // JSON payload of problem stats & badges
+  kaggleUsername   String?
+  kaggleData       String?   // JSON payload of competition standings & notebooks
+  lastSyncedAt     DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}

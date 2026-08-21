@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Manrope, Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -34,12 +32,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${manrope.variable} ${plusJakartaSans.variable} ${inter.variable} font-sans antialiased min-h-screen flex flex-col justify-between`}
       >
         <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false}>
-          <Navbar />
-          <main className="flex-grow">{children}</main>
-          <Footer />
+          {children}
         </ThemeProvider>
       </body>
     </html>
