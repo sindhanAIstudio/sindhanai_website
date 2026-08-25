@@ -12,23 +12,34 @@ export async function POST(req: Request) {
         }
 
         const normalizedEmail = email.trim().toLowerCase();
-        const user = await prisma.user.findUnique({
+        const user = await (prisma as any).user.findUnique({
             where: { email: normalizedEmail },
             include: { role: true },
         });
 
-        if (!user || !user.passwordHash) {
+        if (!user) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        let isValidPassword = false;
+
+        // Check permanent hashed password if available
+        if (user.passwordHash) {
+            isValidPassword = await bcrypt.compare(password, user.passwordHash);
+        }
+
+        // Fallback: check temporary unencrypted password (for newly created onboarding users)
+        if (!isValidPassword && user.tempPassword && user.tempPassword === password) {
+            isValidPassword = true;
+        }
+
         if (!isValidPassword) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
         // Update active device fingerprint if provided
         if (deviceFingerprint) {
-            await prisma.user.update({
+            await (prisma as any).user.update({
                 where: { id: user.id },
                 data: { deviceFingerprint },
             });
@@ -45,11 +56,13 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
+            mustChangePassword: !!user.mustChangePassword,
             user: {
                 id: user.id,
                 name: user.name,
                 email: user.email,
                 role: user.role.name,
+                mustChangePassword: !!user.mustChangePassword,
             },
         });
     } catch (error) {

@@ -169,9 +169,23 @@ export default function StudentProfileModal({
 
                             <div className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200/80">
                                 <p className="text-[11px] font-bold text-emerald-800 uppercase flex items-center gap-1">
-                                    <SealCheck className="w-4 h-4 text-emerald-600" /> Interested Role
+                                    <SealCheck className="w-4 h-4 text-emerald-600" /> Interested Roles
                                 </p>
-                                <p className="text-xs font-extrabold text-emerald-950 mt-1">{student.interestedRole?.name || "Not Specified"}</p>
+                                <div className="flex items-center gap-1.5 flex-wrap mt-1">
+                                    {student.interestedRoles && student.interestedRoles.length > 0 ? (
+                                        student.interestedRoles.map((r: any) => (
+                                            <span key={r.id} className="px-2.5 py-0.5 rounded-lg bg-emerald-100/80 text-emerald-800 text-xs font-bold">
+                                                {r.name}
+                                            </span>
+                                        ))
+                                    ) : student.interestedRole ? (
+                                        <span className="px-2.5 py-0.5 rounded-lg bg-emerald-100/80 text-emerald-800 text-xs font-bold">
+                                            {student.interestedRole.name}
+                                        </span>
+                                    ) : (
+                                        <p className="text-xs font-extrabold text-emerald-950">Not Specified</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -12,14 +12,14 @@ export default async function AdminLayout({
 }) {
     const session = await getSession();
 
-    if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN")) {
+    if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN" && session.role !== "INSTRUCTOR")) {
         redirect("/login");
     }
 
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
             {/* Top Navigation Bar Header */}
-            <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
+            <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-2xs overflow-visible">
                 <div className="max-w-[1440px] mx-auto px-6 h-16 flex items-center justify-between gap-6">
                     <div className="flex items-center gap-6 shrink-0">
                         <Link href="/admin" className="flex items-center gap-2.5">
@@ -33,8 +33,8 @@ export default async function AdminLayout({
                     </div>
 
                     {/* Horizontal Navigation Items */}
-                    <div className="flex-1 flex justify-center overflow-hidden">
-                        <AdminSidebarNav />
+                    <div className="flex-1 flex justify-center overflow-visible">
+                        <AdminSidebarNav userRole={session.role} />
                     </div>
 
                     {/* User Profile & Sign Out */}

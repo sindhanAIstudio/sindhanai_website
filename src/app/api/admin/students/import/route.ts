@@ -79,7 +79,15 @@ export async function POST(req: Request) {
                         departmentId: r.departmentCode ? deptMap.get(r.departmentCode.toUpperCase()) : null,
                         classGroupId: r.classGroupCode ? classMap.get(r.classGroupCode.toUpperCase()) : null,
                         slotTimingId: r.slotTimingCode ? slotMap.get(r.slotTimingCode.toUpperCase()) : null,
-                        interestedRoleId: r.interestedRoleCode ? roleMap.get(r.interestedRoleCode.toUpperCase()) : null,
+                        interestedRoles: r.interestedRoleCode
+                            ? {
+                                connect: r.interestedRoleCode
+                                    .split(",")
+                                    .map((c: string) => roleMap.get(c.trim().toUpperCase()))
+                                    .filter((id: string | undefined): id is string => Boolean(id))
+                                    .map((id: string) => ({ id })),
+                            }
+                            : undefined,
                     },
                 });
                 successCount++;

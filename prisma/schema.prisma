@@ -246,7 +246,9 @@ model User {
   email               String                 @unique // Institutional SOI Email
   personalEmail       String?
   name                String
-  passwordHash        String?                // Nullable for uninitialized onboarding users
+  passwordHash        String?                // Permanent hashed password
+  tempPassword        String?                // Stored temporary password (unencrypted for administrative record)
+  mustChangePassword  Boolean                @default(true) // Redirect to /setup-password on first login
   rollNumber          String?
   registrationNumber  String?
   yearOfPassing       Int?
@@ -262,6 +264,10 @@ model User {
   address             String?
   resumeUrl           String?
   profilePicUrl       String?
+  instructorType      String?                // "SOI" | "Scope"
+  experienceYears     Float?                 // e.g. 5.5
+  bio                 String?                // Profile bio summary
+  designation         String?                // e.g. "Senior Domain Mentor"
   roleId              String
   role                Role                   @relation(fields: [roleId], references: [id])
   deviceFingerprint   String?                // Encrypted/Hashed device signature
@@ -280,12 +286,12 @@ model User {
   classGroup          ClassGroup?            @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
   slotTimingId        String?
   slotTiming          SlotTiming?            @relation(fields: [slotTimingId], references: [id], onDelete: SetNull)
-  interestedRoleId    String?
-  interestedRole      InterestedRole?        @relation(fields: [interestedRoleId], references: [id], onDelete: SetNull)
+  interestedRoles     InterestedRole[]
   skills              StudentSkill[]         @relation("StudentSkills")
   endorsedSkills      StudentSkill[]         @relation("InstructorSkillEndorsements")
   classroomSessions   ClassroomSession[]     @relation("InstructorSessions")
   attendanceRecords   AttendanceRecord[]     @relation("StudentAttendance")
+  worklogs            FacultyWorklog[]       @relation("FacultyWorklogs")
   platformProfile     StudentPlatformProfile?
   statusNote          String?                // Optional reason/note for active or inactive status
   deletedAt           DateTime?              // Soft delete timestamp
@@ -293,10 +299,46 @@ model User {
   updatedAt           DateTime               @updatedAt
 }
 
-// 4. Anti-Spoofing Dynamic QR Attendance Engine Models
+// 4. Anti-Spoofing Dynamic QR Attendance Engine & Smart Calendar Models
+model WifiWhitelist {
+  id                String   @id @default(uuid())
+  name              String   // e.g. "SOI Lab Router 1 (5GHz)"
+  ipAddressOrSubnet String   // e.g. "192.168.1.0/24" or exact IP "115.240.12.5"
+  description       String?  // e.g. "Main Lab Floor Access Point"
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model CalendarEvent {
+  id            String    @id @default(uuid())
+  date          String    // Format: "YYYY-MM-DD"
+  time          String?   // e.g. "10:00 - 12:30"
+  type          String    // "HOLIDAY" | "EVENT" | "WORKLOG"
+  title         String
+  description   String?
+  soiDomainId   String?   // Optional linkage to specific SOI Lab
+  instructorIds String?   // Comma-separated or JSON list of multi-select instructor IDs
+  createdById   String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SpecialActivityConfig {
+  id          String   @id @default(uuid())
+  startTime   String   @default("16:30") // Default threshold time (e.g. 16:30) for SPECIAL_ACTIVITY auto-categorization
+  description String?  @default("Default Evening SOI Special Activity Window")
+  updatedAt   DateTime @updatedAt
+}
+
 model ClassroomSession {
   id                String             @id @default(uuid())
   title             String
+  description       String?
+  sessionType       String             @default("REGULAR") // "REGULAR" | "EVENT"
+  soiDomainId       String?
+  departmentId      String?
   instructorId      String
   instructor        User               @relation("InstructorSessions", fields: [instructorId], references: [id], onDelete: Cascade)
   sessionSecret     String             // TOTP secret seed string
@@ -315,12 +357,30 @@ model AttendanceRecord {
   studentId         String
   student           User             @relation("StudentAttendance", fields: [studentId], references: [id], onDelete: Cascade)
   scannedAt         DateTime         @default(now())
+  inTime            DateTime         @default(now())
+  outTime           DateTime?
+  category          String           @default("REGULAR") // "REGULAR" | "SPECIAL_ACTIVITY" | "EVENT"
   deviceFingerprint String
   requestIp         String?
-  status            String           @default("VERIFIED") // VERIFIED, REJECTED_FINGERPRINT_MISMATCH, EXPIRED_TOKEN
+  verifiedBy        String           @default("QR_SCAN") // "QR_SCAN" | "MANUAL_INSTRUCTOR"
+  status            String           @default("PRESENT") // "PRESENT" | "ABSENT" | "REJECTED_DEVICE" | "REJECTED_IP"
   createdAt         DateTime         @default(now())
 
-  @@unique([sessionId, studentId])
+  @@unique([sessionId, studentId, category])
+}
+
+model FacultyWorklog {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation("FacultyWorklogs", fields: [userId], references: [id], onDelete: Cascade)
+  date       String   // YYYY-MM-DD
+  timeSlot   String   // e.g. "08:30-09:30"
+  activity   String   @default("")
+  mergedSpan Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, date, timeSlot])
 }
 
 // 5. Developer Platform Integration Profiles (GitHub, LeetCode, Kaggle)

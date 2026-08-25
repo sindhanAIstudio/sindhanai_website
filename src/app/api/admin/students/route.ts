@@ -59,7 +59,7 @@ export async function GET(req: Request) {
                     slotTiming: true,
                     soiDomain: true,
                     domainPlacement: true,
-                    interestedRole: true,
+                    interestedRoles: true,
                     skills: {
                         include: { endorsedByInstructor: { select: { name: true, email: true } } },
                     },
@@ -119,10 +119,18 @@ export async function POST(req: Request) {
             classGroupId,
             soiDomainId,
             domainPlacementId,
+            interestedRoleIds,
             interestedRoleId,
             statusNote,
             skills,
         } = body;
+
+        // Support either interestedRoleIds array or single legacy interestedRoleId
+        const rolesToConnect = Array.isArray(interestedRoleIds)
+            ? interestedRoleIds
+            : interestedRoleId
+                ? [interestedRoleId]
+                : [];
 
         // Validation for mandatory fields
         if (!name || !email || !rollNumber || !registrationNumber) {
@@ -144,11 +152,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "STUDENT role entity not initialized" }, { status: 500 });
         }
 
-        const student = await prisma.user.create({
+        // Generate default temporary password if not provided
+        const generatedTempPassword = body.tempPassword || `Sindhanai@${Math.floor(1000 + Math.random() * 9000)}`;
+
+        const student = await (prisma as any).user.create({
             data: {
                 name,
                 email: email.trim().toLowerCase(),
                 personalEmail: personalEmail || null,
+                tempPassword: generatedTempPassword,
+                mustChangePassword: true,
                 rollNumber: rollNumber || null,
                 registrationNumber: registrationNumber || null,
                 yearOfPassing: yearOfPassing ? parseInt(yearOfPassing) : null,
@@ -171,7 +184,9 @@ export async function POST(req: Request) {
                 classGroupId: classGroupId || null,
                 soiDomainId: soiDomainId || null,
                 domainPlacementId: domainPlacementId || null,
-                interestedRoleId: interestedRoleId || null,
+                interestedRoles: rolesToConnect.length > 0
+                    ? { connect: rolesToConnect.map((id: string) => ({ id })) }
+                    : undefined,
                 statusNote: statusNote || null,
                 skills: skills && Array.isArray(skills)
                     ? {
@@ -188,7 +203,7 @@ export async function POST(req: Request) {
                 slotTiming: true,
                 soiDomain: true,
                 domainPlacement: true,
-                interestedRole: true,
+                interestedRoles: true,
                 skills: true,
             },
         });

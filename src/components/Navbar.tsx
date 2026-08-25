@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -27,6 +27,18 @@ export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [activeCategory, setActiveCategory] = useState<"ai-technology" | "training" | "software-solutions">("ai-technology");
+    const megaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleMegaMouseEnter = () => {
+        if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
+        setMegaMenuOpen(true);
+    };
+
+    const handleMegaMouseLeave = () => {
+        megaTimeoutRef.current = setTimeout(() => {
+            setMegaMenuOpen(false);
+        }, 250);
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -175,11 +187,14 @@ export default function Navbar() {
                                         <div
                                             key={link.name}
                                             className="relative"
-                                            onMouseEnter={() => setMegaMenuOpen(true)}
-                                            onMouseLeave={() => setMegaMenuOpen(false)}
+                                            onMouseEnter={handleMegaMouseEnter}
+                                            onMouseLeave={handleMegaMouseLeave}
                                         >
                                             <button
-                                                onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+                                                onClick={() => {
+                                                    if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
+                                                    setMegaMenuOpen(!megaMenuOpen);
+                                                }}
                                                 style={{
                                                     backgroundColor: isMegaActive ? "#0000001a" : undefined,
                                                     paddingBlock: "calc(var(--spacing) * 2.5)",
@@ -195,7 +210,11 @@ export default function Navbar() {
 
                                             {/* SindhanAI AI Agency 30/70 Mega Menu Dropdown */}
                                             {megaMenuOpen && (
-                                                <div className="absolute top-full left-0 w-[840px] pt-3 z-50">
+                                                <div
+                                                    onMouseEnter={handleMegaMouseEnter}
+                                                    onMouseLeave={handleMegaMouseLeave}
+                                                    className="absolute top-full left-0 w-[840px] pt-3 z-50"
+                                                >
                                                     <div className="rounded-[28px] p-6 border border-slate-200/80 shadow-2xl bg-[#FAF8F5] grid grid-cols-12 gap-6">
 
                                                         {/* Left Col (30% -> 4/12): Explore Sidebar List */}

@@ -19,7 +19,7 @@ import {
 } from "@phosphor-icons/react";
 
 export interface Column<T> {
-    header: string;
+    header: React.ReactNode;
     accessorKey?: keyof T | string;
     cell?: (item: T) => React.ReactNode;
     sortable?: boolean;
@@ -162,8 +162,8 @@ export default function ReusableDataTable<T extends { id: string }>({
                             type="button"
                             onClick={() => onToggleTrashView(!isTrashView)}
                             className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${isTrashView
-                                    ? "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
-                                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                                ? "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100"
+                                : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                                 }`}
                         >
                             {isTrashView ? <UserCheck className="w-4 h-4 text-amber-600" /> : <Trash className="w-4 h-4 text-slate-500" />}

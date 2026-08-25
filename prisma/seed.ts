@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import bcrypt from "bcryptjs";
 import path from "path";
 
 const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
@@ -8,340 +7,339 @@ const adapter = new PrismaBetterSqlite3({ url: dbPath });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-    console.log("Seeding SindhanAI database at:", dbPath);
+    console.log("🌱 Starting Comprehensive SindhanAI Institutional DB Seeding...");
 
-    // 1. Seed News Posts
-    await prisma.newsPost.deleteMany();
-    await prisma.newsPost.createMany({
-        data: [
-            {
-                title: "SindhanAI Launches Applied Generative AI Vertical at KGISL Campus",
-                slug: "sindhanai-launches-applied-genai-vertical",
-                summary: "Bringing together industry experts, faculty, and student developers to build production-grade LLM applications and RAG systems.",
-                content: `SindhanAI is proud to announce the launch of its Applied Generative AI Lab under the School of Innovation at KGISL Educational Institutions. The lab brings together experienced industry practitioners, academic faculty, and passionate student learners to tackle real-world artificial intelligence challenges.\n\nThe vertical will focus on LLM application development, Retrieval-Augmented Generation (RAG) pipelines, autonomous AI agents, and custom fine-tuning for domain-specific enterprise problems.`,
-                category: "Announcement",
-                published: true,
-            },
-            {
-                title: "Students and Faculty Team Up for Industry AI Computer Vision Project",
-                slug: "students-faculty-team-up-cv-project",
-                summary: "SindhanAI team delivers automated quality inspection system for manufacturing partner using edge computer vision models.",
-                content: `In a live industry engagement, SindhanAI faculty and student developers engineered an edge-based computer vision system for automated defect detection in real-time manufacturing lines.\n\nStudents worked directly under the guidance of industry leaders, gaining hands-on experience with model quantization, deployment pipelines, and industrial integration.`,
-                category: "Tech",
-                published: true,
-            },
-            {
-                title: "Upcoming GenAI Hackathon: Building Autonomous Agents for Enterprise",
-                slug: "upcoming-genai-hackathon-2026",
-                summary: "A 36-hour hackathon bringing together students and mentors across KGISL institutions to create intelligent multi-agent workflows.",
-                content: `The School of Innovation and SindhanAI will host the annual Autonomous AI Agents Hackathon next month at the KGISL AI Lab. Registration is open to all students across AI, CS, and engineering streams.`,
-                category: "SOI Hackathon",
-                published: true,
-            },
-        ],
+    // 1. ROLES
+    const superAdminRole = await prisma.role.upsert({
+        where: { name: "SUPER_ADMIN" },
+        update: {},
+        create: { name: "SUPER_ADMIN", description: "Super Administrator - System Settings, RBAC & Metadata", isSystem: true },
     });
 
-    // 2. Seed Events
-    await prisma.event.deleteMany();
-    const event1 = await prisma.event.create({
-        data: {
-            title: "Hands-On Workshop: Building Enterprise RAG Systems with LangChain & LlamaIndex",
-            slug: "hands-on-rag-workshop-2026",
-            date: "September 15, 2026",
-            time: "09:30 AM - 04:30 PM IST",
-            venue: "Generative AI Lab, KGISL Campus, Coimbatore",
-            description: "An intensive 1-day practical workshop covering vector database integration, chunking strategies, hybrid search, and evaluation metrics for enterprise RAG solutions.",
-            isPast: false,
-        },
+    const adminRole = await prisma.role.upsert({
+        where: { name: "ADMIN" },
+        update: {},
+        create: { name: "ADMIN", description: "Lab Administrator - Manage Students, Instructors & Lab Attendance", isSystem: true },
     });
 
-    const event2 = await prisma.event.create({
-        data: {
-            title: "SindhanAI National Student Hackathon 2026",
-            slug: "sindhanai-national-student-hackathon-2026",
-            date: "October 02 - 04, 2026",
-            time: "36 Hours Live",
-            venue: "Main Auditorium & Innovation Labs, KGISL",
-            description: "Build cutting-edge solutions across AI/ML, Computer Vision, and Web Development. Win cash prizes and direct project incubation opportunities with SindhanAI.",
-            isPast: false,
-        },
+    const instructorRole = await prisma.role.upsert({
+        where: { name: "INSTRUCTOR" },
+        update: {},
+        create: { name: "INSTRUCTOR", description: "Lab Instructor & Technical Mentor", isSystem: true },
     });
 
-    await prisma.event.create({
-        data: {
-            title: "Faculty Upskilling Series: Modern Deep Learning & PyTorch",
-            slug: "faculty-upskilling-pytorch-2026",
-            date: "July 18, 2026",
-            time: "10:00 AM - 01:00 PM IST",
-            venue: "AI & Data Science Lab (Completed)",
-            description: "Comprehensive upskilling module for faculty members on deep learning fundamentals, attention mechanisms, and PyTorch model training workflows.",
-            isPast: true,
-        },
+    const studentRole = await prisma.role.upsert({
+        where: { name: "STUDENT" },
+        update: {},
+        create: { name: "STUDENT", description: "Enrolled Student", isSystem: true },
     });
 
-    // 3. Seed Event Registrations
-    await prisma.eventRegistration.deleteMany();
-    await prisma.eventRegistration.create({
-        data: {
-            eventId: event1.id,
-            name: "Aravind Swamy",
-            email: "aravind@kgisl.ac.in",
-            phone: "+91 98765 43210",
-            institution: "KGISL Institute of Technology",
-            role: "Student",
-            additionalInfo: "Interested in vector databases and LLM fine-tuning.",
-        },
-    });
-
-    // 4. Seed Team Members
-    await prisma.teamMember.deleteMany();
-    await prisma.teamMember.createMany({
-        data: [
-            {
-                name: "Dr. K. Ashok Kumar",
-                designation: "Head of AI & Technology Lab",
-                category: "Industry Professional",
-                labGroup: "AI & Data Science Lab",
-                domain: "AI Architecture & Industry Engagements",
-                order: 1,
-            },
-            {
-                name: "Priya Sundaram",
-                designation: "Lead GenAI Engineer & Practitioner",
-                category: "Industry Professional",
-                labGroup: "Generative AI Lab",
-                domain: "LLM Applications & Agentic Workflows",
-                order: 2,
-            },
-            {
-                name: "Prof. S. Ranganathan",
-                designation: "Associate Professor & Research Lead",
-                category: "Faculty",
-                labGroup: "SCOPE",
-                domain: "Computer Vision & Data Science",
-                order: 3,
-            },
-            {
-                name: "Deepak Raj",
-                designation: "Senior Student Developer",
-                category: "Student",
-                labGroup: "Generative AI Lab",
-                domain: "Full-Stack Web & RAG Systems",
-                order: 4,
-            },
-        ],
-    });
-
-    // 5. Seed Client Logos / Partners
-    await prisma.clientLogo.deleteMany();
-    await prisma.clientLogo.createMany({
-        data: [
-            { name: "KGISL Group of Companies" },
-            { name: "KGISL School of Innovation (SOI)" },
-            { name: "MicroCollege" },
-            { name: "Apex Tech Solutions" },
-            { name: "Cognitive AI Systems" },
-        ],
-    });
-
-    // 0. Truncate existing relational records for a clean seed
-    console.log("Truncating existing records for fresh seed...");
-    await prisma.studentSkill.deleteMany();
-    await prisma.attendanceRecord.deleteMany();
-    await prisma.classroomSession.deleteMany();
-    await prisma.formSubmission.deleteMany();
-    await prisma.user.deleteMany();
-    await prisma.rolePermission.deleteMany();
-    await prisma.permission.deleteMany();
-    await prisma.role.deleteMany();
-    await prisma.department.deleteMany();
-    await prisma.classGroup.deleteMany();
-    await prisma.slotTiming.deleteMany();
-    await prisma.soiDomain.deleteMany();
-    await prisma.domainPlacement.deleteMany();
-    await prisma.batch.deleteMany();
-    await prisma.academicYear.deleteMany();
-    await prisma.interestedRole.deleteMany();
-
-    // 7. Seed Dynamic Metadata Categories
-    console.log("Seeding Dynamic Metadata Categories...");
-    const batch1 = await prisma.batch.create({
-        data: { name: "2023-2027", code: "BATCH_2023_2027", startYear: 2023, endYear: 2027, isActive: true } as any,
-    });
-
-    const batch2 = await prisma.batch.create({
-        data: { name: "2024-2028", code: "BATCH_2024_2028", startYear: 2024, endYear: 2028, isActive: true } as any,
-    });
-
-    const year3 = await prisma.academicYear.create({
-        data: { name: "3rd Year", code: "YEAR_3", isActive: true } as any,
-    });
-
-    const deptCse = await prisma.department.create({
-        data: { name: "Computer Science & Engineering", code: "CSE", isActive: true } as any,
-    });
-
-    const deptEce = await prisma.department.create({
-        data: { name: "Electronics & Communication Engineering", code: "ECE", isActive: true } as any,
-    });
-
-    const domainAids = await prisma.soiDomain.create({
-        data: { name: "AI & Data Science", code: "AIDS", isActive: true } as any,
-    });
-
-    const placementGenAi = await prisma.domainPlacement.create({
-        data: { name: "Generative AI Engineer", code: "GENAI_ENG", isActive: true } as any,
-    });
-
-    const classA = await prisma.classGroup.create({
-        data: { name: "Section A", code: "CLASS_A", isActive: true } as any,
-    });
-
-    const classB = await prisma.classGroup.create({
-        data: { name: "Section B", code: "CLASS_B", isActive: true } as any,
-    });
-
-    const slotMorning = await prisma.slotTiming.create({
-        data: { name: "Morning Slot A (09:00 AM - 11:30 AM)", code: "SLOT_MORNING_A", isActive: true } as any,
-    });
-
-    const slotAfternoon = await prisma.slotTiming.create({
-        data: { name: "Afternoon Slot B (01:30 PM - 04:00 PM)", code: "SLOT_AFTERNOON_B", isActive: true } as any,
-    });
-
-    const roleAiEngineer = await prisma.interestedRole.create({
-        data: { name: "AI / ML Engineer", code: "ROLE_AI_ENG", isActive: true } as any,
-    });
-
-    const roleFullstack = await prisma.interestedRole.create({
-        data: { name: "Fullstack Web Engineer", code: "ROLE_FULLSTACK", isActive: true } as any,
-    });
-
-    // 8. Seed Roles
-    console.log("Seeding Dynamic Roles...");
-    const roleSuperAdmin = await prisma.role.create({
-        data: { name: "SUPER_ADMIN", description: "Super Admin with unrestricted systemic privileges", isSystem: true },
-    });
-
-    const roleAdmin = await prisma.role.create({
-        data: { name: "ADMIN", description: "Administrator managing users, sessions, and forms", isSystem: true },
-    });
-
-    const roleInstructor = await prisma.role.create({
-        data: { name: "INSTRUCTOR", description: "Instructor generating TOTP QR codes and running sessions", isSystem: true },
-    });
-
-    const roleAuthor = await prisma.role.create({
-        data: { name: "AUTHOR", description: "Content author for news, events, and dynamic forms", isSystem: true },
-    });
-
-    const roleStudent = await prisma.role.create({
-        data: { name: "STUDENT", description: "Student scanning attendance and maintaining portfolio", isSystem: true },
-    });
-
-    // 9. Seed System Permissions
-    console.log("Seeding Permissions...");
-    const permissionsData = [
-        { key: "users:manage", name: "Manage System Users", category: "Users" },
-        { key: "rbac:manage", name: "Manage Roles & Permissions", category: "RBAC" },
-        { key: "metadata:manage", name: "Manage Metadata Categories", category: "Metadata" },
-        { key: "attendance:create", name: "Create Classroom Sessions", category: "Attendance" },
-        { key: "qr:generate", name: "Generate Dynamic TOTP QR Codes", category: "Attendance" },
-        { key: "attendance:mark", name: "Mark Session Attendance", category: "Attendance" },
-        { key: "content:write", name: "Write News & Event Posts", category: "Content" },
-        { key: "forms:manage", name: "Manage Dynamic Forms", category: "Forms" },
-        { key: "profile:sync", name: "Sync Developer Platform Portfolios", category: "Integrations" },
+    // 2. DEPARTMENTS (10)
+    const departmentsData = [
+        { name: "Computer Science and Engineering", code: "CSE" },
+        { name: "Electronics and Communication Engineering", code: "ECE" },
+        { name: "Mechanical Engineering", code: "MECH" },
+        { name: "Artificial Intelligence and Data Science", code: "AIDS" },
+        { name: "Computer Science and Business Systems", code: "CSBS" },
+        { name: "Information Technology", code: "IT" },
+        { name: "Sciences and Humanities", code: "SNH" },
+        { name: "Master of Business Administration", code: "MBA" },
+        { name: "Artificial Intelligence and Machine Learning", code: "AIML" },
+        { name: "Cybersecurity", code: "CYBER" },
     ];
 
-    for (const permData of permissionsData) {
-        const perm = await prisma.permission.create({
-            data: permData,
+    const createdDepartments: any[] = [];
+    for (const dept of departmentsData) {
+        const d = await prisma.department.upsert({
+            where: { code: dept.code },
+            update: { name: dept.name },
+            create: { name: dept.name, code: dept.code },
         });
+        createdDepartments.push(d);
+    }
 
-        // Grant all permissions to SUPER_ADMIN
-        await prisma.rolePermission.create({
-            data: { roleId: roleSuperAdmin.id, permissionId: perm.id },
+    // 3. CLASS GROUPS / SECTIONS (3)
+    const sectionsData = [
+        { name: "Section A", code: "CLASS_A" },
+        { name: "Section B", code: "CLASS_B" },
+        { name: "Section C", code: "CLASS_C" },
+    ];
+
+    const createdSections: any[] = [];
+    for (const sec of sectionsData) {
+        const s = await prisma.classGroup.upsert({
+            where: { code: sec.code },
+            update: { name: sec.name },
+            create: { name: sec.name, code: sec.code },
+        });
+        createdSections.push(s);
+    }
+
+    // 4. SLOT TIMINGS (3)
+    const slotTimingsData = [
+        { name: "Morning", code: "SLOT_MORNING" },
+        { name: "Afternoon", code: "SLOT_AFTERNOON" },
+        { name: "Evening", code: "SLOT_EVENING" },
+    ];
+
+    const createdSlotTimings: any[] = [];
+    for (const slot of slotTimingsData) {
+        const st = await prisma.slotTiming.upsert({
+            where: { code: slot.code },
+            update: { name: slot.name },
+            create: { name: slot.name, code: slot.code },
+        });
+        createdSlotTimings.push(st);
+    }
+
+    // 5. SOI DOMAINS / SOI LABS (9)
+    const soiLabsData = [
+        { name: "Artificial Intelligence & Data Science", code: "AIDS_LAB", short: "aids" },
+        { name: "Blockchain & Web 3.0", code: "BLOCKCHAIN_LAB", short: "blockchain" },
+        { name: "Cloud & DevOps", code: "CLOUD_LAB", short: "cloud" },
+        { name: "Cybersecurity", code: "CYBER_LAB", short: "cyber" },
+        { name: "Embedded Systems & Internet of Things (IoT)", code: "IOT_LAB", short: "iot" },
+        { name: "Design, Manufacturing & Automation", code: "AUTOMATION_LAB", short: "automation" },
+        { name: "Full-Stack Web Development", code: "FULLSTACK_LAB", short: "fullstack" },
+        { name: "Generative AI Lab", code: "GENAI_LAB", short: "genai" },
+        { name: "Venture & Incubation Laboratory", code: "VENTURE_LAB", short: "venture" },
+    ];
+
+    const createdLabs: any[] = [];
+    for (const lab of soiLabsData) {
+        const l = await prisma.soiDomain.upsert({
+            where: { code: lab.code },
+            update: { name: lab.name },
+            create: { name: lab.name, code: lab.code },
+        });
+        createdLabs.push({ ...l, short: lab.short });
+    }
+
+    // 6. DOMAIN PLACEMENTS (7)
+    const domainPlacementsData = [
+        { name: "Artificial Intelligence & Data Science", code: "PLACE_AIDS" },
+        { name: "Blockchain & Web 3.0", code: "PLACE_BLOCKCHAIN" },
+        { name: "Cloud & DevOps", code: "PLACE_CLOUD" },
+        { name: "Cybersecurity", code: "PLACE_CYBER" },
+        { name: "Embedded Systems & Internet of Things (IoT)", code: "PLACE_IOT" },
+        { name: "Design, Manufacturing & Automation", code: "PLACE_AUTOMATION" },
+        { name: "Full-Stack Web Development", code: "PLACE_FULLSTACK" },
+    ];
+
+    const createdPlacements: any[] = [];
+    for (const dp of domainPlacementsData) {
+        const p = await prisma.domainPlacement.upsert({
+            where: { code: dp.code },
+            update: { name: dp.name },
+            create: { name: dp.name, code: dp.code },
+        });
+        createdPlacements.push(p);
+    }
+
+    // 7. BATCHES & ACADEMIC YEARS (5)
+    const batchesData = [
+        { name: "2022 - 2026", code: "BATCH_2022_2026", startYear: 2022, endYear: 2026 },
+        { name: "2023 - 2027", code: "BATCH_2023_2027", startYear: 2023, endYear: 2027 },
+        { name: "2024 - 2028", code: "BATCH_2024_2028", startYear: 2024, endYear: 2028 },
+        { name: "2025 - 2029", code: "BATCH_2025_2029", startYear: 2025, endYear: 2029 },
+        { name: "2026 - 2027", code: "BATCH_2026_2027", startYear: 2026, endYear: 2027 },
+    ];
+
+    const createdBatches: any[] = [];
+    for (const b of batchesData) {
+        const batch = await prisma.batch.upsert({
+            where: { code: b.code },
+            update: { name: b.name },
+            create: { name: b.name, code: b.code, startYear: b.startYear, endYear: b.endYear },
+        });
+        createdBatches.push(batch);
+    }
+
+    const createdAcademicYears: any[] = [];
+    const yearsData = [
+        { name: "1st Year", code: "YEAR_1" },
+        { name: "2nd Year", code: "YEAR_2" },
+        { name: "3rd Year", code: "YEAR_3" },
+        { name: "4th Year", code: "YEAR_4" },
+    ];
+    for (const y of yearsData) {
+        const yr = await prisma.academicYear.upsert({
+            where: { code: y.code },
+            update: { name: y.name },
+            create: { name: y.name, code: y.code },
+        });
+        createdAcademicYears.push(yr);
+    }
+
+    // 8. INTERESTED ROLES
+    const rolesData = [
+        { name: "AI Engineer", code: "ROLE_AI_ENG" },
+        { name: "Cloud Architect", code: "ROLE_CLOUD_ARCH" },
+        { name: "Cybersecurity Specialist", code: "ROLE_CYBER_SPEC" },
+        { name: "DevOps Engineer", code: "ROLE_DEVOPS" },
+        { name: "Fullstack Developer", code: "ROLE_FULLSTACK" },
+        { name: "IoT Solutions Architect", code: "ROLE_IOT_ARCH" },
+        { name: "Data Scientist", code: "ROLE_DATA_SCI" },
+        { name: "Blockchain Developer", code: "ROLE_BLOCKCHAIN" },
+        { name: "Generative AI Researcher", code: "ROLE_GENAI_RES" },
+        { name: "Automation & Robotics Engineer", code: "ROLE_AUTOMATION" },
+        { name: "Venture & Product Lead", code: "ROLE_PRODUCT_LEAD" },
+        { name: "Embedded Firmware Engineer", code: "ROLE_EMBEDDED" },
+        { name: "Business Systems Analyst", code: "ROLE_CSBS_ANALYST" },
+    ];
+
+    for (const r of rolesData) {
+        await prisma.interestedRole.upsert({
+            where: { code: r.code },
+            update: { name: r.name },
+            create: { name: r.name, code: r.code },
         });
     }
 
-    // 10. Seed Default Test Users (Both .com and .ac.in)
-    console.log("Seeding Default System Users with Complete Metadata Bindings...");
-    const defaultPasswordHash = await bcrypt.hash("SuperAdminPass123!", 10);
-    const adminPasswordHash = await bcrypt.hash("AdminPass123!", 10);
-    const instructorPasswordHash = await bcrypt.hash("InstructorPass123!", 10);
-    const studentPasswordHash = await bcrypt.hash("StudentPass123!", 10);
+    // 9. WI-FI WHITELIST & SPECIAL ACTIVITY
+    await prisma.wifiWhitelist.upsert({
+        where: { id: "wifi-sub-main" },
+        update: {},
+        create: {
+            id: "wifi-sub-main",
+            name: "Institutional SOI Lab Subnet (5GHz)",
+            ipAddressOrSubnet: "192.168.1.0/24",
+            description: "Primary lab router for 3-tier attendance verification",
+            isActive: true,
+        },
+    });
 
-    const userCredentials = [
-        { email: "superadmin@sindhanai.com", name: "Super Admin", roleId: roleSuperAdmin.id, passwordHash: defaultPasswordHash },
-        { email: "superadmin@sindhanai.ac.in", name: "Super Admin", roleId: roleSuperAdmin.id, passwordHash: defaultPasswordHash },
-        { email: "admin@sindhanai.com", name: "System Admin", roleId: roleAdmin.id, passwordHash: adminPasswordHash },
-        { email: "admin@sindhanai.ac.in", name: "System Admin", roleId: roleAdmin.id, passwordHash: adminPasswordHash },
-        { email: "instructor@sindhanai.com", name: "Dr. K. Ashok Kumar", roleId: roleInstructor.id, passwordHash: instructorPasswordHash, departmentId: deptCse.id, soiDomainId: domainAids.id },
-        { email: "instructor@sindhanai.ac.in", name: "Dr. K. Ashok Kumar", roleId: roleInstructor.id, passwordHash: instructorPasswordHash, departmentId: deptCse.id, soiDomainId: domainAids.id },
-        {
-            email: "student@sindhanai.com",
-            name: "Deepak Raj",
-            rollNumber: "73772321001",
-            registrationNumber: "REG2023001",
-            roleId: roleStudent.id,
-            passwordHash: studentPasswordHash,
-            batchId: batch1.id,
-            academicYearId: year3.id,
-            departmentId: deptCse.id,
-            soiDomainId: domainAids.id,
-            domainPlacementId: placementGenAi.id,
-            classGroupId: classA.id,
-            slotTimingId: slotMorning.id,
-            interestedRoleId: roleAiEngineer.id,
+    await prisma.specialActivityConfig.upsert({
+        where: { id: "special-act-config" },
+        update: {},
+        create: {
+            id: "special-act-config",
+            startTime: "16:30",
+            description: "Evening Special Activity Threshold Window",
         },
-        {
-            email: "student@sindhanai.ac.in",
-            name: "Deepak Raj",
-            rollNumber: "73772321001",
-            registrationNumber: "REG2023001",
-            roleId: roleStudent.id,
-            passwordHash: studentPasswordHash,
-            batchId: batch1.id,
-            academicYearId: year3.id,
-            departmentId: deptCse.id,
-            soiDomainId: domainAids.id,
-            domainPlacementId: placementGenAi.id,
-            classGroupId: classA.id,
-            slotTimingId: slotMorning.id,
-            interestedRoleId: roleAiEngineer.id,
-        },
-        {
-            email: "student2@sindhanai.com",
-            name: "Priya Sharma",
-            rollNumber: "73772321002",
-            registrationNumber: "REG2023002",
-            roleId: roleStudent.id,
-            passwordHash: studentPasswordHash,
-            batchId: batch2.id,
-            academicYearId: year3.id,
-            departmentId: deptEce.id,
-            soiDomainId: domainAids.id,
-            domainPlacementId: placementGenAi.id,
-            classGroupId: classB.id,
-            slotTimingId: slotAfternoon.id,
-            interestedRoleId: roleFullstack.id,
-        },
-    ];
+    });
 
-    for (const u of userCredentials) {
-        await prisma.user.create({
-            data: u,
+    // 10. SUPER ADMIN ACCOUNT
+    await prisma.user.upsert({
+        where: { email: "superadmin@sindhanai.in" },
+        update: {
+            tempPassword: "Sindhanai@2026",
+        },
+        create: {
+            name: "Super Administrator",
+            email: "superadmin@sindhanai.in",
+            roleId: superAdminRole.id,
+            tempPassword: "Sindhanai@2026",
+            mustChangePassword: false,
+        },
+    });
+
+    console.log("👤 Created Super Admin (superadmin@sindhanai.in)");
+
+    // 11. GENERATE 1 ADMIN & 10 INSTRUCTORS & 10 STUDENTS PER LAB (9 LABS)
+    let studentCount = 0;
+    let instructorCount = 0;
+    let adminCount = 0;
+
+    for (let labIdx = 0; labIdx < createdLabs.length; labIdx++) {
+        const lab = createdLabs[labIdx];
+        const dept = createdDepartments[labIdx % createdDepartments.length];
+        const placementTrack = createdPlacements[labIdx % createdPlacements.length];
+        const batch = createdBatches[labIdx % createdBatches.length];
+        const academicYr = createdAcademicYears[labIdx % createdAcademicYears.length];
+
+        // A. Create Lab Admin (1 per lab)
+        const adminEmail = `admin.${lab.short}@sindhanai.in`;
+        await prisma.user.upsert({
+            where: { email: adminEmail },
+            update: {},
+            create: {
+                name: `${lab.name} Admin`,
+                email: adminEmail,
+                roleId: adminRole.id,
+                soiDomainId: lab.id,
+                departmentId: dept.id,
+                designation: `${lab.name} Lab Administrator`,
+                mustChangePassword: false,
+            },
         });
+        adminCount++;
+
+        // B. Create Instructors (10 per lab)
+        for (let i = 1; i <= 10; i++) {
+            const instEmail = `instructor.${lab.short}.${i}@sindhanai.in`;
+            await prisma.user.upsert({
+                where: { email: instEmail },
+                update: {},
+                create: {
+                    name: `Mentor ${i} - ${lab.name}`,
+                    email: instEmail,
+                    roleId: instructorRole.id,
+                    soiDomainId: lab.id,
+                    departmentId: dept.id,
+                    designation: `Senior Technical Mentor (${lab.name})`,
+                    experienceYears: 3 + i,
+                    mustChangePassword: false,
+                },
+            });
+            instructorCount++;
+        }
+
+        // C. Create Students (10 per lab)
+        for (let s = 1; s <= 10; s++) {
+            const studEmail = `student.${lab.short}.${s}@sindhanai.in`;
+            const rollNum = `2023${dept.code}${String(labIdx * 10 + s).padStart(3, "0")}`;
+            const regNum = `713523${dept.code}${String(labIdx * 10 + s).padStart(4, "0")}`;
+            const section = createdSections[s % createdSections.length];
+            const slotTiming = createdSlotTimings[s % createdSlotTimings.length];
+
+            // Assign placement track to first 6 students, leave last 4 unallocated to demonstrate optional placement
+            const domainPlacementId = s <= 6 ? placementTrack.id : null;
+
+            await prisma.user.upsert({
+                where: { email: studEmail },
+                update: {},
+                create: {
+                    name: `Student ${s} (${lab.short.toUpperCase()})`,
+                    email: studEmail,
+                    personalEmail: `student.${lab.short}.${s}.personal@gmail.com`,
+                    rollNumber: rollNum,
+                    registrationNumber: regNum,
+                    roleId: studentRole.id,
+                    soiDomainId: lab.id,
+                    departmentId: dept.id,
+                    batchId: batch.id,
+                    academicYearId: academicYr.id,
+                    classGroupId: section.id,
+                    slotTimingId: slotTiming.id,
+                    domainPlacementId,
+                    yearOfPassing: batch.endYear,
+                    mobileNumber: `+91 98${Math.floor(10000000 + Math.random() * 90000000)}`,
+                    tenthPercentage: parseFloat((75 + Math.random() * 20).toFixed(2)),
+                    twelfthPercentage: parseFloat((75 + Math.random() * 20).toFixed(2)),
+                    currentCgpa: parseFloat((7.0 + Math.random() * 2.8).toFixed(2)),
+                    residentialStatus: s % 2 === 0 ? "Hosteller" : "Dayscholar",
+                    githubUrl: `https://github.com/student-${lab.short}-${s}`,
+                    linkedinUrl: `https://linkedin.com/in/student-${lab.short}-${s}`,
+                    leetcodeUrl: `https://leetcode.com/u/student-${lab.short}-${s}`,
+                    kaggleUrl: `https://kaggle.com/student-${lab.short}-${s}`,
+                    tempPassword: "Sindhanai@2026",
+                    mustChangePassword: true,
+                },
+            });
+            studentCount++;
+        }
     }
 
-    console.log("Database successfully truncated and seeded with full metadata relation bindings!");
-
-    console.log("Database seeded successfully with Metadata, RBAC, and System Users!");
+    console.log(`✅ Seeded ${adminCount} Lab Admins`);
+    console.log(`✅ Seeded ${instructorCount} Lab Instructors across 9 SOI Labs`);
+    console.log(`✅ Seeded ${studentCount} Enrolled Students across 9 SOI Labs`);
+    console.log("🚀 Comprehensive Institutional DB Seeding Completed Successfully!");
 }
 
 main()
     .catch((e) => {
-        console.error("Seeding failed:", e);
+        console.error("❌ Seeding Error:", e);
         process.exit(1);
     })
     .finally(async () => {

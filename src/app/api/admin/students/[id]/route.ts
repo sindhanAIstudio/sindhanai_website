@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 slotTiming: true,
                 soiDomain: true,
                 domainPlacement: true,
-                interestedRole: true,
+                interestedRoles: true,
                 skills: {
                     include: { endorsedByInstructor: { select: { name: true, email: true } } },
                 },
@@ -74,9 +74,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
             classGroupId,
             soiDomainId,
             domainPlacementId,
+            interestedRoleIds,
             interestedRoleId,
             statusNote,
         } = body;
+
+        const rolesToSet = Array.isArray(interestedRoleIds)
+            ? interestedRoleIds
+            : interestedRoleId
+                ? [interestedRoleId]
+                : [];
 
         const updatedStudent = await prisma.user.update({
             where: { id },
@@ -105,7 +112,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 classGroupId: classGroupId || null,
                 soiDomainId: soiDomainId || null,
                 domainPlacementId: domainPlacementId || null,
-                interestedRoleId: interestedRoleId || null,
+                interestedRoles: {
+                    set: rolesToSet.map((id: string) => ({ id })),
+                },
                 statusNote: statusNote || null,
             },
             include: {
@@ -115,7 +124,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
                 slotTiming: true,
                 soiDomain: true,
                 domainPlacement: true,
-                interestedRole: true,
+                interestedRoles: true,
                 skills: true,
             },
         });
