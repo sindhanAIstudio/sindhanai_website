@@ -12,9 +12,11 @@ function createPrismaClient() {
     return new PrismaClient({ adapter });
 }
 
+// Ensure fresh PrismaClient in development to pick up schema changes
 export const prisma = process.env.NODE_ENV === "production"
     ? (globalForPrisma.prisma ?? createPrismaClient())
     : createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
+if (process.env.NODE_ENV === "production") {
+    globalForPrisma.prisma = prisma;
+}

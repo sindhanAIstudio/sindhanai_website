@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { generateTOTPToken, TOTP_WINDOW_SECONDS } from "@/lib/attendance/totp";
+import { generateDynamicQrToken } from "@/lib/attendance/totp";
 
 export async function GET(req: Request) {
     try {
@@ -25,12 +25,10 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Session expired" }, { status: 410 });
         }
 
-        const token = generateTOTPToken(session.sessionSecret, now);
-        const secondsRemaining = TOTP_WINDOW_SECONDS - (Math.floor(now / 1000) % TOTP_WINDOW_SECONDS);
+        const token = generateDynamicQrToken(session.id, session.sessionSecret);
 
         return NextResponse.json({
             token,
-            secondsRemaining,
             sessionId: session.id,
             title: session.title,
         });

@@ -15,6 +15,8 @@ import {
     BookmarkSimple,
 } from "@phosphor-icons/react";
 import SearchableSelect from "@/components/ui/SearchableSelect";
+import MultiSelect from "@/components/ui/MultiSelect";
+import ImageCropperModal from "@/components/ui/ImageCropperModal";
 
 interface StudentFormModalProps {
     isOpen: boolean;
@@ -74,9 +76,9 @@ export default function StudentFormModal({
         slotTimingId: "",
         soiDomainId: "",
         domainPlacementId: "",
-        interestedRoleId: "",
+        interestedRoleIds: [] as string[],
         statusNote: "",
-        skills: ["Python", "Machine Learning"],
+        skills: [] as string[],
     });
 
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -84,6 +86,10 @@ export default function StudentFormModal({
     const [uploadingResume, setUploadingResume] = useState(false);
     const [saving, setSaving] = useState(false);
     const [modalError, setModalError] = useState<string | null>(null);
+
+    // Profile Picture 1:1 Cropper Modal State
+    const [cropperOpen, setCropperOpen] = useState(false);
+    const [cropperSrc, setCropperSrc] = useState<string | null>(null);
 
     useEffect(() => {
         if (editingStudent) {
@@ -96,6 +102,10 @@ export default function StudentFormModal({
                     rawPhone = parts.slice(1).join("");
                 }
             }
+
+            const existingRoles = editingStudent.interestedRoles && Array.isArray(editingStudent.interestedRoles)
+                ? editingStudent.interestedRoles.map((r: any) => r.id)
+                : editingStudent.interestedRoleId ? [editingStudent.interestedRoleId] : [];
 
             setFormData({
                 name: editingStudent.name || "",
@@ -123,9 +133,9 @@ export default function StudentFormModal({
                 slotTimingId: editingStudent.slotTimingId || "",
                 soiDomainId: editingStudent.soiDomainId || "",
                 domainPlacementId: editingStudent.domainPlacementId || "",
-                interestedRoleId: editingStudent.interestedRoleId || "",
+                interestedRoleIds: existingRoles,
                 statusNote: editingStudent.statusNote || "",
-                skills: editingStudent.skills ? editingStudent.skills.map((s: any) => s.skillName) : ["Python"],
+                skills: editingStudent.skills ? editingStudent.skills.map((s: any) => s.skillName) : [],
             });
         } else {
             // Default to empty strings so dropdowns show clean placeholders without pre-selected items
@@ -155,9 +165,9 @@ export default function StudentFormModal({
                 slotTimingId: "",
                 soiDomainId: "",
                 domainPlacementId: "",
-                interestedRoleId: "",
+                interestedRoleIds: [],
                 statusNote: "",
-                skills: ["Python", "Machine Learning"],
+                skills: [],
             });
         }
         setFieldErrors({});
@@ -214,50 +224,84 @@ export default function StudentFormModal({
         validateField(field, value);
     };
 
-    // File Upload Handlers for Profile Pic & Resume with 1.5MB File Limit Validation
-    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: "profilePic" | "resume") => {
+    // Profile Picture Select & Crop Handlers
+    const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         setModalError(null);
 
-        // Strict 1.5MB Limit Check for Profile Pictures
-        if (type === "profilePic") {
-            const MAX_SIZE_BYTES = 1.5 * 1024 * 1024; // 1.5 MB
-            if (file.size > MAX_SIZE_BYTES) {
-                setModalError(`Profile picture file size (${(file.size / (1024 * 1024)).toFixed(2)} MB) exceeds the strict 1.5MB limit. Please compress or select a smaller image.`);
-                return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            if (reader.result) {
+                setCropperSrc(reader.result as string);
+                setCropperOpen(true);
             }
-            setUploadingPic(true);
-        } else {
-            setUploadingResume(true);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = "";
+    };
+
+    const handleCropComplete = async (croppedFile: File) => {
+        setModalError(null);
+
+        // Strict 1.5MB Limit Check for Cropped Profile Picture
+        const MAX_SIZE_BYTES = 1.5 * 1024 * 1024; // 1.5 MB
+        if (croppedFile.size > MAX_SIZE_BYTES) {
+            setModalError(`Cropped profile picture file size (${(croppedFile.size / (1024 * 1024)).toFixed(2)} MB) exceeds the strict 1.5MB limit. Please re-crop or select a smaller image.`);
+            return;
         }
 
+        setUploadingPic(true);
         try {
             const body = new FormData();
-            body.append("file", file);
-            body.append("type", type);
+            body.append("file", croppedFile);
+            body.append("type", "profilePic");
 
             const res = await fetch("/api/upload", { method: "POST", body });
             const data = await res.json();
 
             if (res.ok && data.url) {
-                if (type === "profilePic") {
-                    setFormData((prev) => ({ ...prev, profilePicUrl: data.url }));
-                    setFieldErrors((prev) => ({ ...prev, profilePicUrl: "" }));
-                } else {
-                    setFormData((prev) => ({ ...prev, resumeUrl: data.url }));
-                    setFieldErrors((prev) => ({ ...prev, resumeUrl: "" }));
-                }
+                setFormData((prev) => ({ ...prev, profilePicUrl: data.url }));
+                setFieldErrors((prev) => ({ ...prev, profilePicUrl: "" }));
             } else {
-                setModalError(data.error || "File upload failed.");
+                setModalError(data.error || "Profile picture upload failed.");
             }
         } catch (err) {
             console.error("Upload error:", err);
-            setModalError("Network error while uploading file. Please try again.");
+            setModalError("Network error while uploading profile picture. Please try again.");
         } finally {
-            if (type === "profilePic") setUploadingPic(false);
-            else setUploadingResume(false);
+            setUploadingPic(false);
+        }
+    };
+
+    // File Upload Handler for Resume
+    const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setModalError(null);
+        setUploadingResume(true);
+
+        try {
+            const body = new FormData();
+            body.append("file", file);
+            body.append("type", "resume");
+
+            const res = await fetch("/api/upload", { method: "POST", body });
+            const data = await res.json();
+
+            if (res.ok && data.url) {
+                setFormData((prev) => ({ ...prev, resumeUrl: data.url }));
+                setFieldErrors((prev) => ({ ...prev, resumeUrl: "" }));
+            } else {
+                setModalError(data.error || "Resume upload failed.");
+            }
+        } catch (err) {
+            console.error("Upload error:", err);
+            setModalError("Network error while uploading resume. Please try again.");
+        } finally {
+            setUploadingResume(false);
         }
     };
 
@@ -373,7 +417,7 @@ export default function StudentFormModal({
                                         <input
                                             type="file"
                                             accept="image/*"
-                                            onChange={(e) => handleFileUpload(e, "profilePic")}
+                                            onChange={handleProfilePicSelect}
                                             className="hidden"
                                             id="profile-pic-upload"
                                         />
@@ -382,7 +426,7 @@ export default function StudentFormModal({
                                             className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
                                         >
                                             <UploadSimple className="w-4 h-4" />
-                                            <span>{uploadingPic ? "Uploading..." : formData.profilePicUrl ? "Change Photo" : "Upload Photo"}</span>
+                                            <span>{uploadingPic ? "Uploading..." : formData.profilePicUrl ? "Crop / Change Photo" : "Upload Photo"}</span>
                                         </label>
                                         {formData.profilePicUrl && <CheckCircle className="w-5 h-5 text-emerald-600" />}
                                     </div>
@@ -405,7 +449,7 @@ export default function StudentFormModal({
                                         <input
                                             type="file"
                                             accept=".pdf,.doc,.docx"
-                                            onChange={(e) => handleFileUpload(e, "resume")}
+                                            onChange={handleResumeUpload}
                                             className="hidden"
                                             id="resume-upload"
                                         />
@@ -565,21 +609,20 @@ export default function StudentFormModal({
                             />
 
                             <SearchableSelect
-                                label="Domain Placement"
-                                required
+                                label="Domain Placement (Optional)"
                                 options={metadata.domainPlacements}
                                 value={formData.domainPlacementId}
                                 onChange={(val) => handleInputChange("domainPlacementId", val)}
-                                placeholder="Select Domain Placement..."
+                                placeholder="Select Domain Placement (Optional)..."
                             />
 
-                            <SearchableSelect
-                                label="Interested Role"
+                            <MultiSelect
+                                label="Interested Roles"
                                 required
-                                options={metadata.interestedRoles}
-                                value={formData.interestedRoleId}
-                                onChange={(val) => handleInputChange("interestedRoleId", val)}
-                                placeholder="Select Interested Role..."
+                                options={metadata.interestedRoles || []}
+                                value={formData.interestedRoleIds || []}
+                                onChange={(val) => setFormData((prev) => ({ ...prev, interestedRoleIds: val }))}
+                                placeholder="Select Interested Roles..."
                             />
                         </div>
                     </div>
@@ -757,6 +800,14 @@ export default function StudentFormModal({
                     </div>
                 </form>
             </div>
+
+            {/* 1:1 Aspect Ratio Profile Picture Cropper Modal */}
+            <ImageCropperModal
+                isOpen={cropperOpen}
+                imageSrc={cropperSrc}
+                onClose={() => setCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+            />
         </div>
     );
 }

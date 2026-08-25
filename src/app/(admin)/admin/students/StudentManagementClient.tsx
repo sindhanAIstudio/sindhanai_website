@@ -47,6 +47,12 @@ export default function StudentManagementClient({
     const [search, setSearch] = useState("");
     const [isTrashView, setIsTrashView] = useState(false);
 
+    // Selection State for Bulk Domain Placement Assignment
+    const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
+    const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+    const [targetPlacementId, setTargetPlacementId] = useState("");
+    const [bulkUpdating, setBulkUpdating] = useState(false);
+
     // Active filters
     const [activeFilters, setActiveFilters] = useState<Record<string, string>>({
         departmentId: "",
@@ -219,8 +225,68 @@ export default function StudentManagementClient({
         },
     ];
 
+    // Handle Bulk Domain Placement Submission
+    const handleBulkPlacement = async () => {
+        if (selectedStudentIds.length === 0) return;
+        setBulkUpdating(true);
+        try {
+            const res = await fetch("/api/admin/students/bulk-placement", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    studentIds: selectedStudentIds,
+                    domainPlacementId: targetPlacementId || null,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showToast("success", "Bulk Placement Updated", data.message);
+                setSelectedStudentIds([]);
+                setIsBulkModalOpen(false);
+                fetchStudents();
+            } else {
+                showToast("error", "Update Failed", data.error || "Failed to assign domain placement.");
+            }
+        } catch (err) {
+            console.error("Bulk placement error:", err);
+            showToast("error", "Network Error", "Failed to connect to server.");
+        } finally {
+            setBulkUpdating(false);
+        }
+    };
+
     // Columns Definition
     const columns: Column<any>[] = [
+        {
+            header: (
+                <input
+                    type="checkbox"
+                    checked={students.length > 0 && selectedStudentIds.length === students.length}
+                    onChange={(e) => {
+                        if (e.target.checked) {
+                            setSelectedStudentIds(students.map((s) => s.id));
+                        } else {
+                            setSelectedStudentIds([]);
+                        }
+                    }}
+                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+            ),
+            cell: (item) => (
+                <input
+                    type="checkbox"
+                    checked={selectedStudentIds.includes(item.id)}
+                    onChange={(e) => {
+                        if (e.target.checked) {
+                            setSelectedStudentIds((prev) => [...prev, item.id]);
+                        } else {
+                            setSelectedStudentIds((prev) => prev.filter((id) => id !== item.id));
+                        }
+                    }}
+                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                />
+            ),
+        },
         {
             header: "Student Profile",
             cell: (item) => (
@@ -507,6 +573,96 @@ export default function StudentManagementClient({
                                     <SealCheck className="w-4 h-4" /> Endorse Skill as Instructor
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Floating Selection Bar for Bulk Domain Placement */}
+            {selectedStudentIds.length > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white px-6 py-3.5 rounded-2xl shadow-2xl border border-slate-800 flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4">
+                    <div className="text-xs font-semibold">
+                        <span className="bg-indigo-500 text-white px-2 py-0.5 rounded-md font-bold mr-2">
+                            {selectedStudentIds.length} Selected
+                        </span>
+                        Students Selected for Mass Assignment
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setIsBulkModalOpen(true)}
+                            className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+                        >
+                            <Briefcase className="w-4 h-4" /> Bulk Assign Domain Placement
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedStudentIds([])}
+                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium cursor-pointer"
+                        >
+                            Clear Selection
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Domain Placement Selection Modal */}
+            {isBulkModalOpen && (
+                <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden p-6 space-y-6">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div>
+                                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                                    <Briefcase className="w-5 h-5 text-indigo-600" /> Bulk Placement Assignment
+                                </h2>
+                                <p className="text-xs text-slate-500">
+                                    Assigning domain placement to <span className="font-bold text-indigo-600">{selectedStudentIds.length} selected students</span>.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsBulkModalOpen(false)}
+                                className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="text-xs font-bold text-slate-700">Target Domain Placement Track</label>
+                            <select
+                                value={targetPlacementId}
+                                onChange={(e) => setTargetPlacementId(e.target.value)}
+                                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:border-indigo-600"
+                            >
+                                <option value="">-- Clear / Unallocated Placement Track --</option>
+                                {metadata.domainPlacements.map((dp) => (
+                                    <option key={dp.id} value={dp.id}>
+                                        {dp.name} ({dp.code})
+                                    </option>
+                                ))}
+                            </select>
+                            <p className="text-[11px] text-slate-500 italic">
+                                Note: Selecting unallocated will remove the placement tag for all {selectedStudentIds.length} students.
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                            <button
+                                type="button"
+                                onClick={() => setIsBulkModalOpen(false)}
+                                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={bulkUpdating}
+                                onClick={handleBulkPlacement}
+                                className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md cursor-pointer transition-all disabled:opacity-50"
+                            >
+                                {bulkUpdating ? "Applying Changes..." : `Update ${selectedStudentIds.length} Students`}
+                            </button>
                         </div>
                     </div>
                 </div>
