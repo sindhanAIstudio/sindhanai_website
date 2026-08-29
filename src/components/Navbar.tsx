@@ -57,7 +57,7 @@ export default function Navbar() {
         { name: "Home", href: "/" },
         { name: "About", href: "/about" },
         { name: "Services", href: "/services", isMega: true },
-        { name: "News & Events", href: "/news-events" },
+        { name: "News & Events", href: "", isUnlinked: true },
         {
             name: "Teams",
             href: "/team",
@@ -178,7 +178,6 @@ export default function Navbar() {
                         <nav className="hidden md:flex items-center gap-1.5">
                             {navLinks.map((link) => {
                                 if (link.isMega) {
-                                    const isMegaActive = pathname.startsWith("/services") || megaMenuOpen;
                                     return (
                                         <div
                                             key={link.name}
@@ -191,8 +190,8 @@ export default function Navbar() {
                                                     if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
                                                     setMegaMenuOpen(!megaMenuOpen);
                                                 }}
-                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${isMegaActive
-                                                    ? "text-slate-950 bg-black/10"
+                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${megaMenuOpen
+                                                    ? "text-slate-950 bg-black/5"
                                                     : "text-slate-800 hover:text-slate-950 hover:bg-black/5"
                                                     }`}
                                             >
