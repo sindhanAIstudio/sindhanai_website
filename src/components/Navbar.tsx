@@ -162,7 +162,7 @@ export default function Navbar() {
                 <header
                     className={`max-w-[1360px] mx-auto flex items-center justify-between transition-all duration-300 ease-in-out ${isScrolled
                         ? "bg-white/85 backdrop-saturate-[1.8] backdrop-blur-[20px] border border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-[20px] px-5 sm:px-6 h-[62px]"
-                        : "bg-white/95 md:bg-transparent backdrop-saturate-[1.8] md:backdrop-blur-none backdrop-blur-[20px] border border-slate-200/50 md:border-transparent shadow-md md:shadow-none rounded-[22px] md:rounded-none px-5 md:px-0 h-[60px] md:h-auto"
+                        : "bg-transparent backdrop-none border-none shadow-none rounded-none px-5 md:px-0 h-[60px] md:h-auto"
                         }`}
                 >
 
@@ -178,6 +178,7 @@ export default function Navbar() {
                         <nav className="hidden md:flex items-center gap-1.5">
                             {navLinks.map((link) => {
                                 if (link.isMega) {
+                                    const isMegaActive = pathname.startsWith("/services") || megaMenuOpen;
                                     return (
                                         <div
                                             key={link.name}
@@ -190,8 +191,8 @@ export default function Navbar() {
                                                     if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
                                                     setMegaMenuOpen(!megaMenuOpen);
                                                 }}
-                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${megaMenuOpen
-                                                    ? "text-slate-950 bg-black/5"
+                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${isMegaActive
+                                                    ? "text-slate-950 bg-black/10"
                                                     : "text-slate-800 hover:text-slate-950 hover:bg-black/5"
                                                     }`}
                                             >
