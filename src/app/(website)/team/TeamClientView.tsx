@@ -129,16 +129,16 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
     return (
         <div className="w-full bg-white min-h-screen">
 
-            {/* ── HERO HEADER (AI-Technology Page Header Style) ─────────────── */}
-            <section className="relative w-full bg-[#f0f4f4] pt-32 sm:pt-40 lg:pt-44 pb-20 sm:pb-28 overflow-hidden flex flex-col justify-center border-b border-slate-200/80">
-                {/* Teal/Cyan Ambient Mesh Gradient */}
+            {/* ── HERO HEADER (Distinct Indigo & Violet Mesh Palette) ─────────────── */}
+            <section className="relative w-full bg-[#f4f3f9] pt-32 sm:pt-40 lg:pt-44 pb-20 sm:pb-28 overflow-hidden flex flex-col justify-center">
+                {/* Violet/Indigo Ambient Mesh Gradient */}
                 <div className="absolute inset-0 w-full h-full opacity-100 pointer-events-none">
                     <MeshGradientCanvas
                         colors={[
-                            [0.13, 0.78, 0.67, 0.10],   // teal
-                            [0.0, 0.55, 0.70, 0.08],   // cyan-blue
-                            [0.0, 0.0, 0.0, 0.06],     // dark subtle
-                            [0.07, 0.65, 0.60, 0.07],   // mint
+                            [0.38, 0.28, 0.88, 0.10],   // indigo-violet
+                            [0.58, 0.22, 0.82, 0.08],   // purple
+                            [0.0, 0.0, 0.0, 0.06],      // dark subtle
+                            [0.48, 0.38, 0.95, 0.07],   // lavender
                         ]}
                         distortion={1.0}
                         swirl={0.8}
@@ -153,8 +153,8 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
 
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
                     {/* Badge Pill */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-teal-200/90 text-teal-800 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-xs">
-                        <GraduationCap className="w-4 h-4 text-teal-600" weight="bold" />
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-indigo-200/90 text-indigo-800 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-xs">
+                        <GraduationCap className="w-4 h-4 text-indigo-600" weight="bold" />
                         School of AIDS & GenAI
                     </div>
 
