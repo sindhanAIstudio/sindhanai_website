@@ -5,7 +5,7 @@ import { createSessionCookie } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
     try {
-        const { email, password, deviceFingerprint } = await req.json();
+        const { email, tempPassword, password } = await req.json();
 
         if (!email || !password || typeof password !== "string" || password.length < 8) {
             return NextResponse.json(
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         }
 
         const normalizedEmail = email.trim().toLowerCase();
-        const user = await prisma.user.findUnique({
+        const user = await (prisma as any).user.findUnique({
             where: { email: normalizedEmail },
             include: { role: true },
         });
@@ -31,15 +31,23 @@ export async function POST(req: Request) {
             );
         }
 
+        // Security Check: Verify temporary password assigned during onboarding
+        if (user.tempPassword && user.tempPassword !== tempPassword) {
+            return NextResponse.json(
+                { error: "Invalid temporary password. Please enter the temporary password assigned to your profile." },
+                { status: 401 }
+            );
+        }
+
         // Hash strong password with bcrypt
         const passwordHash = await bcrypt.hash(password, 10);
 
-        // Save password and device fingerprint to DB
-        await prisma.user.update({
+        // Save permanent password and clear temporary password
+        await (prisma as any).user.update({
             where: { id: user.id },
             data: {
                 passwordHash,
-                deviceFingerprint: deviceFingerprint || null,
+                tempPassword: null,
             },
         });
 
@@ -49,7 +57,7 @@ export async function POST(req: Request) {
             email: user.email,
             name: user.name,
             role: user.role.name,
-            deviceFingerprint: deviceFingerprint || user.deviceFingerprint,
+            deviceFingerprint: user.deviceFingerprint,
         });
 
         return NextResponse.json({

@@ -286,6 +286,29 @@ export default function StudentProfileModal({
                             <p className="text-xs text-slate-400 italic">No instructor skill endorsements recorded yet.</p>
                         )}
                     </div>
+
+                    {/* SECTION 5: ATTENDANCE & DEFAULTER AUDIT LINK */}
+                    <div className="space-y-3 pt-2 border-t border-slate-100">
+                        <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <CalendarCheck className="w-4 h-4 text-indigo-600" /> 6. Institutional Attendance Audit
+                        </h3>
+                        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-between gap-4">
+                            <div className="space-y-0.5">
+                                <p className="text-xs font-bold text-slate-900">Categorized Fair Attendance Report</p>
+                                <p className="text-[11px] text-slate-500 font-medium">
+                                    View regular classes, special evening activities (after 4:30 PM), and event records for {student.name}.
+                                </p>
+                            </div>
+                            <a
+                                href={`/admin/reports/attendance?search=${encodeURIComponent(student.rollNumber || student.name)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shrink-0 flex items-center gap-1.5 transition-all shadow-xs"
+                            >
+                                View Detailed Report <ArrowSquareOut className="w-3.5 h-3.5" />
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

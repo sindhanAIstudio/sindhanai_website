@@ -2,12 +2,29 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth/session";
 import { verifyDynamicQrToken, isIpInSubnet } from "@/lib/attendance/totp";
+import os from "os";
 
 function getClientIp(req: Request): string {
     const forwarded = req.headers.get("x-forwarded-for");
     if (forwarded) return forwarded.split(",")[0].trim();
     const realIp = req.headers.get("x-real-ip");
     if (realIp) return realIp.trim();
+
+    // Local loopback resolution: resolve ::1 or 127.0.0.1 to host machine's active network IPv4 address
+    try {
+        const interfaces = os.networkInterfaces();
+        for (const name in interfaces) {
+            const iface = interfaces[name];
+            if (!iface) continue;
+            for (const alias of iface) {
+                const isIpv4 = alias.family === "IPv4" || (alias.family as any) === 4;
+                if (isIpv4 && !alias.internal && alias.address !== "127.0.0.1") {
+                    return alias.address;
+                }
+            }
+        }
+    } catch { }
+
     return "127.0.0.1";
 }
 
@@ -84,7 +101,7 @@ export async function POST(req: Request) {
             }
         }
 
-        // 4. Hardware Device Binding Check
+        // 4. Hardware Device Binding Check & Anti-Proxy Security Rule
         const student = await (prisma as any).user.findUnique({
             where: { id: userSession.userId },
         });
@@ -93,8 +110,28 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Student user account not found" }, { status: 404 });
         }
 
-        if (!student.deviceFingerprint) {
-            // First time scanning — lock device to student profile
+        // Anti-Proxy Rule: Ensure this device fingerprint is not already registered to ANOTHER student in the DB
+        const otherStudentWithSameDevice = await (prisma as any).user.findFirst({
+            where: {
+                deviceFingerprint,
+                id: { not: student.id },
+                deletedAt: null,
+            },
+            select: { name: true, rollNumber: true, email: true },
+        });
+
+        if (otherStudentWithSameDevice) {
+            return NextResponse.json(
+                {
+                    error: `Anti-Proxy Security Warning: This device (${deviceFingerprint.substring(0, 12)}) is registered to another student (${otherStudentWithSameDevice.name}). Proxy attendance is strictly prohibited. Ask your lab instructor to reset device binding if you changed devices.`,
+                },
+                { status: 403 }
+            );
+        }
+
+        const isLegacyFingerprint = student.deviceFingerprint && !student.deviceFingerprint.startsWith("DEV-");
+        if (!student.deviceFingerprint || isLegacyFingerprint) {
+            // First time scanning or upgrading legacy Mozilla userAgent fingerprint — lock stable DEV-xxxx device ID to student profile
             await (prisma as any).user.update({
                 where: { id: student.id },
                 data: { deviceFingerprint },
@@ -102,7 +139,7 @@ export async function POST(req: Request) {
         } else if (student.deviceFingerprint !== deviceFingerprint) {
             return NextResponse.json(
                 {
-                    error: `Device Security Error: This account is bound to another device. Please scan from your registered phone or ask faculty to reset device binding.`,
+                    error: `Device Security Error: Your account is registered to device (${student.deviceFingerprint.substring(0, 12)}). You are scanning from (${deviceFingerprint.substring(0, 12)}). Please scan from your registered phone or ask faculty to reset device binding.`,
                 },
                 { status: 403 }
             );

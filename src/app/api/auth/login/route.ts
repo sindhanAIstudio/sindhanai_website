@@ -37,21 +37,13 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        // Update active device fingerprint if provided
-        if (deviceFingerprint) {
-            await (prisma as any).user.update({
-                where: { id: user.id },
-                data: { deviceFingerprint },
-            });
-        }
-
         // Issue 30-day HttpOnly cookie session
         await createSessionCookie({
             userId: user.id,
             email: user.email,
             name: user.name,
             role: user.role.name,
-            deviceFingerprint: deviceFingerprint || user.deviceFingerprint,
+            deviceFingerprint: user.deviceFingerprint,
         });
 
         return NextResponse.json({

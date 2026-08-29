@@ -166,3 +166,23 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         return NextResponse.json({ error: "Failed to perform soft delete action" }, { status: 500 });
     }
 }
+
+// PATCH /api/admin/students/[id] — Reset Device Binding
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const session = await getSession();
+        if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN" && session.role !== "INSTRUCTOR")) {
+            return NextResponse.json({ error: "Unauthorized access" }, { status: 403 });
+        }
+
+        const { id } = await params;
+        await prisma.user.update({
+            where: { id },
+            data: { deviceFingerprint: null },
+        });
+
+        return NextResponse.json({ success: true, message: "Device lock reset successfully" });
+    } catch (error) {
+        return NextResponse.json({ error: "Failed to reset device lock" }, { status: 500 });
+    }
+}

@@ -10,38 +10,65 @@ import {
     CheckCircle,
     Warning,
     Clock,
-    Star
+    Star,
+    MagnifyingGlass,
 } from "@phosphor-icons/react";
 
-export default function AttendanceReportClient() {
+interface AttendanceReportClientProps {
+    session?: any;
+}
+
+export default function AttendanceReportClient({ session }: AttendanceReportClientProps) {
+    const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    const [startDate, setStartDate] = useState(todayStr);
+    const [endDate, setEndDate] = useState(todayStr);
+
     const [reports, setReports] = useState<any[]>([]);
+    const [allReports, setAllReports] = useState<any[]>([]);
     const [summary, setSummary] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [soiDomains, setSoiDomains] = useState<any[]>([]);
     const [soiDomainId, setSoiDomainId] = useState("");
+    const [search, setSearch] = useState("");
     const [categoryFilter, setCategoryFilter] = useState<string>("");
     const [filterTab, setFilterTab] = useState<"ALL" | "DEFAULTERS">("ALL");
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const limit = 15;
+
+    const isSuperAdmin = session?.role === "SUPER_ADMIN";
 
     const fetchReports = useCallback(async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            if (soiDomainId) params.set("soiDomainId", soiDomainId);
+            if (startDate) params.set("startDate", startDate);
+            if (endDate) params.set("endDate", endDate);
+            if (soiDomainId && isSuperAdmin) params.set("soiDomainId", soiDomainId);
+            if (search.trim()) params.set("search", search.trim());
             if (categoryFilter) params.set("category", categoryFilter);
+            params.set("page", currentPage.toString());
+            params.set("limit", limit.toString());
 
             const res = await fetch(`/api/admin/reports/attendance?${params.toString()}`);
             const data = await res.json();
 
             if (res.ok) {
                 setReports(data.data || []);
+                setAllReports(data.allData || data.data || []);
                 setSummary(data.summary || null);
+                if (data.pagination) {
+                    setTotalPages(data.pagination.totalPages || 1);
+                    setTotalItems(data.pagination.total || 0);
+                }
             }
         } catch (err) {
             console.error("Failed to load attendance report:", err);
         } finally {
             setLoading(false);
         }
-    }, [soiDomainId, categoryFilter]);
+    }, [startDate, endDate, soiDomainId, isSuperAdmin, search, categoryFilter, currentPage, limit]);
 
     useEffect(() => {
         fetch("/api/admin/calendar")
@@ -55,19 +82,20 @@ export default function AttendanceReportClient() {
     }, [fetchReports]);
 
     const handleExportCsv = () => {
-        const selectedDomainName = soiDomains.find((d) => d.id === soiDomainId)?.name || "All_SOI_Labs";
-        let csvContent = "data:text/csv;charset=utf-8,Student Name,Roll Number,Email,SOI Lab,Regular Attended,Special Activity,Special Event,Total Attended,Total Valid Days,Attendance %,Status\n";
+        const selectedDomainName = soiDomains.find((d) => d.id === soiDomainId)?.name || "Lab_Report";
+        let csvContent = "data:text/csv;charset=utf-8,Student Name,Roll Number,Email,SOI Lab,Regular Attended,Regular Valid Days,Regular %,Special Activity (After 4:30PM),Special Activity %,Special Event,Special Event %,Status\n";
 
-        reports.forEach((item) => {
+        const exportList = allReports.length > 0 ? allReports : reports;
+        exportList.forEach((item) => {
             const s = item.student;
             const statusStr = item.isDefaulter ? "DEFAULTER (<75%)" : "REGULAR";
-            csvContent += `"${s.name}","${s.rollNumber || "N/A"}","${s.email}","${s.soiDomain?.name || "N/A"}","${item.regularCount}","${item.specialActivityCount}","${item.eventCount}","${item.attendedDays}","${item.totalValidDays}","${item.attendancePercentage}%","${statusStr}"\n`;
+            csvContent += `"${s.name}","${s.rollNumber || "N/A"}","${s.email}","${s.soiDomain?.name || "N/A"}","${item.regularAttendedDays}","${item.totalRegularDays}","${item.regularPercentage}%","${item.specialActivityAttendedDays}","${item.specialActivityPercentage}%","${item.eventAttendedDays}","${item.eventPercentage}%","${statusStr}"\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Categorized_Attendance_Report_${selectedDomainName}.csv`);
+        link.setAttribute("download", `Attendance_Report_${startDate}_to_${endDate}_${selectedDomainName}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -88,7 +116,7 @@ export default function AttendanceReportClient() {
                         <span>Categorized Institutional Attendance & Defaulters</span>
                     </h1>
                     <p className="text-xs text-slate-500 font-medium">
-                        Fair calculations categorized by Regular Sessions, Special Evening Activities, and Special Events
+                        Fair calculations categorized by Regular Sessions, Special Evening Activities (after 4:30 PM), and Events
                     </p>
                 </div>
 
@@ -114,7 +142,7 @@ export default function AttendanceReportClient() {
 
                     <div className="p-4 rounded-3xl bg-white border border-slate-200/80 shadow-xs space-y-1">
                         <div className="flex items-center justify-between text-slate-400 text-xs font-bold">
-                            <span>Average Attendance</span>
+                            <span>Avg Regular Class %</span>
                             <TrendUp className="w-4 h-4 text-emerald-500" />
                         </div>
                         <p className="text-2xl font-black text-emerald-600">{summary.avgAttendancePercentage}%</p>
@@ -122,7 +150,7 @@ export default function AttendanceReportClient() {
 
                     <div className="p-4 rounded-3xl bg-rose-50/60 border border-rose-200/80 shadow-xs space-y-1">
                         <div className="flex items-center justify-between text-rose-500 text-xs font-bold">
-                            <span>Defaulters (&lt; 75%)</span>
+                            <span>Defaulters (&lt; 75% Regular)</span>
                             <Warning className="w-4 h-4 text-rose-600" />
                         </div>
                         <p className="text-2xl font-black text-rose-600">{summary.defaultersCount}</p>
@@ -130,77 +158,101 @@ export default function AttendanceReportClient() {
 
                     <div className="p-4 rounded-3xl bg-indigo-50/60 border border-indigo-200/80 shadow-xs space-y-1">
                         <div className="flex items-center justify-between text-indigo-500 text-xs font-bold">
-                            <span>Valid Working Days</span>
+                            <span>Valid Regular Days</span>
                             <Flask className="w-4 h-4 text-indigo-600" />
                         </div>
-                        <p className="text-2xl font-black text-indigo-600">{summary.totalValidDays} Days</p>
+                        <p className="text-2xl font-black text-indigo-600">{summary.totalRegularDays} Days</p>
                     </div>
                 </div>
             )}
 
             {/* Filter Bar & Category Tabs */}
             <div className="p-4 bg-white rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    {/* Defaulter / All Filter */}
-                    <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
-                        <button
-                            onClick={() => setFilterTab("ALL")}
-                            className={`px-4 py-2 rounded-xl transition-all ${filterTab === "ALL" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600"}`}
-                        >
-                            All Students ({reports.length})
-                        </button>
-                        <button
-                            onClick={() => setFilterTab("DEFAULTERS")}
-                            className={`px-4 py-2 rounded-xl transition-all ${filterTab === "DEFAULTERS" ? "bg-rose-600 text-white shadow-xs" : "text-slate-600"}`}
-                        >
-                            Defaulters (&lt; 75%) ({reports.filter((r) => r.isDefaulter).length})
-                        </button>
+                {/* Search Bar, Date Pickers & Super Admin Lab Dropdown */}
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    {/* Cross-Institutional Student Search */}
+                    <div className="relative flex-1 max-w-md">
+                        <MagnifyingGlass className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search student by Name, Roll #, Reg #, or Email..."
+                            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                        />
+                        {search && (
+                            <button
+                                onClick={() => setSearch("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold"
+                            >
+                                Clear
+                            </button>
+                        )}
                     </div>
 
-                    {/* SOI Domain Dropdown */}
-                    <div className="flex items-center gap-2">
-                        <Flask className="w-4 h-4 text-indigo-600 shrink-0" />
-                        <span className="text-xs font-bold text-slate-500 shrink-0">Filter Lab Domain:</span>
-                        <select
-                            value={soiDomainId}
-                            onChange={(e) => setSoiDomainId(e.target.value)}
-                            className="h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-indigo-600"
-                        >
-                            <option value="">All SOI Labs</option>
-                            {soiDomains.map((d) => (
-                                <option key={d.id} value={d.id}>{d.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
+                    <div className="flex flex-wrap items-center gap-3">
+                        {/* Date Range Pickers (Default Today) */}
+                        <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
+                            <Clock className="w-4 h-4 text-indigo-600 shrink-0 ml-1" />
+                            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                                <span>From:</span>
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="px-2 py-1 rounded-xl bg-white border border-slate-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-indigo-600"
+                                />
+                                <span>To:</span>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="px-2 py-1 rounded-xl bg-white border border-slate-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-indigo-600"
+                                />
+                                {(startDate !== todayStr || endDate !== todayStr) && (
+                                    <button
+                                        onClick={() => { setStartDate(todayStr); setEndDate(todayStr); }}
+                                        className="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-[10px] font-black hover:bg-indigo-100"
+                                    >
+                                        Today
+                                    </button>
+                                )}
+                            </div>
+                        </div>
 
-                {/* Attendance Category Filter Chips */}
-                <div className="flex items-center gap-2 border-t border-slate-100 pt-3 text-xs font-extrabold">
-                    <span className="text-slate-400 text-[11px] uppercase tracking-wider">Attendance Category:</span>
-                    <button
-                        onClick={() => setCategoryFilter("")}
-                        className={`px-3 py-1.5 rounded-xl transition-all ${categoryFilter === "" ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-                    >
-                        All Types
-                    </button>
-                    <button
-                        onClick={() => setCategoryFilter("REGULAR")}
-                        className={`px-3 py-1.5 rounded-xl transition-all ${categoryFilter === "REGULAR" ? "bg-emerald-600 text-white" : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100"}`}
-                    >
-                        Regular Class
-                    </button>
-                    <button
-                        onClick={() => setCategoryFilter("SPECIAL_ACTIVITY")}
-                        className={`px-3 py-1.5 rounded-xl transition-all ${categoryFilter === "SPECIAL_ACTIVITY" ? "bg-amber-600 text-white" : "bg-amber-50 text-amber-800 hover:bg-amber-100"}`}
-                    >
-                        Special Activity (After 4:30 PM)
-                    </button>
-                    <button
-                        onClick={() => setCategoryFilter("EVENT")}
-                        className={`px-3 py-1.5 rounded-xl transition-all ${categoryFilter === "EVENT" ? "bg-indigo-600 text-white" : "bg-indigo-50 text-indigo-800 hover:bg-indigo-100"}`}
-                    >
-                        Special Events
-                    </button>
+                        {/* Defaulter / All Filter Tabs */}
+                        <div className="flex items-center gap-2 p-1 bg-slate-100 rounded-2xl text-xs font-bold">
+                            <button
+                                onClick={() => setFilterTab("ALL")}
+                                className={`px-4 py-2 rounded-xl transition-all ${filterTab === "ALL" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600"}`}
+                            >
+                                All ({reports.length})
+                            </button>
+                            <button
+                                onClick={() => setFilterTab("DEFAULTERS")}
+                                className={`px-4 py-2 rounded-xl transition-all ${filterTab === "DEFAULTERS" ? "bg-rose-600 text-white shadow-xs" : "text-slate-600"}`}
+                            >
+                                Defaulters (&lt; 75%) ({reports.filter((r) => r.isDefaulter).length})
+                            </button>
+                        </div>
+
+                        {/* SOI Domain Dropdown — Strictly for Super Admin */}
+                        {isSuperAdmin && (
+                            <div className="flex items-center gap-2">
+                                <Flask className="w-4 h-4 text-indigo-600 shrink-0" />
+                                <select
+                                    value={soiDomainId}
+                                    onChange={(e) => setSoiDomainId(e.target.value)}
+                                    className="h-10 px-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-indigo-600"
+                                >
+                                    <option value="">All SOI Labs</option>
+                                    {soiDomains.map((d) => (
+                                        <option key={d.id} value={d.id}>{d.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -218,9 +270,9 @@ export default function AttendanceReportClient() {
                                 <th className="py-3.5 px-4">Student</th>
                                 <th className="py-3.5 px-4">Roll / Reg #</th>
                                 <th className="py-3.5 px-4">SOI Lab</th>
-                                <th className="py-3.5 px-4 text-center">Category Breakdown (Reg / Special / Event)</th>
-                                <th className="py-3.5 px-4 text-center">Total Attended / Valid</th>
-                                <th className="py-3.5 px-4 text-center">Attendance %</th>
+                                <th className="py-3.5 px-4 text-center">Regular Class (Main)</th>
+                                <th className="py-3.5 px-4 text-center">Special (After 4:30 PM)</th>
+                                <th className="py-3.5 px-4 text-center">Special Event</th>
                                 <th className="py-3.5 px-4 text-right">Status</th>
                             </tr>
                         </thead>
@@ -254,29 +306,39 @@ export default function AttendanceReportClient() {
                                             {s.soiDomain?.name || "General"}
                                         </td>
 
-                                        <td className="py-3 px-4 text-center">
-                                            <div className="flex items-center justify-center gap-1.5 text-[10px] font-black">
-                                                <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">{item.regularCount} Reg</span>
-                                                <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800">{item.specialActivityCount} Special</span>
-                                                <span className="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800">{item.eventCount} Event</span>
-                                            </div>
-                                        </td>
-
-                                        <td className="py-3 px-4 text-center font-extrabold text-slate-800">
-                                            {item.attendedDays} / {item.totalValidDays}
-                                        </td>
-
+                                        {/* Regular Class Attendance (Main Calculation) */}
                                         <td className="py-3 px-4 text-center">
                                             <div className="inline-flex flex-col items-center">
                                                 <span className={`font-black text-sm ${item.isDefaulter ? "text-rose-600" : "text-emerald-600"}`}>
-                                                    {item.attendancePercentage}%
+                                                    {item.regularPercentage}%
                                                 </span>
-                                                <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1">
-                                                    <div
-                                                        className={`h-full rounded-full ${item.isDefaulter ? "bg-rose-500" : "bg-emerald-500"}`}
-                                                        style={{ width: `${Math.min(item.attendancePercentage, 100)}%` }}
-                                                    ></div>
-                                                </div>
+                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                    {item.regularAttendedDays} / {item.totalRegularDays} Days
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        {/* Special Activity Attendance (After 4:30 PM) */}
+                                        <td className="py-3 px-4 text-center">
+                                            <div className="inline-flex flex-col items-center">
+                                                <span className="font-black text-xs text-amber-700">
+                                                    {item.specialActivityPercentage}%
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                    {item.specialActivityAttendedDays} / {item.totalSpecialDays} Sessions
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        {/* Special Event Attendance */}
+                                        <td className="py-3 px-4 text-center">
+                                            <div className="inline-flex flex-col items-center">
+                                                <span className="font-black text-xs text-indigo-700">
+                                                    {item.eventPercentage}%
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-bold">
+                                                    {item.eventAttendedDays} / {item.totalEventDays} Events
+                                                </span>
                                             </div>
                                         </td>
 
@@ -305,6 +367,35 @@ export default function AttendanceReportClient() {
                             })}
                         </tbody>
                     </table>
+                )}
+
+                {/* Pagination Footer */}
+                {totalPages > 1 && (
+                    <div className="px-6 py-4 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between">
+                        <div className="text-xs font-semibold text-slate-500">
+                            Showing page <span className="font-bold text-slate-900">{currentPage}</span> of{" "}
+                            <span className="font-bold text-slate-900">{totalPages}</span> ({totalItems} total students)
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                                disabled={currentPage === 1}
+                                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-2xs"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-xs font-mono font-bold text-slate-700 px-2">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                                className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-xs font-bold text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-2xs"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

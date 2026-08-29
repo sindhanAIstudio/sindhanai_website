@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
 import { generateDynamicQrToken } from "@/lib/attendance/totp";
-import { Broadcast, ShieldCheck, WarningCircle } from "@phosphor-icons/react";
+import { Broadcast, ShieldCheck, WarningCircle, Copy, Check } from "@phosphor-icons/react";
 
 interface DynamicQrDisplayProps {
     sessionId: string;
     sessionSecret: string;
     sessionTitle: string;
     status: string;
-    showTimer?: boolean; // Set to false by default for silent rotation
+    showTimer?: boolean;
 }
 
 export default function DynamicQrDisplay({
@@ -21,12 +21,15 @@ export default function DynamicQrDisplay({
     showTimer = false,
 }: DynamicQrDisplayProps) {
     const [qrDataUrl, setQrDataUrl] = useState<string>("");
+    const [currentToken, setCurrentToken] = useState<string>("");
+    const [copied, setCopied] = useState<boolean>(false);
 
     useEffect(() => {
         if (status !== "ACTIVE") return;
 
         const refreshQr = async () => {
             const token = generateDynamicQrToken(sessionId, sessionSecret);
+            setCurrentToken(token);
             try {
                 const url = await QRCode.toDataURL(token, { width: 280, margin: 1 });
                 setQrDataUrl(url);
@@ -44,6 +47,13 @@ export default function DynamicQrDisplay({
 
         return () => clearInterval(interval);
     }, [sessionId, sessionSecret, status]);
+
+    const handleCopyToken = () => {
+        if (!currentToken) return;
+        navigator.clipboard.writeText(currentToken);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     if (status !== "ACTIVE") {
         return (
@@ -86,8 +96,28 @@ export default function DynamicQrDisplay({
                 </div>
             </div>
 
+            {/* Dev Copy Token Button for Single-Laptop Testing */}
+            <div className="pt-1">
+                <button
+                    onClick={handleCopyToken}
+                    className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center justify-center gap-1.5 mx-auto border border-slate-200 cursor-pointer"
+                >
+                    {copied ? (
+                        <>
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            <span className="text-emerald-700 font-extrabold">Live QR Token Copied!</span>
+                        </>
+                    ) : (
+                        <>
+                            <Copy className="w-3.5 h-3.5 text-indigo-600" />
+                            <span>Copy Live Token (For Testing)</span>
+                        </>
+                    )}
+                </button>
+            </div>
+
             <p className="text-xs text-slate-500 font-medium">
-                Point your mobile camera at screen while connected to Lab Wi-Fi.
+                Point mobile camera at screen OR copy token to paste at /student/scan.
             </p>
         </div>
     );

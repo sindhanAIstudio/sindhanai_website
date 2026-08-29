@@ -20,6 +20,7 @@ import {
     Eye,
     GraduationCap,
     BookmarkSimple,
+    DeviceMobile,
 } from "@phosphor-icons/react";
 
 interface StudentManagementClientProps {
@@ -367,6 +368,22 @@ export default function StudentManagementClient({
             ),
         },
         {
+            header: "Device Status",
+            cell: (item) => (
+                item.deviceFingerprint ? (
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-mono font-bold inline-flex items-center gap-1" title={item.deviceFingerprint}>
+                        <DeviceMobile className="w-3.5 h-3.5 text-emerald-600" />
+                        {item.deviceFingerprint}
+                    </span>
+                ) : (
+                    <span className="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-mono font-bold inline-flex items-center gap-1">
+                        <ArrowClockwise className="w-3.5 h-3.5 text-amber-600" />
+                        Unbound / Reset
+                    </span>
+                )
+            ),
+        },
+        {
             header: "Resume",
             cell: (item) => (
                 item.resumeUrl ? (
@@ -415,6 +432,28 @@ export default function StudentManagementClient({
                                 title="Endorse Technical Skill"
                             >
                                 <SealCheck className="w-4 h-4" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!confirm(`Reset device lock for ${item.name}? This will allow them to register a new phone on their next scan.`)) return;
+                                    try {
+                                        const res = await fetch(`/api/admin/students/${item.id}`, { method: "PATCH" });
+                                        const data = await res.json();
+                                        if (res.ok) {
+                                            showToast("success", "Device Reset", `Device lock reset for ${item.name}.`);
+                                            fetchStudents();
+                                        } else {
+                                            showToast("error", "Reset Failed", data.error || "Failed to reset device.");
+                                        }
+                                    } catch {
+                                        showToast("error", "Error", "Failed to reset device lock.");
+                                    }
+                                }}
+                                className="p-1.5 rounded-lg text-slate-500 hover:bg-amber-50 hover:text-amber-600 transition-colors cursor-pointer"
+                                title="Reset Bound Device (Allow New Phone Registration)"
+                            >
+                                <DeviceMobile className="w-4 h-4 text-amber-600" />
                             </button>
                             <button
                                 type="button"
