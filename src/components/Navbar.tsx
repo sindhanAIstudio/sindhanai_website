@@ -17,14 +17,15 @@ import {
     GraduationCap,
     Code,
     ArrowRight,
-    Star,
     CheckCircle,
 } from "@phosphor-icons/react";
+import SindhanAiLogo from "@/components/SindhanAiLogo";
 
 export default function Navbar() {
     const pathname = usePathname();
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [activeCategory, setActiveCategory] = useState<"ai-technology" | "training" | "software-solutions">("ai-technology");
     const megaTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -42,7 +43,7 @@ export default function Navbar() {
 
     useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 40) {
+            if (window.scrollY > 30) {
                 setIsScrolled(true);
             } else {
                 setIsScrolled(false);
@@ -54,14 +55,21 @@ export default function Navbar() {
 
     const navLinks = [
         { name: "Home", href: "/" },
-        { name: "Services", href: "/services", isMega: true },
         { name: "About", href: "/about" },
+        { name: "Services", href: "/services", isMega: true },
         { name: "News & Events", href: "/news-events" },
-        { name: "Team", href: "/team" },
-        { name: "Contact", href: "/contact" },
+        {
+            name: "Teams",
+            href: "/team",
+            hasDropdown: true,
+            dropdownItems: [
+                { name: "Industry Experts", href: "", isUnlinked: true },
+                { name: "Scope", href: "/team" },
+            ],
+        },
+        { name: "Contact", href: "", isUnlinked: true },
     ];
 
-    // Mega menu interactive content definitions matching SindhanAI design
     const megaMenuData = {
         "ai-technology": {
             title: "AI and Technology",
@@ -124,14 +132,13 @@ export default function Navbar() {
     };
 
     const currentData = megaMenuData[activeCategory];
-
     const isHomePage = pathname === "/";
 
     return (
-        <div className={`w-full z-50 transition-all duration-300 ${isScrolled ? "fixed top-0 left-0 right-0 pointer-events-none" : isHomePage ? "relative bg-white" : "absolute top-0 left-0 right-0 bg-transparent pointer-events-auto"}`}>
+        <div className={`w-full z-50 transition-all duration-300 ${isScrolled ? "fixed top-0 left-0 right-0 pointer-events-none" : isHomePage ? "md:relative md:bg-white absolute top-0 left-0 right-0 bg-transparent pointer-events-auto" : "absolute top-0 left-0 right-0 bg-transparent pointer-events-auto"}`}>
 
-            {/* 1. Top Header Bar (SindhanAI Style) */}
-            <div className={`hidden md:flex items-center justify-between max-w-[1360px] mx-auto py-2 px-4 sm:px-6 lg:px-8 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full max-h-0 py-0 overflow-hidden border-transparent pointer-events-none" : isHomePage ? "opacity-100 translate-y-0 max-h-12 border-slate-100/60 bg-white pointer-events-auto" : "opacity-100 translate-y-0 max-h-12 border-slate-900/10 bg-transparent pointer-events-auto"}`}>
+            {/* 1. Desktop Top Bar */}
+            <div className={`hidden md:flex items-center justify-between max-w-[1360px] mx-auto py-2 px-0 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full max-h-0 py-0 overflow-hidden border-transparent pointer-events-none" : isHomePage ? "opacity-100 translate-y-0 max-h-12 border-slate-100/60 bg-white pointer-events-auto" : "opacity-100 translate-y-0 max-h-12 border-slate-900/10 bg-transparent pointer-events-auto"}`}>
                 <div className="flex items-center gap-3">
                     <span className="text-slate-700 font-semibold text-[14px]">Follow us on</span>
                     <div className="flex items-center gap-3 text-slate-900">
@@ -150,35 +157,24 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* 2. Main Floating Sticky Navbar */}
-            <div className={`w-full transition-all duration-300 ease-in-out pointer-events-auto ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6 z-50" : isHomePage ? "relative bg-white px-4 sm:px-6 lg:px-8" : "relative bg-transparent px-4 sm:px-6 lg:px-8"}`}>
+            {/* 2. Main Sticky Navbar Bar (White Glossy Rounded Floating Container on Mobile) */}
+            <div className={`w-full transition-all duration-300 ease-in-out pointer-events-auto ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6 z-50" : "relative bg-transparent px-4 sm:px-6 lg:px-8 py-3"}`}>
                 <header
                     className={`max-w-[1360px] mx-auto flex items-center justify-between transition-all duration-300 ease-in-out ${isScrolled
-                        ? "bg-white/85 backdrop-saturate-[1.8] backdrop-blur-[20px] border border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-[16px] px-6 h-[65px]"
-                        : isHomePage
-                            ? "border border-transparent py-3.5 bg-white"
-                            : "border border-transparent py-3.5 bg-transparent"
+                        ? "bg-white/85 backdrop-saturate-[1.8] backdrop-blur-[20px] border border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-[20px] px-5 sm:px-6 h-[62px]"
+                        : "bg-white/95 md:bg-transparent backdrop-saturate-[1.8] md:backdrop-blur-none backdrop-blur-[20px] border border-slate-200/50 md:border-transparent shadow-md md:shadow-none rounded-[22px] md:rounded-none px-5 md:px-0 h-[60px] md:h-auto"
                         }`}
                 >
 
-                    {/* Left Group: Capital Text Logo + Vertical Separator + Left-Aligned Nav Menu */}
+                    {/* Left: Brand Logo + Nav Menu */}
                     <div className="flex items-center gap-4">
-
-                        <Link
-                            href="/"
-                            className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
-                        >
-                            <img
-                                src="/sindhanai-logo.png"
-                                alt="SindhanAI"
-                                className="w-auto h-5 sm:h-6 md:h-7 object-contain"
-                            />
+                        <Link href="/" className="flex items-center shrink-0 hover:opacity-90 transition-opacity">
+                            <SindhanAiLogo className="h-6 sm:h-7" />
                         </Link>
 
-                        {/* Vertical Separator Line */}
                         <span className="w-px h-6 bg-slate-300 mx-1 hidden md:inline-block"></span>
 
-                        {/* Left-Aligned Nav Items */}
+                        {/* Desktop Nav Items */}
                         <nav className="hidden md:flex items-center gap-1.5">
                             {navLinks.map((link) => {
                                 if (link.isMega) {
@@ -195,20 +191,15 @@ export default function Navbar() {
                                                     if (megaTimeoutRef.current) clearTimeout(megaTimeoutRef.current);
                                                     setMegaMenuOpen(!megaMenuOpen);
                                                 }}
-                                                style={{
-                                                    backgroundColor: isMegaActive ? "#0000001a" : undefined,
-                                                    paddingBlock: "calc(var(--spacing) * 2.5)",
-                                                }}
-                                                className={`px-4 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${isMegaActive
-                                                    ? "text-slate-950"
-                                                    : "text-slate-800 hover:text-slate-950 hover:bg-[#0000000d]"
+                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1 ${isMegaActive
+                                                    ? "text-slate-950 bg-black/10"
+                                                    : "text-slate-800 hover:text-slate-950 hover:bg-black/5"
                                                     }`}
                                             >
                                                 {link.name}
                                                 <CaretDown className={`w-4 h-4 transition-transform ${megaMenuOpen ? "rotate-180" : ""}`} weight="bold" />
                                             </button>
 
-                                            {/* SindhanAI AI Agency 30/70 Mega Menu Dropdown */}
                                             {megaMenuOpen && (
                                                 <div
                                                     onMouseEnter={handleMegaMouseEnter}
@@ -217,11 +208,10 @@ export default function Navbar() {
                                                 >
                                                     <div className="rounded-[28px] p-6 border border-slate-200/80 shadow-2xl bg-[#FAF8F5] grid grid-cols-12 gap-6">
 
-                                                        {/* Left Col (30% -> 4/12): Explore Sidebar List */}
                                                         <div className="col-span-4 flex flex-col justify-between space-y-4">
                                                             <div>
                                                                 <span className="text-[12px] font-bold text-slate-500 uppercase tracking-wider block mb-3 pl-1">
-                                                                    Explore
+                                                                    Explore Services
                                                                 </span>
 
                                                                 <div className="space-y-1.5">
@@ -241,7 +231,6 @@ export default function Navbar() {
                                                                                     : "text-slate-700 hover:bg-[#F2EFE9]"
                                                                                     }`}
                                                                             >
-                                                                                {/* Neutral Gray Icon Outer Container — SindhanAI style */}
                                                                                 <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-white text-slate-950 shadow-2xs" : "bg-slate-200/70 text-slate-700"}`}>
                                                                                     <CategoryIcon className="w-4 h-4" weight="bold" />
                                                                                 </div>
@@ -260,7 +249,6 @@ export default function Navbar() {
                                                             </div>
                                                         </div>
 
-                                                        {/* Right Col (70% -> 8/12): Rainbow Border Preview Card */}
                                                         <div className="col-span-8">
                                                             <div className="p-[2.5px] rounded-[24px] bg-gradient-to-tr from-amber-400 via-pink-400 to-indigo-500 shadow-lg h-full">
                                                                 <div className="bg-white rounded-[22px] p-7 h-full flex flex-col justify-between space-y-5">
@@ -283,7 +271,6 @@ export default function Navbar() {
                                                                         </div>
                                                                     </div>
 
-                                                                    {/* Non-clickable Sub-Items Grid */}
                                                                     <div className="grid grid-cols-2 gap-2 my-1">
                                                                         {currentData.subItems.map((subItem) => (
                                                                             <div
@@ -319,18 +306,54 @@ export default function Navbar() {
                                     );
                                 }
 
-                                const isActive = pathname === link.href;
+                                if (link.isUnlinked) {
+                                    return (
+                                        <span
+                                            key={link.name}
+                                            className="px-4 py-2.5 rounded-xl text-[15px] font-semibold text-slate-800 hover:text-slate-950 cursor-pointer transition-all"
+                                        >
+                                            {link.name}
+                                        </span>
+                                    );
+                                }
+
+                                if (link.hasDropdown) {
+                                    return (
+                                        <div key={link.name} className="relative group/team">
+                                            <Link
+                                                href={link.href}
+                                                className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all flex items-center gap-1.5 ${pathname === link.href
+                                                    ? "text-slate-950 bg-black/10 font-bold"
+                                                    : "text-slate-800 hover:text-slate-950 hover:bg-black/5"
+                                                    }`}
+                                            >
+                                                {link.name}
+                                                <CaretDown className="w-3.5 h-3.5 text-slate-600 group-hover/team:rotate-180 transition-transform" weight="bold" />
+                                            </Link>
+                                            <div className="absolute top-full left-0 pt-2 w-56 hidden group-hover/team:block z-50">
+                                                <div className="bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-xl rounded-2xl p-2 space-y-1">
+                                                    <div className="px-3 py-2 text-xs font-semibold text-slate-400 select-none cursor-default">
+                                                        Industry Experts
+                                                    </div>
+                                                    <Link
+                                                        href="/team"
+                                                        className="block px-3 py-2.5 rounded-xl text-sm font-bold text-slate-900 hover:bg-slate-100 transition-colors"
+                                                    >
+                                                        Scope
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+
                                 return (
                                     <Link
                                         key={link.name}
                                         href={link.href}
-                                        style={{
-                                            backgroundColor: isActive ? "#0000001a" : undefined,
-                                            paddingBlock: "calc(var(--spacing) * 2.5)",
-                                        }}
-                                        className={`px-4 rounded-xl text-[15px] font-semibold transition-all ${isActive
-                                            ? "text-slate-950"
-                                            : "text-slate-800 hover:text-slate-950 hover:bg-[#0000000d]"
+                                        className={`px-4 py-2.5 rounded-xl text-[15px] font-semibold transition-all ${pathname === link.href
+                                            ? "text-slate-950 bg-black/10 font-bold"
+                                            : "text-slate-800 hover:text-slate-950 hover:bg-black/5"
                                             }`}
                                     >
                                         {link.name}
@@ -340,19 +363,17 @@ export default function Navbar() {
                         </nav>
                     </div>
 
-                    {/* Right: Lang, Search & Get in Touch CTA */}
-                    <div className="flex items-center gap-4">
-                        <Link
-                            href="/contact"
-                            className="hidden sm:inline-flex bg-black hover:bg-slate-900 text-white font-bold text-[14px] px-5 py-2.5 rounded-xl transition-all items-center gap-2 shadow-xs"
-                        >
+                    {/* Right CTA */}
+                    <div className="flex items-center gap-3">
+                        <span className="hidden sm:inline-flex bg-black text-white font-bold text-[14px] px-5 py-2.5 rounded-xl items-center gap-2 shadow-xs cursor-default">
                             Get in Touch <ChatTeardropText className="w-4 h-4 fill-white" />
-                        </Link>
+                        </span>
 
-                        {/* Mobile Menu Toggle */}
+                        {/* Mobile Menu Toggle Button */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100"
+                            aria-label="Toggle Menu"
+                            className="md:hidden p-2 rounded-xl text-slate-800 hover:bg-slate-100 transition-colors"
                         >
                             {mobileMenuOpen ? <X className="w-6 h-6" /> : <List className="w-6 h-6" />}
                         </button>
@@ -361,27 +382,125 @@ export default function Navbar() {
                 </header>
             </div>
 
-            {/* Mobile Drawer */}
+            {/* Mobile Drawer (Clean Glassmorphism Floating Overlay) */}
             {mobileMenuOpen && (
-                <div className="md:hidden bg-white border-t border-slate-100 p-4 space-y-2">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            href={link.href}
+                <div className="md:hidden fixed inset-x-4 top-20 z-50 bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-2xl rounded-3xl p-6 space-y-4 pointer-events-auto max-h-[85vh] overflow-y-auto">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <SindhanAiLogo className="h-6" />
+                        <button
                             onClick={() => setMobileMenuOpen(false)}
-                            className="block px-4 py-2 rounded-xl text-sm font-bold text-slate-800 hover:bg-slate-50"
+                            className="p-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200"
                         >
-                            {link.name}
-                        </Link>
-                    ))}
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    <div className="space-y-1.5 pt-1">
+                        {navLinks.map((link) => {
+                            if (link.isMega) {
+                                return (
+                                    <div key={link.name} className="space-y-2">
+                                        <button
+                                            onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                                            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-base font-bold text-slate-900 bg-slate-50 hover:bg-slate-100"
+                                        >
+                                            <span>Services</span>
+                                            <CaretDown className={`w-4 h-4 text-slate-600 transition-transform ${mobileServicesOpen ? "rotate-180" : ""}`} weight="bold" />
+                                        </button>
+
+                                        {mobileServicesOpen && (
+                                            <div className="pl-3 pr-1 space-y-1.5 py-1">
+                                                <Link
+                                                    href="/services/ai-technology"
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-colors"
+                                                >
+                                                    <Cpu className="w-4.5 h-4.5 text-slate-700 shrink-0" weight="bold" />
+                                                    <div>
+                                                        <div className="text-slate-950 font-bold">AI & Technology</div>
+                                                        <div className="text-[11px] text-slate-500 font-medium">GenAI, ML & RAG Applications</div>
+                                                    </div>
+                                                </Link>
+
+                                                <Link
+                                                    href="/services/training"
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-colors"
+                                                >
+                                                    <GraduationCap className="w-4.5 h-4.5 text-slate-700 shrink-0" weight="bold" />
+                                                    <div>
+                                                        <div className="text-slate-950 font-bold">Training & Upskilling</div>
+                                                        <div className="text-[11px] text-slate-500 font-medium">Faculty & Student Training</div>
+                                                    </div>
+                                                </Link>
+
+                                                <Link
+                                                    href="/services/software-solutions"
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-900 font-bold text-sm hover:bg-slate-100 transition-colors"
+                                                >
+                                                    <Code className="w-4.5 h-4.5 text-slate-700 shrink-0" weight="bold" />
+                                                    <div>
+                                                        <div className="text-slate-950 font-bold">Software Solutions</div>
+                                                        <div className="text-[11px] text-slate-500 font-medium">Web, E-Commerce, CRM & Cloud</div>
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
+
+                            if (link.hasDropdown) {
+                                return (
+                                    <div key={link.name} className="space-y-1">
+                                        <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider select-none">
+                                            {link.name}
+                                        </div>
+                                        <div className="pl-3 pr-1 space-y-1">
+                                            <div className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-400 cursor-not-allowed">
+                                                Industry Experts (Upcoming)
+                                            </div>
+                                            <Link
+                                                href="/team"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-4 py-2.5 rounded-xl text-base font-bold text-slate-900 bg-slate-50 border border-slate-200/70 hover:bg-slate-100 transition-colors"
+                                            >
+                                                SCOPE Team
+                                            </Link>
+                                        </div>
+                                    </div>
+                                );
+                            }
+
+                            if (link.isUnlinked) {
+                                return (
+                                    <div
+                                        key={link.name}
+                                        className="px-4 py-3 rounded-2xl text-base font-bold text-slate-900 hover:bg-slate-50 cursor-pointer"
+                                    >
+                                        {link.name}
+                                    </div>
+                                );
+                            }
+
+                            return (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block px-4 py-3 rounded-2xl text-base font-bold text-slate-900 hover:bg-slate-50"
+                                >
+                                    {link.name}
+                                </Link>
+                            );
+                        })}
+                    </div>
+
                     <div className="pt-2">
-                        <Link
-                            href="/contact"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block w-full py-3 text-center text-xs font-bold text-white rounded-xl bg-black"
-                        >
+                        <span className="block w-full py-3.5 text-center text-sm font-bold text-white rounded-2xl bg-black shadow-md cursor-default">
                             Get in Touch
-                        </Link>
+                        </span>
                     </div>
                 </div>
             )}

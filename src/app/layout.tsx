@@ -19,9 +19,61 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SindhanAI — Applied AI and Technology Lab | KGISL SOI",
-  description: "Industry Experts, Faculty, and Students from KGISL AI and Generative AI labs delivering production-grade AI solutions, software engineering, and industry training.",
-  keywords: ["SindhanAI", "KGISL", "School of Innovation", "AI Lab", "Generative AI", "Data Science", "Training", "Coimbatore"],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://sindhanai.com"),
+  title: {
+    default: "SindhanAI — Applied AI & Technology Lab | KGiSL Institute of Technology",
+    template: "%s | SindhanAI"
+  },
+  description: "Industry Experts, SCOPE Faculty Mentors, and Students from KGiSL AI and Generative AI labs delivering production-grade AI solutions, software engineering, and hands-on industry training.",
+  keywords: [
+    "SindhanAI",
+    "SCOPE Faculty",
+    "KGiSL Institute of Technology",
+    "School of Programming Excellence",
+    "AI Lab",
+    "Generative AI",
+    "Data Science",
+    "Software Solutions",
+    "Tech Training",
+    "Coimbatore"
+  ],
+  authors: [{ name: "SindhanAI Team" }],
+  creator: "SindhanAI — KGiSL Institute of Technology",
+  publisher: "SindhanAI",
+  icons: {
+    icon: [
+      { url: "/sindhanai-icon.svg", type: "image/svg+xml" },
+      { url: "/sindhanai-logo.png", type: "image/png" }
+    ],
+    shortcut: "/sindhanai-icon.svg",
+    apple: "/sindhanai-icon.svg"
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://sindhanai.com",
+    siteName: "SindhanAI",
+    title: "SindhanAI — Applied AI & Technology Lab",
+    description: "Production-grade AI solutions, software engineering, and industry training from KGiSL Institute of Technology faculty and industry experts.",
+    images: [
+      {
+        url: "/sindhanai-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "SindhanAI Applied AI and Technology Lab"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SindhanAI — Applied AI & Technology Lab",
+    description: "Production-grade AI solutions, software engineering, and industry training.",
+    images: ["/sindhanai-logo.png"]
+  },
+  robots: {
+    index: true,
+    follow: true
+  }
 };
 
 export default function RootLayout({

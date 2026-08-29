@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="url(#bg-gradient)"/>
+  
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#03072E" />
+      <stop offset="50%" stop-color="#080D42" />
+      <stop offset="100%" stop-color="#0A1148" />
+    </linearGradient>
+
+    <linearGradient id="s-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052FF" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+
+    <linearGradient id="spark-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#A855F7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Styled "S" AI Symbol -->
+  <path d="M336 176C336 140.654 307.346 112 272 112H200C164.654 112 136 140.654 136 176C136 211.346 164.654 240 200 240H312C347.346 240 376 268.654 376 304C376 339.346 347.346 368 312 368H240C204.654 368 176 339.346 176 304" stroke="url(#s-gradient)" stroke-width="48" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Spark Star -->
+  <path d="M360 120L366 138L384 144L366 150L360 168L354 150L336 144L354 138L360 120Z" fill="url(#spark-gradient)" />
+</svg>

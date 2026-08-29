@@ -1,0 +1,27 @@
+<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sindhan-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#03072E" />
+      <stop offset="50%" stop-color="#080D42" />
+      <stop offset="100%" stop-color="#0A1148" />
+    </linearGradient>
+    <linearGradient id="ai-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0052FF" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#9033FF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sindhan Text -->
+  <text x="0" y="34" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-weight="900" font-size="32" letter-spacing="-0.03em" fill="url(#sindhan-gradient)">
+    Sindhan
+  </text>
+
+  <!-- AI Text -->
+  <text x="127" y="34" font-family="'Plus Jakarta Sans', 'Inter', system-ui, sans-serif" font-weight="900" font-size="32" letter-spacing="-0.03em" fill="url(#ai-gradient)">
+    AI
+  </text>
+
+  <!-- Spark Accent -->
+  <path d="M165 10L166.5 14.5L171 16L166.5 17.5L165 22L163.5 17.5L159 16L163.5 14.5L165 10Z" fill="#6366F1" />
+</svg>
