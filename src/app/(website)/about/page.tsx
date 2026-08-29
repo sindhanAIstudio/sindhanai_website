@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
@@ -25,6 +26,16 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+    title: "About Us — Bridging Industry Practice & Academic Innovation",
+    description: "Learn about SindhanAI — KGiSL's applied technology lab uniting industry professionals, SCOPE faculty experts, and student builders to solve real problems.",
+    openGraph: {
+        title: "About SindhanAI — Applied AI and Technology Lab",
+        description: "Bridging industry practice and academic innovation at KGiSL Institute of Technology.",
+        images: ["/sindhanai-logo.png"]
+    }
+};
 
 export default async function AboutPage() {
     const clientLogos = await prisma.clientLogo.findMany();

@@ -1,110 +1,623 @@
 "use client";
 
-import { useState } from "react";
-import { User, Briefcase, GraduationCap, Sparkle } from "@phosphor-icons/react";
-import BrandTicker from "@/components/BrandTicker";
+import { useState, useEffect } from "react";
+import {
+    GraduationCap,
+    ArrowRight,
+    X,
+    PlayCircle,
+    FileText,
+    EnvelopeSimple,
+    PhoneCall,
+    LinkedinLogo,
+    GithubLogo,
+    TwitterLogo,
+    Code,
+    Article,
+    SlackLogo,
+    Database,
+    Brain,
+    CaretLeft,
+    CaretRight,
+    CheckCircle,
+    MagnifyingGlass,
+    Funnel,
+} from "@phosphor-icons/react";
+import { TeamMember } from "@/data/teamData";
+import MeshGradientCanvas from "@/components/MeshGradientCanvas";
 import CTASection from "@/components/CTASection";
 
 interface TeamClientViewProps {
-    initialMembers: any[];
+    initialMembers: TeamMember[];
 }
 
 export default function TeamClientView({ initialMembers }: TeamClientViewProps) {
-    const [activeTab, setActiveTab] = useState("All");
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    const tabs = ["All", "Industry Professional", "Faculty", "Student", "SCOPE"];
-
-    const filteredMembers = initialMembers.filter((m) => {
-        if (activeTab === "All") return true;
-        if (activeTab === "SCOPE") return m.labGroup === "SCOPE";
-        return m.category === activeTab;
+    // Filter faculty members based on search input (Name, Role, Skills, Bio)
+    const filteredMembers = initialMembers.filter((member) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.toLowerCase().trim();
+        return (
+            member.name.toLowerCase().includes(q) ||
+            member.role.toLowerCase().includes(q) ||
+            member.skills.some((skill) => skill.toLowerCase().includes(q)) ||
+            (member.bio && member.bio.toLowerCase().includes(q))
+        );
     });
 
-    return (
-        <div className="w-full space-y-12 py-8 md:py-14">
+    // Disable body scroll when modal is open
+    useEffect(() => {
+        if (selectedIndex !== null) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "unset";
+        }
+        return () => {
+            document.body.style.overflow = "unset";
+        };
+    }, [selectedIndex]);
 
-            {/* SindhanAI Pastel Hero Banner */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[32px] p-8 md:p-14 space-y-6 relative overflow-hidden shadow-xl">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
-                        <Sparkle className="w-4 h-4 text-white" /> People & Roster
+    // Handle initial URL hash (#slug) on load and on hash change
+    useEffect(() => {
+        const syncHashWithModal = () => {
+            const hash = window.location.hash.replace("#", "").trim().toLowerCase();
+            if (hash) {
+                const index = initialMembers.findIndex(
+                    (m) =>
+                        m.slug.toLowerCase() === hash ||
+                        m.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === hash
+                );
+                if (index !== -1) {
+                    setSelectedIndex(index);
+                    return;
+                }
+            }
+        };
+
+        syncHashWithModal();
+        window.addEventListener("hashchange", syncHashWithModal);
+        return () => window.removeEventListener("hashchange", syncHashWithModal);
+    }, [initialMembers]);
+
+    const selectMember = (indexInFiltered: number | null) => {
+        if (indexInFiltered === null) {
+            setSelectedIndex(null);
+            if (window.location.hash) {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
+            return;
+        }
+
+        const targetMember = filteredMembers[indexInFiltered];
+        if (!targetMember) return;
+
+        const originalIndex = initialMembers.findIndex((m) => m.id === targetMember.id);
+        if (originalIndex !== -1) {
+            setSelectedIndex(originalIndex);
+            const targetHash = `#${targetMember.slug}`;
+            if (window.location.hash !== targetHash) {
+                window.location.hash = targetMember.slug;
+            }
+        }
+    };
+
+    const selectedMember = selectedIndex !== null ? initialMembers[selectedIndex] : null;
+
+    const handlePrev = () => {
+        if (selectedIndex === null) return;
+        const newIdx = selectedIndex === 0 ? initialMembers.length - 1 : selectedIndex - 1;
+        setSelectedIndex(newIdx);
+        const member = initialMembers[newIdx];
+        if (member) window.location.hash = member.slug;
+    };
+
+    const handleNext = () => {
+        if (selectedIndex === null) return;
+        const newIdx = selectedIndex === initialMembers.length - 1 ? 0 : selectedIndex + 1;
+        setSelectedIndex(newIdx);
+        const member = initialMembers[newIdx];
+        if (member) window.location.hash = member.slug;
+    };
+
+    const openLink = (url?: string) => {
+        if (!url || url === "-" || url === "") return;
+        window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    return (
+        <div className="w-full bg-white min-h-screen">
+
+            {/* ── HERO HEADER (AI-Technology Page Header Style) ─────────────── */}
+            <section className="relative w-full bg-[#f0f4f4] pt-32 sm:pt-40 lg:pt-44 pb-20 sm:pb-28 overflow-hidden flex flex-col justify-center border-b border-slate-200/80">
+                {/* Teal/Cyan Ambient Mesh Gradient */}
+                <div className="absolute inset-0 w-full h-full opacity-100 pointer-events-none">
+                    <MeshGradientCanvas
+                        colors={[
+                            [0.13, 0.78, 0.67, 0.10],   // teal
+                            [0.0, 0.55, 0.70, 0.08],   // cyan-blue
+                            [0.0, 0.0, 0.0, 0.06],     // dark subtle
+                            [0.07, 0.65, 0.60, 0.07],   // mint
+                        ]}
+                        distortion={1.0}
+                        swirl={0.8}
+                        grainMixer={0.0}
+                        grainOverlay={0.0}
+                        speed={0.8}
+                    />
+                </div>
+
+                {/* Bottom Fade Gradient */}
+                <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent via-white/50 to-white pointer-events-none z-[1]" />
+
+                <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
+                    {/* Badge Pill */}
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-teal-200/90 text-teal-800 text-xs font-bold uppercase tracking-wider backdrop-blur-md shadow-xs">
+                        <GraduationCap className="w-4 h-4 text-teal-600" weight="bold" />
+                        School of AIDS & GenAI
                     </div>
-                    <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-                        Our Team & Fellows
+
+                    {/* Main Title */}
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12] max-w-4xl mx-auto">
+                        SCOPE Faculties
                     </h1>
-                    <p className="text-base sm:text-xl text-white/90 max-w-3xl leading-relaxed font-medium">
-                        Industry practitioners, academic faculty, and student developers working together in applied technology labs.
+
+                    {/* Subtitle */}
+                    <p className="text-slate-600 text-base sm:text-lg md:text-xl max-w-3xl mx-auto font-medium leading-relaxed">
+                        Team SindhanAI brings together faculty from AD, GenAI and SCOPE to learn from each other, keep up with current technologies and industry practices, and turn that learning into useful teaching, projects, training, and solutions.
                     </p>
                 </div>
             </section>
 
-            {/* Filter Tabs */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-200">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all ${activeTab === tab
-                                ? "bg-black text-white shadow-md"
-                                : "bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300"
-                                }`}
-                        >
-                            {tab}
-                        </button>
-                    ))}
+            {/* ── FACULTY MEMBERS GRID & SEARCH ────────────────────────────────────────── */}
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-28 space-y-10">
+
+                {/* SEARCH INPUT & FILTER BAR */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs backdrop-blur-sm">
+                    {/* Search Field */}
+                    <div className="relative w-full sm:max-w-md">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <MagnifyingGlass className="w-4 h-4" weight="bold" />
+                        </div>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search faculty by name, role, or skill..."
+                            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all shadow-2xs"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery("")}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                            >
+                                <X className="w-3.5 h-3.5" weight="bold" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Member Count Indicator */}
+                    <div className="text-xs font-bold text-slate-600 flex items-center gap-2 self-start sm:self-center">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>Showing {filteredMembers.length} of {initialMembers.length} Faculty Mentors</span>
+                    </div>
                 </div>
+
+                {/* FACULTY GRID */}
+                {filteredMembers.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                        {filteredMembers.map((member, index) => (
+                            <div
+                                key={member.id}
+                                className="bg-white rounded-[20px] border border-slate-200/90 shadow-xs hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between space-y-6 group hover:-translate-y-1"
+                            >
+                                <div className="space-y-5">
+                                    {/* Member Header & Light Studio Background Frame */}
+                                    <div className="flex items-start justify-between gap-4">
+                                        <div className="relative shrink-0 p-1 bg-slate-100/80 rounded-2xl border border-slate-200 shadow-2xs">
+                                            <img
+                                                src={member.avatar || "/faculty_images/dummy_avatar.png"}
+                                                alt={member.name}
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0F172A&color=fff&size=200`;
+                                                }}
+                                                className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl object-cover bg-white group-hover:scale-105 transition-transform"
+                                            />
+                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-slate-950 border-2 border-white" />
+                                        </div>
+                                    </div>
+
+                                    {/* Name & Role */}
+                                    <div>
+                                        <h3 className="text-xl font-extrabold text-slate-950 leading-snug group-hover:text-slate-800 transition-colors">
+                                            {member.name}
+                                        </h3>
+                                        <p className="text-xs font-bold text-slate-500 mt-1">
+                                            {member.role}
+                                        </p>
+                                    </div>
+
+                                    {/* About Bio Snippet */}
+                                    <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3">
+                                        {member.bio}
+                                    </p>
+
+                                    {/* Skills Chips */}
+                                    <div className="flex flex-wrap gap-1.5 pt-1">
+                                        {member.skills.slice(0, 3).map((skill) => (
+                                            <span
+                                                key={skill}
+                                                className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200/60"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                        {member.skills.length > 3 && (
+                                            <span className="text-[11px] font-semibold px-2 py-1 rounded-lg bg-slate-100 text-slate-500">
+                                                +{member.skills.length - 3}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Action Button */}
+                                <div className="pt-3 border-t border-slate-100">
+                                    <button
+                                        type="button"
+                                        onClick={() => selectMember(index)}
+                                        className="w-full py-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs inline-flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
+                                    >
+                                        View Details <ArrowRight className="w-3.5 h-3.5" weight="bold" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    /* EMPTY STATE WHEN SEARCH HAS NO MATCHES */
+                    <div className="py-20 text-center space-y-4 bg-slate-50/60 rounded-3xl border border-dashed border-slate-300 p-8">
+                        <div className="w-14 h-14 rounded-full bg-slate-200/80 flex items-center justify-center mx-auto text-slate-500">
+                            <MagnifyingGlass className="w-6 h-6" weight="bold" />
+                        </div>
+                        <h3 className="text-lg font-extrabold text-slate-900">
+                            No faculty members found
+                        </h3>
+                        <p className="text-xs text-slate-500 max-w-sm mx-auto font-medium">
+                            We couldn't find any faculty members matching "{searchQuery}". Try searching by another name, role, or programming skill.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={() => setSearchQuery("")}
+                            className="px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+                        >
+                            Reset Search Filter
+                        </button>
+                    </div>
+                )}
             </section>
 
-            {/* Team Roster Grid */}
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredMembers.map((member) => (
-                        <div
-                            key={member.id}
-                            className="bg-white rounded-[24px] border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col justify-between space-y-4"
-                        >
-                            <div className="space-y-4">
-                                <div className="w-14 h-14 rounded-2xl bg-black text-white flex items-center justify-center font-extrabold text-base shadow-md">
-                                    {member.name
-                                        .split(" ")
-                                        .map((n: string) => n[0])
-                                        .join("")
-                                        .slice(0, 2)}
-                                </div>
+            {/* ── MONOCHROME EXTRA-LARGE FACULTY DETAIL MODAL ── */}
+            {selectedMember && selectedIndex !== null && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md animate-fadeIn"
+                    onClick={() => selectMember(null)}
+                >
+                    <div
+                        className="relative w-full max-w-4xl bg-white rounded-[32px] border border-slate-200 shadow-2xl overflow-hidden text-slate-900 max-h-[92vh] flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Clean Top Navigation Bar (Only Prev/Next Controls & Close Button) */}
+                        <div className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 shadow-xs shrink-0">
+                            {/* Previous / Next Navigation & Counter */}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handlePrev}
+                                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center gap-1 text-xs font-bold text-slate-800 transition-colors cursor-pointer"
+                                    title="Previous Profile"
+                                >
+                                    <CaretLeft className="w-4 h-4" weight="bold" />
+                                    <span>Previous</span>
+                                </button>
 
-                                <div>
-                                    <h3 className="text-lg font-extrabold text-slate-900 leading-snug">{member.name}</h3>
-                                    <p className="text-xs font-semibold text-slate-600 mt-0.5">{member.designation}</p>
-                                </div>
+                                <span className="text-xs font-extrabold text-slate-600 px-3 select-none">
+                                    Profile {selectedIndex + 1} of {initialMembers.length}
+                                </span>
 
-                                <div className="pt-3 border-t border-slate-100 space-y-2 text-xs text-slate-600">
-                                    <div className="flex items-center gap-2">
-                                        <Briefcase className="w-4 h-4 text-slate-400" />
-                                        <span>{member.domain}</span>
+                                <button
+                                    type="button"
+                                    onClick={handleNext}
+                                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center gap-1 text-xs font-bold text-slate-800 transition-colors cursor-pointer"
+                                    title="Next Profile"
+                                >
+                                    <span>Next</span>
+                                    <CaretRight className="w-4 h-4" weight="bold" />
+                                </button>
+                            </div>
+
+                            {/* Close Modal Button */}
+                            <button
+                                type="button"
+                                onClick={() => selectMember(null)}
+                                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-700 transition-colors cursor-pointer shrink-0"
+                                aria-label="Close modal"
+                            >
+                                <X className="w-4 h-4" weight="bold" />
+                            </button>
+                        </div>
+
+                        {/* SINGLE UNIFIED SCROLLABLE AREA (Gray Header + About Body scroll together) */}
+                        <div className="overflow-y-auto flex-1">
+                            {/* Modal Header Details (Gray Background) */}
+                            <div className="p-6 sm:p-8 bg-slate-50 border-b border-slate-200 space-y-6">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                                    {/* Extra-Large Profile Avatar in Modal */}
+                                    <div className="relative group shrink-0 p-1.5 bg-white rounded-3xl border border-slate-200 shadow-sm">
+                                        <img
+                                            src={selectedMember.avatar || "/faculty_images/dummy_avatar.png"}
+                                            alt={selectedMember.name}
+                                            onError={(e) => {
+                                                (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedMember.name)}&background=0F172A&color=fff&size=300`;
+                                            }}
+                                            className="w-36 h-36 sm:w-44 sm:h-44 rounded-2xl object-cover border border-slate-200"
+                                        />
+
+                                        {/* Action Badges Overlay (Play Video & Resume) */}
+                                        <div className="absolute -bottom-2 -right-2 flex items-center gap-1.5 z-10">
+                                            {/* Intro Video Button */}
+                                            {selectedMember.scopeData?.selfIntroVideo && selectedMember.scopeData.selfIntroVideo.startsWith("http") && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openLink(selectedMember.scopeData?.selfIntroVideo)}
+                                                    title="Watch Self Introduction Video"
+                                                    className="w-10 h-10 rounded-full bg-slate-950 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer border-2 border-white"
+                                                >
+                                                    <PlayCircle className="w-5.5 h-5.5 text-white" weight="fill" />
+                                                </button>
+                                            )}
+
+                                            {/* Resume / OnePage CV Button */}
+                                            {selectedMember.scopeData?.onePageCv && selectedMember.scopeData.onePageCv.startsWith("http") && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openLink(selectedMember.scopeData?.onePageCv)}
+                                                    title="View One-Page CV / Resume"
+                                                    className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer border-2 border-white"
+                                                >
+                                                    <FileText className="w-5 h-5 text-white" weight="bold" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <GraduationCap className="w-4 h-4 text-slate-400" />
-                                        <span>{member.labGroup}</span>
+
+                                    {/* Name, Role & Contact */}
+                                    <div className="space-y-3">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800 border border-slate-300">
+                                                SCOPE Team
+                                            </span>
+                                            {selectedMember.scopeData?.empId && (
+                                                <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-950 text-white">
+                                                    Emp ID: {selectedMember.scopeData.empId}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950">
+                                            {selectedMember.name}
+                                        </h2>
+
+                                        <p className="text-xs sm:text-sm font-bold text-slate-600">
+                                            {selectedMember.role}
+                                        </p>
+
+                                        {/* Direct Contact Links */}
+                                        <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-slate-600 font-semibold">
+                                            {selectedMember.email && (
+                                                <a
+                                                    href={`mailto:${selectedMember.email}`}
+                                                    className="inline-flex items-center gap-1.5 hover:text-slate-950 transition-colors"
+                                                >
+                                                    <EnvelopeSimple className="w-4 h-4 text-slate-500" weight="bold" />
+                                                    <span>{selectedMember.email}</span>
+                                                </a>
+                                            )}
+                                            {selectedMember.scopeData?.phone && (
+                                                <a
+                                                    href={`tel:${selectedMember.scopeData.phone}`}
+                                                    className="inline-flex items-center gap-1.5 hover:text-slate-950 transition-colors"
+                                                >
+                                                    <PhoneCall className="w-4 h-4 text-slate-500" weight="bold" />
+                                                    <span>{selectedMember.scopeData.phone}</span>
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* All Profiles & Social Links Directly Under Profile Header Section */}
+                                <div className="pt-3 border-t border-slate-200/80 space-y-2.5">
+                                    <h4 className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                        Profiles & Social Links
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedMember.social.linkedin && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.social.linkedin)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <LinkedinLogo className="w-4 h-4 text-slate-800" weight="bold" /> LinkedIn
+                                            </button>
+                                        )}
+                                        {selectedMember.social.github && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.social.github)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <GithubLogo className="w-4 h-4 text-slate-800" weight="bold" /> GitHub
+                                            </button>
+                                        )}
+                                        {selectedMember.social.twitter && selectedMember.social.twitter !== "-" && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.social.twitter)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <TwitterLogo className="w-4 h-4 text-slate-800" weight="bold" /> X (Twitter)
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.leetcode && selectedMember.scopeData.leetcode.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.leetcode)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <Code className="w-4 h-4 text-slate-800" weight="bold" /> LeetCode
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.hackerrank && selectedMember.scopeData.hackerrank.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.hackerrank)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <Code className="w-4 h-4 text-slate-800" weight="bold" /> HackerRank
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.medium && selectedMember.scopeData.medium.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.medium)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <Article className="w-4 h-4 text-slate-800" weight="bold" /> Medium
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.slack && selectedMember.scopeData.slack.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.slack)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <SlackLogo className="w-4 h-4 text-slate-800" weight="bold" /> Slack
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.kaggle && selectedMember.scopeData.kaggle.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.kaggle)}
+                                                className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold inline-flex items-center gap-1.5 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
+                                            >
+                                                <Database className="w-4 h-4 text-slate-800" weight="bold" /> Kaggle
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-2">
-                                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700">
-                                    {member.category}
-                                </span>
+                            {/* Modal Content Area */}
+                            <div className="p-6 sm:p-8 space-y-6">
+                                {/* Quick Action CV / Intro Video Buttons if present */}
+                                {(selectedMember.scopeData?.selfIntroVideo || selectedMember.scopeData?.onePageCv) && (
+                                    <div className="flex flex-wrap items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                        <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Faculty Assets:</span>
+                                        {selectedMember.scopeData?.onePageCv && selectedMember.scopeData.onePageCv.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.onePageCv)}
+                                                className="px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                                            >
+                                                <FileText className="w-4 h-4" weight="bold" /> View One-Page CV
+                                            </button>
+                                        )}
+                                        {selectedMember.scopeData?.selfIntroVideo && selectedMember.scopeData.selfIntroVideo.startsWith("http") && (
+                                            <button
+                                                type="button"
+                                                onClick={() => openLink(selectedMember.scopeData?.selfIntroVideo)}
+                                                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs inline-flex items-center gap-2 transition-all cursor-pointer shadow-xs"
+                                            >
+                                                <PlayCircle className="w-4 h-4 text-white" weight="fill" /> Watch Self Intro Video
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* About Section */}
+                                <div className="space-y-2">
+                                    <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                                        About & Professional Overview
+                                    </h4>
+                                    <p className="text-sm text-slate-700 leading-relaxed font-medium">
+                                        {selectedMember.fullBio || selectedMember.bio}
+                                    </p>
+                                </div>
+
+                                {/* Technical & Teaching Experience Grid */}
+                                {selectedMember.scopeData && (
+                                    <div className="space-y-3 pt-2">
+                                        <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                                            Experience & Technical Proficiency
+                                        </h4>
+                                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                                <span className="block text-[11px] font-bold text-slate-500">Work Experience</span>
+                                                <span className="text-sm font-extrabold text-slate-900">{selectedMember.scopeData.workExperience || "N/A"}</span>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                                <span className="block text-[11px] font-bold text-slate-500">Python</span>
+                                                <span className="text-sm font-extrabold text-slate-900">{selectedMember.scopeData.pythonExperience || "-"}</span>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                                <span className="block text-[11px] font-bold text-slate-500">C Programming</span>
+                                                <span className="text-sm font-extrabold text-slate-900">{selectedMember.scopeData.cProgrammingExperience || "-"}</span>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                                <span className="block text-[11px] font-bold text-slate-500">DSA / Design Thinking</span>
+                                                <span className="text-sm font-extrabold text-slate-900">{selectedMember.scopeData.dsaDesignThinkingExperience || "-"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                    ))}
+
+                        {/* Modal Footer with Previous / Next Controls */}
+                        <div className="p-4 sm:p-6 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handlePrev}
+                                    className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-100 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                    <CaretLeft className="w-4 h-4" weight="bold" /> Previous
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleNext}
+                                    className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 font-bold text-xs hover:bg-slate-100 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                    Next <CaretRight className="w-4 h-4" weight="bold" />
+                                </button>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => selectMember(null)}
+                                className="px-6 py-2.5 rounded-xl bg-slate-950 text-white font-bold text-xs hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
+                                Close Window
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </section>
+            )}
 
-            {/* Global Footer Callouts */}
-            <BrandTicker />
+            {/* <BrandTicker /> */}
             <CTASection />
-
         </div>
     );
 }
-

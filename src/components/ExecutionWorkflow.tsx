@@ -132,8 +132,8 @@ export default function ExecutionWorkflow() {
                     <div className="max-w-3xl space-y-2">
                         {/* Main Headline */}
                         <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-slate-950 tracking-tight leading-[1.12]">
-                             Structured execution <br className="hidden sm:inline" />
-                                from concept to delivery.
+                            Structured execution <br className="hidden sm:inline" />
+                            from concept to delivery.
                         </h2>
                         {/* Light Grey Sub-text */}
                         <p className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-[#949494] tracking-tight leading-[1.2]">
@@ -160,41 +160,38 @@ export default function ExecutionWorkflow() {
                         </div>
                     </FadeIn>
 
-                    {/* Horizontal 4-Stage Grid with Greyish Glassmorphism */}
+                    {/* Horizontal 4-Stage Grid with Glossy Glassmorphism */}
                     <FadeIn delay={150}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/[0.08] divide-y md:divide-y-0 md:divide-x divide-white/[0.08] bg-white/[0.02] backdrop-blur-xl shadow-2xl">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                             {teamWorkflow.map((step) => {
                                 const IconComponent = step.icon;
                                 return (
                                     <div
                                         key={step.num}
-                                        className="group relative p-8 sm:p-10 flex flex-col justify-between min-h-[280px] sm:min-h-[320px] bg-gradient-to-b from-white/[0.03] to-transparent hover:from-white/[0.07] hover:to-white/[0.02] backdrop-blur-md transition-all duration-300"
+                                        className="group relative p-8 sm:p-9 flex flex-col justify-between min-h-[280px] sm:min-h-[310px] rounded-3xl bg-white/[0.08] backdrop-blur-2xl border border-white/[0.18] shadow-xl shadow-black/30 hover:bg-white/[0.15] hover:border-white/[0.32] hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
                                     >
-                                        {/* Top Row: Step number & subtle monochromatic icon */}
+                                        {/* Top Row: Step number & subtle icon */}
                                         <div className="flex items-center justify-between">
-                                            <span className="text-base sm:text-lg font-medium tracking-widest text-[#777777] group-hover:text-[#F5F5F5] transition-colors duration-300">
+                                            <span className="text-base sm:text-lg font-bold tracking-widest text-slate-300 group-hover:text-white transition-colors duration-300">
                                                 {step.num}
                                             </span>
-                                            <IconComponent
-                                                className="w-6 h-6 text-[#777777] group-hover:text-[#F5F5F5] group-hover:scale-110 transition-all duration-300"
-                                                weight="light"
-                                            />
+                                            <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-slate-200 group-hover:bg-white/20 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-sm">
+                                                <IconComponent className="w-5 h-5" weight="bold" />
+                                            </div>
                                         </div>
 
                                         {/* Content */}
-                                        <div className="space-y-3 pt-12">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="text-xl sm:text-2xl font-medium tracking-wide text-[#F5F5F5] group-hover:translate-x-1 transition-transform duration-300">
-                                                    {step.title}
-                                                </h4>
-                                            </div>
-                                            <p className="text-sm sm:text-base text-[#9A9A9A] group-hover:text-[#D4D4D4] leading-relaxed transition-colors duration-300">
+                                        <div className="space-y-3 pt-8">
+                                            <h4 className="text-xl sm:text-2xl font-bold tracking-wide text-white group-hover:translate-x-1 transition-transform duration-300">
+                                                {step.title}
+                                            </h4>
+                                            <p className="text-sm sm:text-base text-slate-300 group-hover:text-white leading-relaxed font-normal transition-colors duration-300">
                                                 {step.description}
                                             </p>
                                         </div>
 
-                                        {/* Subtle animated bottom line indicator */}
-                                        <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-white/70 transition-all duration-500 ease-out group-hover:w-full" />
+                                        {/* Animated bottom glow indicator */}
+                                        <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-500 ease-out group-hover:w-full" />
                                     </div>
                                 );
                             })}
@@ -263,28 +260,28 @@ export default function ExecutionWorkflow() {
                                                         <div className="w-2.5 h-2.5 rounded-full bg-white/40 group-hover:bg-white transition-colors duration-300" />
                                                     </div>
 
-                                                    {/* Glassmorphic Stage Card */}
-                                                    <div className="flex-1 p-7 sm:p-9 rounded-2xl border border-white/[0.08] group-hover:border-white/[0.18] bg-gradient-to-b from-white/[0.04] to-white/[0.01] hover:from-white/[0.07] hover:to-white/[0.03] backdrop-blur-xl shadow-2xl transition-all duration-300 space-y-4">
-                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+                                                    {/* Glossy Glassmorphic Stage Card */}
+                                                    <div className="flex-1 p-7 sm:p-9 rounded-3xl border border-white/[0.18] bg-white/[0.08] backdrop-blur-2xl hover:bg-white/[0.15] hover:border-white/[0.32] shadow-xl shadow-black/30 hover:shadow-2xl transition-all duration-300 space-y-4">
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
                                                             <div className="flex items-center gap-3.5">
-                                                                <span className="text-xs sm:text-sm font-semibold tracking-widest text-[#888888] group-hover:text-[#B5B5B5] transition-colors">
+                                                                <span className="text-xs sm:text-sm font-bold tracking-widest text-slate-300 group-hover:text-white transition-colors">
                                                                     STAGE {stage.num}
                                                                 </span>
-                                                                <span className="text-white/20 hidden sm:inline">/</span>
-                                                                <h4 className="text-xl sm:text-2xl font-medium tracking-tight text-[#F5F5F5] group-hover:translate-x-0.5 transition-transform duration-200">
+                                                                <span className="text-white/30 hidden sm:inline">/</span>
+                                                                <h4 className="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:translate-x-0.5 transition-transform duration-200">
                                                                     {stage.title}
                                                                 </h4>
                                                             </div>
-                                                            <div className="flex items-center gap-2 text-[#777777] group-hover:text-[#F5F5F5] transition-colors">
-                                                                <IconComponent className="w-6 h-6" weight="light" />
+                                                            <div className="flex items-center gap-2 text-slate-300 group-hover:text-white transition-colors">
+                                                                <IconComponent className="w-6 h-6" weight="bold" />
                                                             </div>
                                                         </div>
 
                                                         <div className="space-y-2.5">
-                                                            <p className="text-base sm:text-lg font-normal text-[#EDEDED] leading-relaxed">
+                                                            <p className="text-base sm:text-lg font-semibold text-slate-100 leading-relaxed">
                                                                 {stage.description}
                                                             </p>
-                                                            <p className="text-sm sm:text-[15px] text-[#9A9A9A] leading-relaxed group-hover:text-[#BBBBBB] transition-colors">
+                                                            <p className="text-sm sm:text-[15px] text-slate-300 leading-relaxed group-hover:text-white transition-colors">
                                                                 {stage.detail}
                                                             </p>
                                                         </div>

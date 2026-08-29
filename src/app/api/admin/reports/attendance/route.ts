@@ -18,10 +18,24 @@ export async function GET(req: Request) {
         const page = parseInt(searchParams.get("page") || "1", 10);
         const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-        // Date Range Filters (Default to Today's Local Date)
-        const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
-        const startDate = searchParams.get("startDate") || todayStr;
-        const endDate = searchParams.get("endDate") || todayStr;
+        // Helper to normalize date string (e.g. DD-MM-YYYY or YYYY-MM-DD -> YYYY-MM-DD)
+        const normalizeDateStr = (input?: string | null): string | undefined => {
+            if (!input || !input.trim()) return undefined;
+            const clean = input.trim();
+            if (/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/.test(clean)) {
+                const parts = clean.split(/[-\/]/);
+                return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+            }
+            if (/^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/.test(clean)) {
+                const parts = clean.split(/[-\/]/);
+                return `${parts[0]}-${parts[1].padStart(2, "0")}-${parts[2].padStart(2, "0")}`;
+            }
+            return clean;
+        };
+
+        // Date Range Filters (Optional — Cumulative by default if empty)
+        const startDate = normalizeDateStr(searchParams.get("startDate"));
+        const endDate = normalizeDateStr(searchParams.get("endDate"));
 
         // Fetch current user details from DB to check domain/department association
         const currentUser = await (prisma as any).user.findUnique({
@@ -79,6 +93,17 @@ export async function GET(req: Request) {
             return `${year}-${month}-${day}`;
         };
 
+        // Helper to check if a record scan timestamp is at or after 4:30 PM (16:30 local time)
+        const isAfter430PM = (rec: any): boolean => {
+            if (rec.category === "SPECIAL_ACTIVITY") return true;
+            const scanTime = rec.inTime || rec.scannedAt || rec.createdAt;
+            if (!scanTime) return false;
+            const d = new Date(scanTime);
+            const hours = d.getHours();
+            const minutes = d.getMinutes();
+            return hours > 16 || (hours === 16 && minutes >= 30);
+        };
+
         // 2. Fetch classroom sessions with attendance records
         const classroomSessions = await (prisma as any).classroomSession.findMany({
             include: {
@@ -92,78 +117,103 @@ export async function GET(req: Request) {
         });
         const holidayDateSet = new Set(holidays.map((h: any) => h.date));
 
-        // 4. Filter sessions strictly within [startDate, endDate] & identify valid dates per category
-        const filteredSessions = classroomSessions.filter((s: any) => {
-            const dateStr = toLocalDateString(s.activeFrom);
-            return dateStr >= startDate && dateStr <= endDate;
-        });
+        // 4. Map valid dates and categorize based on actual record/session timestamps within [startDate, endDate]
+        const regularValidDatesSet = new Set<string>();
+        const specialValidDatesSet = new Set<string>();
+        const eventValidDatesSet = new Set<string>();
 
-        const dateSessionMap = new Map<string, typeof classroomSessions>();
-        filteredSessions.forEach((s: any) => {
-            const dateStr = toLocalDateString(s.activeFrom);
-            if (!dateSessionMap.has(dateStr)) {
-                dateSessionMap.set(dateStr, []);
+        classroomSessions.forEach((s: any) => {
+            const sessDate = toLocalDateString(s.activeFrom);
+            const isSessAfter430 = s.activeFrom && isAfter430PM({ inTime: s.activeFrom });
+
+            // Check session date
+            if (!startDate || sessDate >= startDate) {
+                if (!endDate || sessDate <= endDate) {
+                    const dateObj = new Date(sessDate);
+                    const isSunday = dateObj.getDay() === 0;
+                    const isHoliday = holidayDateSet.has(sessDate);
+
+                    if (!isSunday && !isHoliday) {
+                        if (s.sessionType === "EVENT") {
+                            eventValidDatesSet.add(sessDate);
+                        } else if (s.sessionType === "SPECIAL_ACTIVITY" || isSessAfter430) {
+                            specialValidDatesSet.add(sessDate);
+                        } else {
+                            regularValidDatesSet.add(sessDate);
+                        }
+                    }
+                }
             }
-            dateSessionMap.get(dateStr)!.push(s);
-        });
 
-        const regularValidDates: string[] = [];
-        const specialValidDates: string[] = [];
-        const eventValidDates: string[] = [];
+            // Also check individual attendance record timestamps (in case scans took place on a date inside range)
+            s.attendanceRecords.forEach((rec: any) => {
+                const recDate = toLocalDateString(rec.inTime || rec.scannedAt || rec.createdAt || s.activeFrom);
+                if (!startDate || recDate >= startDate) {
+                    if (!endDate || recDate <= endDate) {
+                        const dateObj = new Date(recDate);
+                        const isSunday = dateObj.getDay() === 0;
+                        const isHoliday = holidayDateSet.has(recDate);
 
-        dateSessionMap.forEach((sessionsOnDate, dateStr) => {
-            const dateObj = new Date(dateStr);
-            const isSunday = dateObj.getDay() === 0;
-            const isHoliday = holidayDateSet.has(dateStr);
-
-            if (!isSunday && !isHoliday) {
-                const regSessions = sessionsOnDate.filter((s: any) => !s.sessionType || s.sessionType === "REGULAR");
-                const specSessions = sessionsOnDate.filter((s: any) => s.sessionType === "SPECIAL_ACTIVITY");
-                const evtSessions = sessionsOnDate.filter((s: any) => s.sessionType === "EVENT");
-
-                if (regSessions.length > 0) regularValidDates.push(dateStr);
-                if (specSessions.length > 0) specialValidDates.push(dateStr);
-                if (evtSessions.length > 0) eventValidDates.push(dateStr);
-            }
-        });
-
-        const totalRegularDays = regularValidDates.length || (startDate === endDate ? 1 : 1);
-        const totalSpecialDays = specialValidDates.length || (startDate === endDate ? 1 : 1);
-        const totalEventDays = eventValidDates.length || (startDate === endDate ? 1 : 1);
-
-        // 5. Calculate attendance per student with distinct category percentages
-        const studentReports = students.map((student: any) => {
-            let regularAttendedDays = 0;
-            let specialActivityAttendedDays = 0;
-            let eventAttendedDays = 0;
-
-            filteredSessions.forEach((sess: any) => {
-                const sessCategory = sess.sessionType || "REGULAR";
-                const isAttended = sess.attendanceRecords.some(
-                    (rec: any) => rec.studentId === student.id && (rec.status === "PRESENT" || rec.status === "VERIFIED")
-                );
-
-                if (isAttended) {
-                    if (sessCategory === "SPECIAL_ACTIVITY") {
-                        specialActivityAttendedDays += 1;
-                    } else if (sessCategory === "EVENT") {
-                        eventAttendedDays += 1;
-                    } else {
-                        regularAttendedDays += 1;
+                        if (!isSunday && !isHoliday) {
+                            const isScanAfter430 = isAfter430PM(rec);
+                            if (rec.category === "EVENT" || s.sessionType === "EVENT") {
+                                eventValidDatesSet.add(recDate);
+                            } else if (rec.category === "SPECIAL_ACTIVITY" || isScanAfter430 || s.sessionType === "SPECIAL_ACTIVITY" || isSessAfter430) {
+                                specialValidDatesSet.add(recDate);
+                            } else {
+                                regularValidDatesSet.add(recDate);
+                            }
+                        }
                     }
                 }
             });
+        });
+
+        const totalRegularDays = regularValidDatesSet.size;
+        const totalSpecialDays = specialValidDatesSet.size;
+        const totalEventDays = eventValidDatesSet.size;
+
+        // 5. Calculate attendance per student with record-level date matching
+        const studentReports = students.map((student: any) => {
+            const regularAttendedDates = new Set<string>();
+            const specialAttendedDates = new Set<string>();
+            const eventAttendedDates = new Set<string>();
+
+            classroomSessions.forEach((sess: any) => {
+                const studentRecords = sess.attendanceRecords.filter(
+                    (rec: any) => rec.studentId === student.id && (rec.status === "PRESENT" || rec.status === "VERIFIED")
+                );
+
+                studentRecords.forEach((rec: any) => {
+                    const recDate = toLocalDateString(rec.inTime || rec.scannedAt || rec.createdAt || sess.activeFrom);
+                    const isWithinStart = !startDate || recDate >= startDate;
+                    const isWithinEnd = !endDate || recDate <= endDate;
+
+                    if (isWithinStart && isWithinEnd) {
+                        const isScanAfter430 = isAfter430PM(rec);
+                        const isSessAfter430 = sess.activeFrom && isAfter430PM({ inTime: sess.activeFrom });
+
+                        if (rec.category === "EVENT" || sess.sessionType === "EVENT") {
+                            eventAttendedDates.add(recDate);
+                        } else if (rec.category === "SPECIAL_ACTIVITY" || isScanAfter430 || isSessAfter430 || sess.sessionType === "SPECIAL_ACTIVITY") {
+                            specialAttendedDates.add(recDate);
+                        } else {
+                            regularAttendedDates.add(recDate);
+                        }
+                    }
+                });
+            });
+
+            const regularAttendedDays = regularAttendedDates.size;
+            const specialActivityAttendedDays = specialAttendedDates.size;
+            const eventAttendedDays = eventAttendedDates.size;
 
             // Primary Percentage is strictly REGULAR class attendance
-            const regularPercentage = Math.min(100, Math.round((regularAttendedDays / totalRegularDays) * 100));
-            const specialActivityPercentage = totalSpecialDays > 0 && specialActivityAttendedDays > 0
-                ? Math.min(100, Math.round((specialActivityAttendedDays / totalSpecialDays) * 100))
-                : 0;
-            const eventPercentage = totalEventDays > 0 && eventAttendedDays > 0
-                ? Math.min(100, Math.round((eventAttendedDays / totalEventDays) * 100))
-                : 0;
+            const regularPercentage = totalRegularDays > 0 ? Math.min(100, Math.round((regularAttendedDays / totalRegularDays) * 100)) : 0;
+            const specialActivityPercentage = totalSpecialDays > 0 ? Math.min(100, Math.round((specialActivityAttendedDays / totalSpecialDays) * 100)) : 0;
+            const eventPercentage = totalEventDays > 0 ? Math.min(100, Math.round((eventAttendedDays / totalEventDays) * 100)) : 0;
 
-            const isDefaulter = regularPercentage < 75;
+            const isDefaulter = totalRegularDays > 0 ? regularPercentage < 75 : false;
 
             return {
                 student,

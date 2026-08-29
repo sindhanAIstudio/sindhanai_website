@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Clock, EnvelopeSimple, MapPin, CaretRight, ArrowUp, FacebookLogo, XLogo, InstagramLogo, DribbbleLogo, YoutubeLogo } from "@phosphor-icons/react";
+import SindhanAiLogo from "@/components/SindhanAiLogo";
 
 export default function Footer() {
     const [showTop, setShowTop] = useState(false);
@@ -21,16 +22,11 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-14 pb-14 border-b border-slate-200">
                     <div className="md:col-span-4 space-y-5">
                         <div className="flex items-center">
-                            {/* Logo Place holder */}
                             <Link
                                 href="/"
                                 className="flex items-center shrink-0 hover:opacity-90 transition-opacity"
                             >
-                                <img
-                                    src="/sindhanai-logo.png"
-                                    alt="SindhanAI"
-                                    className="w-auto h-8 sm:h-10 md:h-12 object-contain"
-                                />
+                                <SindhanAiLogo className="h-8 sm:h-9" />
                             </Link>
                         </div>
 
@@ -53,7 +49,7 @@ export default function Footer() {
                     </div>
 
                     <div className="md:col-span-3 space-y-4">
-                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Product</h4>
+                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Services</h4>
                         <ul className="space-y-2.5">
                             {[
                                 { name: "AI & Technology", href: "/services/ai-technology" },
@@ -61,10 +57,10 @@ export default function Footer() {
                                 { name: "Training & Up-Skilling", href: "/services/training" }
                             ].map((item) => (
                                 <li key={item.name}>
-                                    <a href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
+                                    <Link href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
                                         <span>{item.name}</span>
                                         <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                                    </a>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
@@ -74,17 +70,23 @@ export default function Footer() {
                         <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Menu</h4>
                         <ul className="space-y-2.5">
                             {[
-                                { label: "Home", href: "/" },
-                                { label: "About", href: "/about" },
-                                { label: "Services", href: "/services" },
-                                { label: "Team", href: "/team" },
-                                { label: "Contact", href: "/contact" }
+                                { label: "Home", href: "/", isUnlinked: false },
+                                { label: "About", href: "/about", isUnlinked: false },
+                                { label: "Services", href: "/services", isUnlinked: false },
+                                { label: "Team", href: "/team", isUnlinked: false },
+                                { label: "Contact", href: "", isUnlinked: true }
                             ].map((item) => (
                                 <li key={item.label}>
-                                    <a href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
-                                        <span>{item.label}</span>
-                                        <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                                    </a>
+                                    {item.isUnlinked ? (
+                                        <span className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors cursor-pointer">
+                                            <span>{item.label}</span>
+                                        </span>
+                                    ) : (
+                                        <Link href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
+                                            <span>{item.label}</span>
+                                            <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -100,8 +102,8 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
                                 <EnvelopeSimple className="w-4 h-4 text-slate-900 shrink-0 mt-0.5" weight="bold" />
-                                <a href="mailto:contact@sindhanai.com" className="hover:text-slate-950 transition-colors">
-                                    Contact us at contact@sindhanai.com
+                                <a href="mailto:sindhanai@kgisl.ac.in" className="hover:text-slate-950 transition-colors">
+                                    Contact us at sindhanai@kgisl.ac.in
                                 </a>
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
@@ -123,11 +125,11 @@ export default function Footer() {
                 <div className="pt-5 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
                     <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
                         <EnvelopeSimple className="w-4 h-4" />
-                        <a href="mailto:contact@sindhanai.com" className="hover:text-slate-900 transition-colors">contact@sindhanai.com</a>
+                        <a href="mailto:sindhanai@kgisl.ac.in" className="hover:text-slate-900 transition-colors">sindhanai@kgisl.ac.in</a>
                     </div>
 
                     <div className="flex items-center gap-6 text-xs font-medium text-slate-500">
-                        <a href="#" className="hover:text-slate-900 transition-colors">Get in Touch</a>
+                        <span className="select-none text-slate-400">Get in Touch</span>
                         <span>SindhanAI © All rights reserved</span>
                     </div>
                 </div>
@@ -139,7 +141,7 @@ export default function Footer() {
             >
                 <span
                     className="block font-black text-slate-200 text-[130px] sm:text-[180px] lg:text-[220px] tracking-tighter translate-y-8 translate-x-6"
-                    style={{ fontFamily: "'Manrope', 'Google Sans', system-ui, sans-serif" }}
+                    style={{ fontFamily: "var(--font-heading), 'Plus Jakarta Sans', sans-serif" }}
                 >
                     SindhanAI.
                 </span>

@@ -23,6 +23,18 @@ export async function GET(req: Request) {
         const soiDomainIdParam = searchParams.get("soiDomainId") || undefined;
         const status = searchParams.get("status") || undefined;
 
+        // Auto-expire active sessions created on past calendar days
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        await (prisma as any).classroomSession.updateMany({
+            where: {
+                status: "ACTIVE",
+                createdAt: { lt: todayStart },
+            },
+            data: { status: "COMPLETED" },
+        });
+
         let whereClause: any = {
             ...(status ? { status } : {}),
         };

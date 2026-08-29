@@ -22,13 +22,13 @@ export default function HomePage() {
     <main className="w-full">
       <section className="px-0 sm:px-6 lg:px-8 pt-0 pb-0">
         <div
-          className="relative rounded-none sm:rounded-[24px] lg:rounded-[32px] overflow-hidden"
+          className="relative rounded-none sm:rounded-xl lg:rounded-2xl overflow-hidden"
           style={{ minHeight: "calc(100vh - 110px)", backgroundColor: "#7783F5" }}
         >
           <MeshGradientCanvas />
 
           <div
-            className="relative z-10 h-full flex items-center pt-24 sm:pt-36 lg:pt-40 pb-14 sm:pb-16 lg:pb-24 px-5 sm:px-10 lg:px-16"
+            className="relative z-10 h-full flex items-center pt-32 sm:pt-36 lg:pt-40 pb-14 sm:pb-16 lg:pb-24 px-5 sm:px-10 lg:px-16"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center w-full">
               <div className="lg:col-span-7 space-y-5 sm:space-y-6 lg:space-y-7">

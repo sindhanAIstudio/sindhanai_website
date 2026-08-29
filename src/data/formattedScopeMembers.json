@@ -1,0 +1,661 @@
+[
+  {
+    "id": "scope-905535",
+    "slug": "maruthupandi-v",
+    "name": "Maruthupandi V",
+    "role": "SCOPE Faculty Mentor (Emp #905535)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Maruthupandi V is a faculty mentor in SCOPE. Python: 3, C: 3.",
+    "fullBio": "Maruthupandi V serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (3), C Programming (3), and DSA / Design Thinking (2). Contact: maruthupandi.v@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 3",
+      "C/C++: 3",
+      "DSA/Design Thinking: 2",
+      "Work Exp: 6 Years"
+    ],
+    "experience": "6 Years",
+    "location": "Coimbatore, TN",
+    "email": "maruthupandi.v@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/maruthupandiv/",
+      "github": "https://github.com/Maruthu-prof",
+      "twitter": "https://x.com/Prof_Maruthu"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "6 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "6 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Profile"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905535",
+      "phone": "8248052636",
+      "leetcode": "https://leetcode.com/u/Prof_Maruthu/",
+      "hackerrank": "https://www.hackerrank.com/profile/maruthupandiv_c1",
+      "medium": "https://medium.com/@maruthupandiv.cse",
+      "slack": "https://app.slack.com/client/T0BLAC4FKLH/D0BM2Q6C37A?entry_point=default_oauth&redir=%2Fgantry%2Fclient",
+      "kaggle": "https://www.kaggle.com/maruthuprof",
+      "selfIntroVideo": ""
+    }
+  },
+  {
+    "id": "scope-905404",
+    "slug": "raakesh-m",
+    "name": "Raakesh M",
+    "role": "SCOPE Faculty Mentor (Emp #905404)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Raakesh M is a faculty mentor in SCOPE. Python: -, C: 1.",
+    "fullBio": "Raakesh M serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (-), C Programming (1), and DSA / Design Thinking (-). Contact: raakesh.m@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: -",
+      "C/C++: 1",
+      "DSA/Design Thinking: -",
+      "Work Exp: 4+ years"
+    ],
+    "experience": "4+ years",
+    "location": "Coimbatore, TN",
+    "email": "raakesh.m@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/raakesh-muthuvel",
+      "github": "https://github.com/Raa96",
+      "twitter": "https://x.com/raakeshmuthuvel"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "4+ years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "4+ years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Self Bio"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905404",
+      "phone": "9360758406",
+      "leetcode": "https://leetcode.com/u/DragonRise/",
+      "hackerrank": "https://www.hackerrank.com/profile/raakeshmuthuvel",
+      "medium": "https://medium.com/@raakeshmuthuvel",
+      "slack": "https://app.slack.com/client/T011HKS9HNK/C011YJ3CYUB",
+      "kaggle": "https://www.kaggle.com/raakesh96",
+      "selfIntroVideo": "Raakesh_self_Intro"
+    }
+  },
+  {
+    "id": "scope-905579",
+    "slug": "samuvel-rajappa-j",
+    "name": "Samuvel Rajappa J",
+    "role": "SCOPE Faculty Mentor (Emp #905579)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Samuvel Rajappa J is a faculty mentor in SCOPE. Python: 1 Time, C: 1 Time.",
+    "fullBio": "Samuvel Rajappa J serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (1 Time), C Programming (1 Time), and DSA / Design Thinking (-). Contact: samuvel.r@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 1 Time",
+      "C/C++: 1 Time",
+      "DSA/Design Thinking: -",
+      "Work Exp: 2+ Years"
+    ],
+    "experience": "2+ Years",
+    "location": "Coimbatore, TN",
+    "email": "samuvel.r@kgkite.ac.in",
+    "social": {
+      "linkedin": "LinkedIn-Samuvel",
+      "github": "GitHub-Samuvel",
+      "twitter": "X-Twitter-Samuvel"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "2+ Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "2+ Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "About Me"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905579",
+      "phone": "7010736051",
+      "leetcode": "LeetCode-Samuvel",
+      "hackerrank": "HackerRank-Samuvel",
+      "medium": "Medium-Samuvel",
+      "slack": "Slack-Samuvel",
+      "kaggle": "Kaggle-Samuvel",
+      "selfIntroVideo": ""
+    }
+  },
+  {
+    "id": "scope-905592",
+    "slug": "santhoshi-m",
+    "name": "Santhoshi M",
+    "role": "SCOPE Faculty Mentor (Emp #905592)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Santhoshi M is a faculty mentor in SCOPE. Python: -, C: -.",
+    "fullBio": "Santhoshi M serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (-), C Programming (-), and DSA / Design Thinking (-). Contact: santhoshi.m@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: -",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: Fresher"
+    ],
+    "experience": "Fresher",
+    "location": "Coimbatore, TN",
+    "email": "santhoshi.m@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/santhoshi-m-021330200/",
+      "github": "https://github.com/Santhoshi2010",
+      "twitter": "https://x.com/SanthoshiM6"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "Fresher"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "Fresher"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Santhoshi M Profile"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905592",
+      "phone": "8807202170",
+      "leetcode": "https://leetcode.com/u/M_Santhoshi/",
+      "hackerrank": "https://www.hackerrank.com/profile/santhoshimadhan1",
+      "medium": "https://medium.com/@santhoshimadhan02",
+      "slack": "https://app.slack.com/client/T0BKBHSDG8L/C0BK4J8N0DT",
+      "kaggle": "https://www.kaggle.com/santhoshimadhan",
+      "selfIntroVideo": "Santhoshi M Self Intro"
+    }
+  },
+  {
+    "id": "scope-905605",
+    "slug": "mrskpreetha",
+    "name": "Mrs.K.Preetha",
+    "role": "SCOPE Faculty Mentor (Emp #905605)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800",
+    "bio": "Mrs.K.Preetha is a faculty mentor in SCOPE. Python: 2, C: 2.",
+    "fullBio": "Mrs.K.Preetha serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (2), C Programming (2), and DSA / Design Thinking (-). Contact: preetha.k@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 2",
+      "C/C++: 2",
+      "DSA/Design Thinking: -",
+      "Work Exp: 13+ Years"
+    ],
+    "experience": "13+ Years",
+    "location": "Coimbatore, TN",
+    "email": "preetha.k@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/preetha-k-3ab697b2/",
+      "github": "https://github.com/preethaGavas",
+      "twitter": "https://x.com/preethagavaskar"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "13+ Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "13+ Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Profile-Preetha"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905605",
+      "phone": "9600844664",
+      "leetcode": "https://leetcode.com/u/PreethaGavas/",
+      "hackerrank": "https://www.hackerrank.com/profile/preethagavas",
+      "medium": "https://medium.com/@preethagavas",
+      "slack": "https://app.slack.com/client/T0BK34XNVPC/D0BJMPRGJ95",
+      "kaggle": "https://www.kaggle.com/preethagavaskar",
+      "selfIntroVideo": "Preetha's Self Introduction"
+    }
+  },
+  {
+    "id": "scope-905617",
+    "slug": "rajesh-s",
+    "name": "Rajesh S",
+    "role": "SCOPE Faculty Mentor (Emp #905617)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Rajesh S is a faculty mentor in SCOPE. Python: 1, C: -.",
+    "fullBio": "Rajesh S serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (1), C Programming (-), and DSA / Design Thinking (-). Contact: rajesh.s@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 1",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: 12 Years"
+    ],
+    "experience": "12 Years",
+    "location": "Coimbatore, TN",
+    "email": "rajesh.s@kgkite.ac.in",
+    "social": {
+      "linkedin": "http://www.linkedin.com/in/s-rajesh-rajesh-5323b453",
+      "github": "https://github.com/prof-rajeshs",
+      "twitter": "https://x.com/rajeshruba8n"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "12 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "12 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Rajesh_S_CV Profile"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905617",
+      "phone": "9791432957",
+      "leetcode": "https://leetcode.com/u/rajesh_ruban8/",
+      "hackerrank": "https://www.hackerrank.com/profile/rajesh_ruban8",
+      "medium": "https://medium.com/@rajesh.ruban8",
+      "slack": "https://app.slack.com/client/T0BK1B83KHU/D0BKXLL9Y0G?entry_point=help_center",
+      "kaggle": "https://www.kaggle.com/rubans8",
+      "selfIntroVideo": "https://drive.google.com/file/d/1ancu4VitYXAqYqcYKyaLlMLNFxb337JW/view?usp=drive_link"
+    }
+  },
+  {
+    "id": "scope-905628",
+    "slug": "grace-catherine-j",
+    "name": "Grace Catherine J",
+    "role": "SCOPE Faculty Mentor (Emp #905628)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Grace Catherine J is a faculty mentor in SCOPE. Python: -, C: 1.",
+    "fullBio": "Grace Catherine J serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (-), C Programming (1), and DSA / Design Thinking (-). Contact: grace.c@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: -",
+      "C/C++: 1",
+      "DSA/Design Thinking: -",
+      "Work Exp: 3 year"
+    ],
+    "experience": "3 year",
+    "location": "Coimbatore, TN",
+    "email": "grace.c@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/gracecatherine65",
+      "github": "https://github.com/Catty-grace"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "3 year"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "3 year"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Profile"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905628",
+      "phone": "7604981660",
+      "leetcode": "https://leetcode.com/u/Catty-grace/",
+      "hackerrank": "https://www.hackerrank.com/profile/gracecatherine65",
+      "medium": "https://medium.com/@gracecatherine65",
+      "slack": "https://join.slack.com/t/kgisl-wii5652/shared_invite/zt-44ywn70af-NJan31wkwdUlhPNJ7gMPlg",
+      "kaggle": "https://www.kaggle.com/gracecatherine",
+      "selfIntroVideo": "https://youtube.com/shorts/kz_sUI27th4?si=53WAXZemCeFhdwIG"
+    }
+  },
+  {
+    "id": "scope-905665",
+    "slug": "priyadharshini-r",
+    "name": "Priyadharshini R",
+    "role": "SCOPE Faculty Mentor (Emp #905665)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Priyadharshini R is a faculty mentor in SCOPE. Python: -, C: -.",
+    "fullBio": "Priyadharshini R serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (-), C Programming (-), and DSA / Design Thinking (-). Contact: .",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: -",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: 1 year"
+    ],
+    "experience": "1 year",
+    "location": "Coimbatore, TN",
+    "email": "",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/priyadharshini-rajini-parthasarathi-769a7722b/",
+      "github": "https://github.com/riyadharshini2112",
+      "twitter": "https://x.com/PriyaDh25269606"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "1 year"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "1 year"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Priyadharshini R - CV"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905665",
+      "phone": "6383771623",
+      "leetcode": "https://leetcode.com/u/Priya_Parthasarathi/",
+      "hackerrank": "https://www.hackerrank.com/profile/riyadharshini890",
+      "medium": "https://medium.com/@riyadharshini890",
+      "slack": "https://app.slack.com/client/T0BNNNSJR88/D0BMN5SR42X",
+      "kaggle": "https://www.kaggle.com/priyaparthasarathi",
+      "selfIntroVideo": "https://drive.google.com/file/d/171Wb2rge4gx5uFL2CEqP_VXM99FoG2Bo/view?usp=drive_link"
+    }
+  },
+  {
+    "id": "scope-905661",
+    "slug": "mrslydia-mary",
+    "name": "Mrs.Lydia Mary",
+    "role": "SCOPE Faculty Mentor (Emp #905661)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800",
+    "bio": "Mrs.Lydia Mary is a faculty mentor in SCOPE. Python: -, C: -.",
+    "fullBio": "Mrs.Lydia Mary serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (-), C Programming (-), and DSA / Design Thinking (-). Contact: lydiamary.s@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: -",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: 6.5 years"
+    ],
+    "experience": "6.5 years",
+    "location": "Coimbatore, TN",
+    "email": "lydiamary.s@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/lydia-mary-77670918a",
+      "github": "https://github.com/LydiaMary25"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "6.5 years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "6.5 years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Lydia Mary"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905661",
+      "phone": "9489030530",
+      "leetcode": "https://leetcode.com/u/LydiaMary/",
+      "hackerrank": "https://www.hackerrank.com/profile/lidupravi_job",
+      "medium": "https://medium.com/@lidupravi.job",
+      "slack": "https://join.slack.com/t/kite-wrl8041/shared_invite/zt-47j4wg5ts-BHX06a6B4N4ihJFCmwFHng",
+      "kaggle": "https://www.kaggle.com/lydiamary25",
+      "selfIntroVideo": "https://drive.google.com/file/d/1mhCmdn4T2EzWlgy4r9baJ5MZ4vFx_oxx/view?usp=sharing"
+    }
+  },
+  {
+    "id": "scope-905657",
+    "slug": "sankardayal-p",
+    "name": "Sankardayal P",
+    "role": "SCOPE Faculty Mentor (Emp #905657)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Sankardayal P is a faculty mentor in SCOPE. Python: 3, C: 1.",
+    "fullBio": "Sankardayal P serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (3), C Programming (1), and DSA / Design Thinking (). Contact: sankardayal.p@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 3",
+      "C/C++: 1",
+      "Work Exp: 11 Years"
+    ],
+    "experience": "11 Years",
+    "location": "Coimbatore, TN",
+    "email": "sankardayal.p@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/sankardayal-palanisamy/",
+      "github": "https://github.com/Sankardayal-P",
+      "twitter": "https://x.com/Sankardayal_P"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "11 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "11 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Sankardayal P"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905657",
+      "phone": "9944323252",
+      "leetcode": "https://leetcode.com/u/Sankardayal/",
+      "hackerrank": "https://www.hackerrank.com/profile/ersankardayal",
+      "medium": ".https://medium.com/@sankardayal.p",
+      "slack": "https://join.slack.com/t/kgkite-nmx2215/shared_invite/zt-479tpmgs7-mQh5DhdFPjO63p0J2IxjNw",
+      "kaggle": "https://www.kaggle.com/sankardayal",
+      "selfIntroVideo": "https://drive.google.com/file/d/1SOyLNixziUF6N5mnsi_FC-GC3PGEdaz1/view?usp=drivesdk"
+    }
+  },
+  {
+    "id": "scope-904653",
+    "slug": "arunmaharaja-e",
+    "name": "Arunmaharaja e",
+    "role": "SCOPE Faculty Mentor (Emp #904653)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Arunmaharaja e is a faculty mentor in SCOPE. Python: 1 Time, C: 3 years.",
+    "fullBio": "Arunmaharaja e serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (1 Time), C Programming (3 years), and DSA / Design Thinking (1 time). Contact: arunmaharaja.e@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 1 Time",
+      "C/C++: 3 years",
+      "DSA/Design Thinking: 1 time",
+      "Work Exp: 6 Years"
+    ],
+    "experience": "6 Years",
+    "location": "Coimbatore, TN",
+    "email": "arunmaharaja.e@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/arunmaharaja-e-48561b3ba/",
+      "github": "https://github.com/arunmaharaja2021",
+      "twitter": "https://x.com/Arunmaharajae"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "6 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "6 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "https://docs.google.com/document/d/1qVNI-xOPCloLWIyR2bbaUokRmfYc5iOD/edit"
+      }
+    ],
+    "extraDetails": {
+      "empId": "904653",
+      "phone": "9940995950",
+      "leetcode": "Arunmaharajae - LeetCode Profile",
+      "hackerrank": "https://www.hackerrank.com/profile/arunmaharaja2021",
+      "medium": "https://medium.com/@arunmaharaja2021",
+      "slack": "https://app.slack.com/client/T0BRKC5SXJ5/C0BRFFQS8TY",
+      "kaggle": "https://www.kaggle.com/arunmaharajae",
+      "selfIntroVideo": "https://drive.google.com/file/d/1qx-b5KC1VxygLJhm8PhwqO4dqEZvNPYD/view?t=6.093"
+    }
+  },
+  {
+    "id": "scope-905664",
+    "slug": "dhayanithi-t",
+    "name": "Dhayanithi T",
+    "role": "SCOPE Faculty Mentor (Emp #905664)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Dhayanithi T is a faculty mentor in SCOPE. Python: 2, C: -.",
+    "fullBio": "Dhayanithi T serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (2), C Programming (-), and DSA / Design Thinking (-). Contact: dhayanithi.t@kgkite.ac.in.",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 2",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: 2 Years"
+    ],
+    "experience": "2 Years",
+    "location": "Coimbatore, TN",
+    "email": "dhayanithi.t@kgkite.ac.in",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/dhayanithi-t-52b1a0320/",
+      "github": "https://github.com/TDhayanithi"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "2 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "2 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Dhayanithi.T"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905664",
+      "phone": "7604998619",
+      "leetcode": "https://leetcode.com/u/Dhayanithi_T_/",
+      "hackerrank": "https://www.hackerrank.com/profile/dhayanithi_t14",
+      "medium": "https://medium.com/@dhayanithi.t14",
+      "slack": "https://app.slack.com/client/T0BRLPS4PJQ/C0BRK29E61F?entry_point=default_oauth&geocode=en-in",
+      "kaggle": "https://www.kaggle.com/dhayanithit14",
+      "selfIntroVideo": "https://drive.google.com/file/d/1WUZJ2CW1eijTUEd0Blm9oqEUBkxJUGWf/view?usp=sharing"
+    }
+  },
+  {
+    "id": "scope-905666",
+    "slug": "ashwing",
+    "name": "Ashwin.G",
+    "role": "SCOPE Faculty Mentor (Emp #905666)",
+    "category": "SCOPE Team",
+    "lab": "School of Computer Science & Engineering (SCOPE)",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    "bio": "Ashwin.G is a faculty mentor in SCOPE. Python: 5, C: -.",
+    "fullBio": "Ashwin.G serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (5), C Programming (-), and DSA / Design Thinking (-). Contact: .",
+    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
+    "skills": [
+      "Python: 5",
+      "C/C++: -",
+      "DSA/Design Thinking: -",
+      "Work Exp: 8 Years"
+    ],
+    "experience": "8 Years",
+    "location": "Coimbatore, TN",
+    "email": "",
+    "social": {
+      "linkedin": "https://www.linkedin.com/in/ashwin-gurusamy-6595922b/?isSelfProfile=true",
+      "github": "https://github.com/ashudhiya",
+      "twitter": "https://x.com/Ashudhi28"
+    },
+    "stats": {
+      "projectsCount": 10,
+      "studentsMentored": 300,
+      "yearsExp": "8 Years"
+    },
+    "highlights": [
+      {
+        "title": "Work & Academic Experience",
+        "description": "8 Years"
+      },
+      {
+        "title": "One Page CV",
+        "description": "Ashwin.G"
+      }
+    ],
+    "extraDetails": {
+      "empId": "905666",
+      "phone": "9994806795",
+      "leetcode": "https://leetcode.com/u/A2IZ7ezfPy/",
+      "hackerrank": "https://www.hackerrank.com/profile/ashwinn62",
+      "medium": "https://medium.com/@ashwinn62",
+      "slack": "https://ashwingurusamy.slack.com/team/U0BRYTVDGN6",
+      "kaggle": "https://www.kaggle.com/ashwingurusamy",
+      "selfIntroVideo": "Ashwin Self Intro"
+    }
+  }
+]

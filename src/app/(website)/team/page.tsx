@@ -1,12 +1,20 @@
-import { prisma } from "@/lib/prisma";
+import { Metadata } from "next";
+import { TEAM_MEMBERS } from "@/data/teamData";
 import TeamClientView from "./TeamClientView";
 
 export const revalidate = 0;
 
-export default async function TeamPage() {
-    const teamMembers = await prisma.teamMember.findMany({
-        orderBy: { order: "asc" },
-    });
+export const metadata: Metadata = {
+    title: "SCOPE Faculty & Mentors",
+    description: "Explore the SCOPE Faculty Mentors and technical experts at KGiSL Institute of Technology driving hands-on software development, AI engineering, and industry training.",
+    openGraph: {
+        title: "SCOPE Faculty & Mentors | SindhanAI",
+        description: "Meet the SCOPE Faculty Mentors driving programming excellence and AI development at KGiSL Institute of Technology.",
+        images: ["/sindhanai-logo.png"]
+    }
+};
 
-    return <TeamClientView initialMembers={teamMembers} />;
+export default function TeamPage() {
+    return <TeamClientView initialMembers={TEAM_MEMBERS} />;
 }
+

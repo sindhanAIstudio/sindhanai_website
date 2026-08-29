@@ -20,8 +20,8 @@ interface AttendanceReportClientProps {
 
 export default function AttendanceReportClient({ session }: AttendanceReportClientProps) {
     const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
-    const [startDate, setStartDate] = useState(todayStr);
-    const [endDate, setEndDate] = useState(todayStr);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     const [reports, setReports] = useState<any[]>([]);
     const [allReports, setAllReports] = useState<any[]>([]);
@@ -83,6 +83,7 @@ export default function AttendanceReportClient({ session }: AttendanceReportClie
 
     const handleExportCsv = () => {
         const selectedDomainName = soiDomains.find((d) => d.id === soiDomainId)?.name || "Lab_Report";
+        const dateRangeLabel = startDate && endDate ? `${startDate}_to_${endDate}` : "Cumulative_All_Time";
         let csvContent = "data:text/csv;charset=utf-8,Student Name,Roll Number,Email,SOI Lab,Regular Attended,Regular Valid Days,Regular %,Special Activity (After 4:30PM),Special Activity %,Special Event,Special Event %,Status\n";
 
         const exportList = allReports.length > 0 ? allReports : reports;
@@ -95,7 +96,7 @@ export default function AttendanceReportClient({ session }: AttendanceReportClie
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Attendance_Report_${startDate}_to_${endDate}_${selectedDomainName}.csv`);
+        link.setAttribute("download", `Attendance_Report_${dateRangeLabel}_${selectedDomainName}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -191,7 +192,7 @@ export default function AttendanceReportClient({ session }: AttendanceReportClie
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
-                        {/* Date Range Pickers (Default Today) */}
+                        {/* Date Range Pickers (Default Cumulative All-Time) */}
                         <div className="flex items-center gap-2 bg-slate-50 p-1.5 rounded-2xl border border-slate-200">
                             <Clock className="w-4 h-4 text-indigo-600 shrink-0 ml-1" />
                             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
@@ -209,12 +210,18 @@ export default function AttendanceReportClient({ session }: AttendanceReportClie
                                     onChange={(e) => setEndDate(e.target.value)}
                                     className="px-2 py-1 rounded-xl bg-white border border-slate-200 text-xs font-extrabold text-slate-800 focus:outline-none focus:border-indigo-600"
                                 />
-                                {(startDate !== todayStr || endDate !== todayStr) && (
+                                <button
+                                    onClick={() => { setStartDate(todayStr); setEndDate(todayStr); }}
+                                    className={`px-2 py-1 rounded-lg text-[10px] font-black transition-all ${startDate === todayStr && endDate === todayStr ? "bg-indigo-600 text-white" : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-100"}`}
+                                >
+                                    Today
+                                </button>
+                                {(startDate !== "" || endDate !== "") && (
                                     <button
-                                        onClick={() => { setStartDate(todayStr); setEndDate(todayStr); }}
-                                        className="px-2 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-[10px] font-black hover:bg-indigo-100"
+                                        onClick={() => { setStartDate(""); setEndDate(""); }}
+                                        className="px-2 py-1 rounded-lg bg-slate-200 text-slate-800 text-[10px] font-black hover:bg-slate-300 transition-all"
                                     >
-                                        Today
+                                        Cumulative (All)
                                     </button>
                                 )}
                             </div>
