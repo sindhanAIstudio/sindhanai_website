@@ -29,12 +29,11 @@ export async function GET(req: Request) {
 
         if (userRole === "ADMIN" || userRole === "INSTRUCTOR") {
             if (userLabId) {
-                // Include sessions created for this lab OR created by instructors belonging to this lab OR generic regular sessions
+                // Include sessions created for this lab OR created by instructors belonging to this lab
                 whereClause.OR = [
                     { soiDomainId: userLabId },
                     { instructorId: session.userId },
                     { instructor: { soiDomainId: userLabId } },
-                    { soiDomainId: null, sessionType: "REGULAR" },
                 ];
             } else {
                 whereClause.instructorId = session.userId;
@@ -81,18 +80,23 @@ export async function POST(req: Request) {
 
         const user = await (prisma as any).user.findUnique({
             where: { id: session.userId },
-            select: { id: true, soiDomainId: true },
+            select: { id: true, soiDomainId: true, soiDomain: { select: { name: true } } },
         });
 
         const body = await req.json();
-        const { title, description, sessionType, soiDomainId, departmentId, durationMinutes } = body;
+        let { title, description, sessionType, soiDomainId, departmentId, durationMinutes } = body;
 
-        if (!title.trim()) {
+        if (!title || !title.trim()) {
             return NextResponse.json({ error: "Session Title is required" }, { status: 400 });
         }
 
         // Determine final soiDomainId (fallback to user's assigned lab)
         const finalSoiDomainId = soiDomainId || user?.soiDomainId || null;
+
+        // Enrich generic titles with Lab Domain Name
+        if (user?.soiDomain?.name && title.includes("Regular SOI Lab Attendance")) {
+            title = `${user.soiDomain.name} Attendance — ${new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+        }
 
         // Check for existing session launched TODAY for this specific lab
         const todayStart = new Date();
@@ -100,9 +104,8 @@ export async function POST(req: Request) {
 
         const existingSession = await (prisma as any).classroomSession.findFirst({
             where: {
-                title: title.trim(),
                 createdAt: { gte: todayStart },
-                ...(finalSoiDomainId ? { soiDomainId: finalSoiDomainId } : {}),
+                soiDomainId: finalSoiDomainId,
             },
             include: {
                 instructor: { select: { id: true, name: true, email: true } },

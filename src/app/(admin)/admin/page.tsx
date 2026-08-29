@@ -8,7 +8,15 @@ export const revalidate = 0;
 export default async function AdminDashboardPage() {
     const session = await getSession();
 
-    if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN")) {
+    if (!session) {
+        redirect("/login");
+    }
+
+    if (session.role === "INSTRUCTOR") {
+        redirect("/admin/attendance");
+    }
+
+    if (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN") {
         redirect("/login");
     }
 

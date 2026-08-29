@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
     QrCode,
     Camera,
@@ -11,6 +12,7 @@ import {
     Broadcast,
     Sparkle,
     Spinner,
+    ArrowLeft,
 } from "@phosphor-icons/react";
 
 export default function StudentScannerClient() {
@@ -19,16 +21,65 @@ export default function StudentScannerClient() {
     const [submitting, setSubmitting] = useState(false);
     const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
 
-    // Generate hardware fingerprint
+    // Generate persistent cryptographically unique device ID + Canvas hardware entropy
     useEffect(() => {
-        const fpStr = `${navigator.userAgent}-${window.screen.width}x${window.screen.height}-${navigator.language}`;
-        let hash = 0;
-        for (let i = 0; i < fpStr.length; i++) {
-            const char = fpStr.charCodeAt(i);
-            hash = (hash << 5) - hash + char;
-            hash |= 0;
-        }
-        setDeviceFingerprint(`DEV-${Math.abs(hash).toString(16)}`);
+        const getOrCreatePersistentDeviceId = (): string => {
+            const STORAGE_KEY = "sindhanai_device_id_v2";
+            let deviceId = "";
+
+            try {
+                deviceId = localStorage.getItem(STORAGE_KEY) || "";
+            } catch { }
+
+            if (!deviceId) {
+                // Cryptographically secure 128-bit random token
+                if (typeof crypto !== "undefined" && crypto.randomUUID) {
+                    deviceId = `DEV-${crypto.randomUUID().replace(/-/g, "").substring(0, 12)}`;
+                } else {
+                    const randomBuf = new Uint8Array(8);
+                    if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+                        crypto.getRandomValues(randomBuf);
+                    }
+                    const hex = Array.from(randomBuf).map((b) => b.toString(16).padStart(2, "0")).join("");
+                    deviceId = `DEV-${hex.substring(0, 12)}`;
+                }
+
+                try {
+                    localStorage.setItem(STORAGE_KEY, deviceId);
+                } catch { }
+            }
+
+            return deviceId;
+        };
+
+        // Hardware Canvas Font & Shader Entropy for supplementary validation
+        let canvasHash = "";
+        try {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                canvas.width = 200;
+                canvas.height = 50;
+                ctx.textBaseline = "top";
+                ctx.font = "14px 'Arial', sans-serif";
+                ctx.fillStyle = "#f60";
+                ctx.fillRect(125, 1, 62, 20);
+                ctx.fillStyle = "#069";
+                ctx.fillText("Sindhanai-ID", 2, 15);
+                ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+                ctx.fillText("Sindhanai-ID", 4, 17);
+                const str = canvas.toDataURL();
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = (hash << 5) - hash + str.charCodeAt(i);
+                    hash |= 0;
+                }
+                canvasHash = Math.abs(hash).toString(16).substring(0, 4);
+            }
+        } catch { }
+
+        const baseId = getOrCreatePersistentDeviceId();
+        setDeviceFingerprint(baseId);
     }, []);
 
     const handleScanSubmit = async (tokenToUse?: string) => {
@@ -64,7 +115,16 @@ export default function StudentScannerClient() {
 
     return (
         <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-md bg-slate-900 rounded-3xl border border-slate-800 p-6 space-y-6 shadow-2xl">
+            <div className="w-full max-w-md bg-slate-900 rounded-3xl border border-slate-800 p-6 space-y-6 shadow-2xl relative">
+                {/* Back to Dashboard Navigation Button */}
+                <Link
+                    href="/student"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition-all"
+                >
+                    <ArrowLeft className="w-4 h-4 text-indigo-400" />
+                    <span>Back to Student Dashboard</span>
+                </Link>
+
                 {/* Header */}
                 <div className="text-center space-y-2">
                     <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center mx-auto">

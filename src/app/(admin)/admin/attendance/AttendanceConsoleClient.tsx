@@ -278,7 +278,7 @@ export default function AttendanceConsoleClient() {
         }
     };
 
-    // Manual Override / Device Reset
+    // Manual Override
     const handleManualOverride = async (studentId: string, status: string) => {
         if (!activeSession) return;
 
@@ -621,11 +621,22 @@ export default function AttendanceConsoleClient() {
                                         <tr key={item.student.id} className="hover:bg-slate-50/70 transition-colors">
                                             <td className="py-3 px-4">
                                                 <span className="font-extrabold text-slate-900 block">{item.student.name}</span>
-                                                <span className="text-[10px] text-slate-400 font-mono">{item.student.rollNumber || item.student.email}</span>
+                                                <div className="flex items-center gap-2 mt-0.5">
+                                                    <span className="text-[10px] text-slate-400 font-mono">{item.student.rollNumber || item.student.email}</span>
+                                                    {item.student.deviceFingerprint ? (
+                                                        <span className="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-mono font-bold flex items-center gap-1" title={item.student.deviceFingerprint}>
+                                                            📱 {item.student.deviceFingerprint}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-700 text-[9px] font-mono font-bold flex items-center gap-1">
+                                                            🔄 Unbound / Reset
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
 
                                             <td className="py-3 px-4 text-center">
-                                                <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black ${item.isScanned || item.status === "PRESENT" ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"}`}>
+                                                <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black ${item.isScanned || item.status === "PRESENT" ? "bg-emerald-100 text-emerald-800" : item.status === "ABSENT" ? "bg-rose-100 text-rose-800" : "bg-slate-100 text-slate-500"}`}>
                                                     {item.isScanned || item.status === "PRESENT" ? "PRESENT" : item.status || "NOT SCANNED"}
                                                 </span>
                                             </td>
@@ -637,15 +648,15 @@ export default function AttendanceConsoleClient() {
                                             <td className="py-3 px-4 text-right space-x-1">
                                                 <button
                                                     onClick={() => handleManualOverride(item.student.id, "PRESENT")}
-                                                    className="px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-[10px] font-bold"
+                                                    className="px-2.5 py-1 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-[10px] font-bold border border-emerald-200 transition-colors cursor-pointer"
                                                 >
                                                     Present
                                                 </button>
                                                 <button
-                                                    onClick={() => handleResetDevice(item.student.id, item.student.name)}
-                                                    className="px-2 py-1 bg-slate-100 text-slate-700 rounded-lg text-[10px] font-bold"
+                                                    onClick={() => handleManualOverride(item.student.id, "ABSENT")}
+                                                    className="px-2.5 py-1 bg-rose-50 text-rose-700 hover:bg-rose-100 rounded-lg text-[10px] font-bold border border-rose-200 transition-colors cursor-pointer"
                                                 >
-                                                    Reset Device
+                                                    Absent
                                                 </button>
                                             </td>
                                         </tr>

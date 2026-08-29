@@ -91,15 +91,44 @@ export function verifyDynamicQrToken(
     }
 }
 
+import os from "os";
+
+function ipToLong(ip: string): number {
+    const parts = ip.split(".").map(Number);
+    if (parts.length !== 4 || parts.some((p) => isNaN(p) || p < 0 || p > 255)) {
+        throw new Error("Invalid IPv4 address format");
+    }
+    return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
+}
+
 /**
- * IP Matching helper supporting CIDR (e.g. 192.168.1.0/24), wildcards (192.168.1.*), or exact IP.
+ * IP Matching helper supporting bitwise CIDR (e.g. 172.16.48.0/21, 192.168.1.0/24, 10.0.0.0/16), wildcards (172.16.52.*), or exact IP.
  */
 export function isIpInSubnet(clientIp: string, allowedRange: string): boolean {
-    const ip = clientIp.trim();
+    let ip = clientIp.trim();
     const range = allowedRange.trim();
 
-    if (ip === "127.0.0.1" || ip === "::1" || ip === "localhost") {
-        return true; // Allow local loopback testing
+    // If loopback address (::1 or 127.0.0.1), resolve to active non-internal IPv4 address of local network adapter
+    if (ip === "::1" || ip === "127.0.0.1" || ip === "localhost") {
+        try {
+            const interfaces = os.networkInterfaces();
+            for (const name in interfaces) {
+                const iface = interfaces[name];
+                if (!iface) continue;
+                for (const alias of iface) {
+                    const isIpv4 = alias.family === "IPv4" || (alias.family as any) === 4;
+                    if (isIpv4 && !alias.internal && alias.address !== "127.0.0.1") {
+                        ip = alias.address;
+                        break;
+                    }
+                }
+            }
+        } catch { }
+    }
+
+    // Strip IPv6-mapped IPv4 prefix (e.g. ::ffff:172.16.52.254 -> 172.16.52.254)
+    if (ip.startsWith("::ffff:")) {
+        ip = ip.substring(7);
     }
 
     if (range === "*" || range === "0.0.0.0/0") return true;
@@ -107,17 +136,26 @@ export function isIpInSubnet(clientIp: string, allowedRange: string): boolean {
     // Exact match
     if (ip === range) return true;
 
-    // Wildcard match (e.g., "192.168.1.*")
+    // Wildcard match (e.g., "172.16.52.*" or "172.16.*")
     if (range.endsWith(".*")) {
-        const prefix = range.replace(".*", "");
+        const prefix = range.replace(/\.\*+$/, "");
         return ip.startsWith(prefix);
     }
 
-    // Subnet CIDR /24 simple check
-    if (range.includes("/24")) {
-        const subnetPrefix = range.split("/")[0].split(".").slice(0, 3).join(".");
-        const clientPrefix = ip.split(".").slice(0, 3).join(".");
-        return subnetPrefix === clientPrefix;
+    // Bitwise CIDR matching for any mask (/8 to /32)
+    if (range.includes("/")) {
+        const [subnetIp, maskBitsStr] = range.split("/");
+        const maskBits = parseInt(maskBitsStr, 10);
+        if (isNaN(maskBits) || maskBits < 0 || maskBits > 32) return false;
+
+        try {
+            const clientLong = ipToLong(ip);
+            const subnetLong = ipToLong(subnetIp);
+            const mask = maskBits === 0 ? 0 : (~0 << (32 - maskBits)) >>> 0;
+            return (clientLong & mask) === (subnetLong & mask);
+        } catch {
+            return false;
+        }
     }
 
     return false;

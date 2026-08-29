@@ -11,6 +11,7 @@ export default function LoginPage() {
 
     const [screen, setScreen] = useState<1 | 2>(1);
     const [email, setEmail] = useState("");
+    const [tempPassword, setTempPassword] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -109,8 +110,8 @@ export default function LoginPage() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         email,
+                        tempPassword,
                         password,
-                        deviceFingerprint: typeof window !== "undefined" ? navigator.userAgent : null,
                     }),
                 });
 
@@ -234,20 +235,37 @@ export default function LoginPage() {
                             </div>
 
                             {!isExistingUser && (
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-slate-700">Confirm Password</label>
-                                    <div className="relative">
-                                        <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                                        <input
-                                            type="password"
-                                            required
-                                            placeholder="••••••••••••"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
-                                        />
+                                <>
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-700">Initial Temporary Password</label>
+                                        <div className="relative">
+                                            <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                                            <input
+                                                type="password"
+                                                required
+                                                placeholder="Assigned initial temp password"
+                                                value={tempPassword}
+                                                onChange={(e) => setTempPassword(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-xs font-bold text-slate-700">Confirm New Password</label>
+                                        <div className="relative">
+                                            <Key className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                                            <input
+                                                type="password"
+                                                required
+                                                placeholder="••••••••••••"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </>
                             )}
 
                             <div className="flex gap-2">

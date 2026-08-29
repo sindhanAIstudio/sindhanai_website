@@ -11,18 +11,51 @@ export async function GET(req: Request) {
         }
 
         const { searchParams } = new URL(req.url);
-        const soiDomainId = searchParams.get("soiDomainId") || undefined;
+        const searchQuery = searchParams.get("search")?.trim() || undefined;
+        let soiDomainId = searchParams.get("soiDomainId") || undefined;
         const batchId = searchParams.get("batchId") || undefined;
         const categoryFilter = searchParams.get("category") || undefined; // REGULAR | SPECIAL_ACTIVITY | EVENT
+        const page = parseInt(searchParams.get("page") || "1", 10);
+        const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-        // 1. Fetch all active students
+        // Date Range Filters (Default to Today's Local Date)
+        const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+        const startDate = searchParams.get("startDate") || todayStr;
+        const endDate = searchParams.get("endDate") || todayStr;
+
+        // Fetch current user details from DB to check domain/department association
+        const currentUser = await (prisma as any).user.findUnique({
+            where: { id: session.userId },
+            select: { soiDomainId: true, departmentId: true },
+        });
+
+        // Role-based default scoping if no search or explicit domain filter is selected
+        if (!searchQuery && !soiDomainId && currentUser) {
+            if ((session.role === "INSTRUCTOR" || session.role === "ADMIN") && currentUser.soiDomainId) {
+                soiDomainId = currentUser.soiDomainId;
+            }
+        }
+
+        // 1. Build student search filter
+        const studentWhere: any = {
+            role: { name: "STUDENT" },
+            deletedAt: null,
+            ...(soiDomainId ? { soiDomainId } : {}),
+            ...(batchId ? { batchId } : {}),
+        };
+
+        if (searchQuery) {
+            studentWhere.OR = [
+                { name: { contains: searchQuery, mode: "insensitive" } },
+                { rollNumber: { contains: searchQuery, mode: "insensitive" } },
+                { registrationNumber: { contains: searchQuery, mode: "insensitive" } },
+                { email: { contains: searchQuery, mode: "insensitive" } },
+            ];
+        }
+
+        // Fetch students matching filter
         const students = await (prisma as any).user.findMany({
-            where: {
-                role: { name: "STUDENT" },
-                deletedAt: null,
-                ...(soiDomainId ? { soiDomainId } : {}),
-                ...(batchId ? { batchId } : {}),
-            },
+            where: studentWhere,
             select: {
                 id: true,
                 name: true,
@@ -37,11 +70,17 @@ export async function GET(req: Request) {
             orderBy: { name: "asc" },
         });
 
-        // 2. Fetch classroom sessions
+        // Helper to format local date string YYYY-MM-DD without UTC timezone offset errors
+        const toLocalDateString = (dInput: Date | string): string => {
+            const d = new Date(dInput);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        };
+
+        // 2. Fetch classroom sessions with attendance records
         const classroomSessions = await (prisma as any).classroomSession.findMany({
-            where: {
-                ...(soiDomainId ? { soiDomainId } : {}),
-            },
             include: {
                 attendanceRecords: true,
             },
@@ -53,66 +92,95 @@ export async function GET(req: Request) {
         });
         const holidayDateSet = new Set(holidays.map((h: any) => h.date));
 
-        // 4. Identify distinct session dates and filter out Sundays, Holidays & Zero-Attendance Days
-        const dateSessionMap = new Map<string, typeof classroomSessions>();
+        // 4. Filter sessions strictly within [startDate, endDate] & identify valid dates per category
+        const filteredSessions = classroomSessions.filter((s: any) => {
+            const dateStr = toLocalDateString(s.activeFrom);
+            return dateStr >= startDate && dateStr <= endDate;
+        });
 
-        classroomSessions.forEach((s: any) => {
-            const dateStr = new Date(s.activeFrom).toISOString().split("T")[0];
+        const dateSessionMap = new Map<string, typeof classroomSessions>();
+        filteredSessions.forEach((s: any) => {
+            const dateStr = toLocalDateString(s.activeFrom);
             if (!dateSessionMap.has(dateStr)) {
                 dateSessionMap.set(dateStr, []);
             }
             dateSessionMap.get(dateStr)!.push(s);
         });
 
-        const validSessionDates: string[] = [];
+        const regularValidDates: string[] = [];
+        const specialValidDates: string[] = [];
+        const eventValidDates: string[] = [];
+
         dateSessionMap.forEach((sessionsOnDate, dateStr) => {
             const dateObj = new Date(dateStr);
             const isSunday = dateObj.getDay() === 0;
             const isHoliday = holidayDateSet.has(dateStr);
-            const totalScansOnDate = sessionsOnDate.reduce((acc: number, sess: any) => acc + sess.attendanceRecords.length, 0);
 
-            // EXCLUSION RULE: Exclude Sundays, Exclude Admin Holidays, Exclude Zero-Attendance Days
-            if (!isSunday && !isHoliday && totalScansOnDate > 0) {
-                validSessionDates.push(dateStr);
+            if (!isSunday && !isHoliday) {
+                const regSessions = sessionsOnDate.filter((s: any) => !s.sessionType || s.sessionType === "REGULAR");
+                const specSessions = sessionsOnDate.filter((s: any) => s.sessionType === "SPECIAL_ACTIVITY");
+                const evtSessions = sessionsOnDate.filter((s: any) => s.sessionType === "EVENT");
+
+                if (regSessions.length > 0) regularValidDates.push(dateStr);
+                if (specSessions.length > 0) specialValidDates.push(dateStr);
+                if (evtSessions.length > 0) eventValidDates.push(dateStr);
             }
         });
 
-        const totalValidDaysCount = validSessionDates.length || 1;
+        const totalRegularDays = regularValidDates.length || (startDate === endDate ? 1 : 1);
+        const totalSpecialDays = specialValidDates.length || (startDate === endDate ? 1 : 1);
+        const totalEventDays = eventValidDates.length || (startDate === endDate ? 1 : 1);
 
-        // 5. Calculate attendance per student with category breakdowns
+        // 5. Calculate attendance per student with distinct category percentages
         const studentReports = students.map((student: any) => {
-            let attendedDaysCount = 0;
-            let regularCount = 0;
-            let specialActivityCount = 0;
-            let eventCount = 0;
+            let regularAttendedDays = 0;
+            let specialActivityAttendedDays = 0;
+            let eventAttendedDays = 0;
 
-            validSessionDates.forEach((dateStr) => {
-                const sessionsOnDate = dateSessionMap.get(dateStr) || [];
-                sessionsOnDate.forEach((sess: any) => {
-                    sess.attendanceRecords.forEach((rec: any) => {
-                        if (rec.studentId === student.id && (rec.status === "PRESENT" || rec.status === "VERIFIED")) {
-                            if (!categoryFilter || rec.category === categoryFilter) {
-                                attendedDaysCount += 1;
-                            }
-                            if (rec.category === "SPECIAL_ACTIVITY") specialActivityCount += 1;
-                            else if (rec.category === "EVENT") eventCount += 1;
-                            else regularCount += 1;
-                        }
-                    });
-                });
+            filteredSessions.forEach((sess: any) => {
+                const sessCategory = sess.sessionType || "REGULAR";
+                const isAttended = sess.attendanceRecords.some(
+                    (rec: any) => rec.studentId === student.id && (rec.status === "PRESENT" || rec.status === "VERIFIED")
+                );
+
+                if (isAttended) {
+                    if (sessCategory === "SPECIAL_ACTIVITY") {
+                        specialActivityAttendedDays += 1;
+                    } else if (sessCategory === "EVENT") {
+                        eventAttendedDays += 1;
+                    } else {
+                        regularAttendedDays += 1;
+                    }
+                }
             });
 
-            const attendancePercentage = Math.round((attendedDaysCount / totalValidDaysCount) * 100);
-            const isDefaulter = attendancePercentage < 75;
+            // Primary Percentage is strictly REGULAR class attendance
+            const regularPercentage = Math.min(100, Math.round((regularAttendedDays / totalRegularDays) * 100));
+            const specialActivityPercentage = totalSpecialDays > 0 && specialActivityAttendedDays > 0
+                ? Math.min(100, Math.round((specialActivityAttendedDays / totalSpecialDays) * 100))
+                : 0;
+            const eventPercentage = totalEventDays > 0 && eventAttendedDays > 0
+                ? Math.min(100, Math.round((eventAttendedDays / totalEventDays) * 100))
+                : 0;
+
+            const isDefaulter = regularPercentage < 75;
 
             return {
                 student,
-                totalValidDays: totalValidDaysCount,
-                attendedDays: attendedDaysCount,
-                regularCount,
-                specialActivityCount,
-                eventCount,
-                attendancePercentage,
+                totalRegularDays,
+                regularAttendedDays,
+                regularPercentage,
+
+                totalSpecialDays,
+                specialActivityAttendedDays,
+                specialActivityPercentage,
+
+                totalEventDays,
+                eventAttendedDays,
+                eventPercentage,
+
+                // Primary fields for table display & cards
+                attendancePercentage: regularPercentage,
                 isDefaulter,
             };
         });
@@ -121,17 +189,31 @@ export async function GET(req: Request) {
         const defaultersCount = studentReports.filter((r: any) => r.isDefaulter).length;
         const avgAttendancePercentage =
             totalStudentsCount > 0
-                ? Math.round(studentReports.reduce((acc: number, r: any) => acc + r.attendancePercentage, 0) / totalStudentsCount)
+                ? Math.round(studentReports.reduce((acc: number, r: any) => acc + r.regularPercentage, 0) / totalStudentsCount)
                 : 0;
+
+        const totalPages = Math.ceil(totalStudentsCount / limit) || 1;
+        const paginatedReports = studentReports.slice((page - 1) * limit, page * limit);
 
         return NextResponse.json({
             summary: {
-                totalValidDays: totalValidDaysCount,
+                totalRegularDays,
+                totalSpecialDays,
+                totalEventDays,
                 totalStudents: totalStudentsCount,
                 defaultersCount,
                 avgAttendancePercentage,
+                startDate,
+                endDate,
             },
-            data: studentReports,
+            pagination: {
+                total: totalStudentsCount,
+                page,
+                limit,
+                totalPages,
+            },
+            data: paginatedReports,
+            allData: studentReports,
         });
     } catch (error) {
         console.error("GET Attendance Report Error:", error);

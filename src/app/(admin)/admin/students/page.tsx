@@ -7,7 +7,7 @@ export const revalidate = 0;
 
 export default async function StudentManagementPage() {
     const session = await getSession();
-    if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN")) {
+    if (!session || (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN" && session.role !== "INSTRUCTOR")) {
         redirect("/login");
     }
 
