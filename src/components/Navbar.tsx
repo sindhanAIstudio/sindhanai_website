@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     CaretDown,
+    CaretRight,
     List,
     X,
     ChatTeardropText,
@@ -18,11 +19,13 @@ import {
     Code,
     ArrowRight,
     CheckCircle,
+    Sparkle,
 } from "@phosphor-icons/react";
 import SindhanAiLogo from "@/components/SindhanAiLogo";
 
 export default function Navbar() {
     const pathname = usePathname();
+    const router = useRouter();
     const [megaMenuOpen, setMegaMenuOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
@@ -138,7 +141,7 @@ export default function Navbar() {
         <div className={`w-full z-50 transition-all duration-300 ${isScrolled ? "fixed top-0 left-0 right-0 pointer-events-none" : isHomePage ? "md:relative md:bg-white absolute top-0 left-0 right-0 bg-transparent pointer-events-auto" : "absolute top-0 left-0 right-0 bg-transparent pointer-events-auto"}`}>
 
             {/* 1. Desktop Top Bar */}
-            <div className={`hidden md:flex items-center justify-between max-w-[1360px] mx-auto py-2 px-0 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full max-h-0 py-0 overflow-hidden border-transparent pointer-events-none" : isHomePage ? "opacity-100 translate-y-0 max-h-12 border-slate-100/60 bg-white pointer-events-auto" : "opacity-100 translate-y-0 max-h-12 border-slate-900/10 bg-transparent pointer-events-auto"}`}>
+            <div className={`hidden lg:flex items-center justify-between max-w-[1360px] mx-auto py-2 px-0 text-[14px] text-slate-800 font-semibold border-b transition-all duration-300 ${isScrolled ? "opacity-0 -translate-y-full max-h-0 py-0 overflow-hidden border-transparent pointer-events-none" : isHomePage ? "opacity-100 translate-y-0 max-h-12 border-slate-100/60 bg-white pointer-events-auto" : "opacity-100 translate-y-0 max-h-12 border-slate-900/10 bg-transparent pointer-events-auto"}`}>
                 <div className="flex items-center gap-3">
                     <span className="text-slate-700 font-semibold text-[14px]">Follow us on</span>
                     <div className="flex items-center gap-3 text-slate-900">
@@ -157,12 +160,12 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* 2. Main Sticky Navbar Bar (White Glossy Rounded Floating Container on Mobile) */}
-            <div className={`w-full transition-all duration-300 ease-in-out pointer-events-auto ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6 z-50" : "relative bg-transparent px-4 sm:px-6 lg:px-8 py-3"}`}>
+            {/* 2. Main Sticky Navbar Bar (Solid White Bar on Mobile/Tablet Unscrolled, Borderless Glossy Floating Container on Scrolled) */}
+            <div className={`w-full transition-all duration-300 ease-in-out pointer-events-auto ${isScrolled ? "fixed top-3 left-0 right-0 px-4 sm:px-6 z-50" : "relative bg-white lg:bg-transparent border-none px-0 lg:px-6 lg:px-8 py-0 lg:py-3 z-40"}`}>
                 <header
                     className={`max-w-[1360px] mx-auto flex items-center justify-between transition-all duration-300 ease-in-out ${isScrolled
-                        ? "bg-white/85 backdrop-saturate-[1.8] backdrop-blur-[20px] border border-slate-200/50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] rounded-[20px] px-5 sm:px-6 h-[62px]"
-                        : "bg-transparent backdrop-none border-none shadow-none rounded-none px-5 md:px-0 h-[60px] md:h-auto"
+                        ? "bg-white/95 backdrop-saturate-[1.8] backdrop-blur-[20px] shadow-[0_8px_30px_rgba(0,0,0,0.08)] border-none rounded-[20px] px-5 sm:px-6 h-[62px]"
+                        : "bg-white lg:bg-transparent backdrop-none border-none shadow-none rounded-none px-5 lg:px-0 h-[60px] lg:h-auto"
                         }`}
                 >
 
@@ -172,10 +175,10 @@ export default function Navbar() {
                             <SindhanAiLogo className="h-6 sm:h-7" />
                         </Link>
 
-                        <span className="w-px h-6 bg-slate-300 mx-1 hidden md:inline-block"></span>
+                        <span className="w-px h-6 bg-slate-300 mx-1 hidden lg:inline-block"></span>
 
                         {/* Desktop Nav Items */}
-                        <nav className="hidden md:flex items-center gap-1.5">
+                        <nav className="hidden lg:flex items-center gap-1.5">
                             {navLinks.map((link) => {
                                 if (link.isMega) {
                                     const isMegaActive = pathname.startsWith("/services") || megaMenuOpen;
@@ -218,84 +221,106 @@ export default function Navbar() {
                                                                     {(["ai-technology", "training", "software-solutions"] as const).map((key) => {
                                                                         const item = megaMenuData[key];
                                                                         const CategoryIcon = item.icon;
-                                                                        const isActive = activeCategory === key;
-
+                                                                        const isSelected = activeCategory === key;
                                                                         return (
-                                                                            <Link
+                                                                            <button
                                                                                 key={key}
-                                                                                href={item.href}
-                                                                                onClick={() => setMegaMenuOpen(false)}
                                                                                 onMouseEnter={() => setActiveCategory(key)}
-                                                                                className={`p-3 rounded-2xl flex items-center gap-3 cursor-pointer transition-all ${isActive
-                                                                                    ? "bg-[#ECE8E1] text-slate-950 shadow-xs border border-slate-300/40"
-                                                                                    : "text-slate-700 hover:bg-[#F2EFE9]"
+                                                                                onClick={() => {
+                                                                                    setMegaMenuOpen(false);
+                                                                                    router.push(`/services/${key}`);
+                                                                                }}
+                                                                                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-left transition-all group ${isSelected
+                                                                                    ? "bg-white shadow-md border border-slate-200/80 text-slate-950"
+                                                                                    : "hover:bg-white/60 text-slate-700"
                                                                                     }`}
                                                                             >
-                                                                                <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-white text-slate-950 shadow-2xs" : "bg-slate-200/70 text-slate-700"}`}>
-                                                                                    <CategoryIcon className="w-4 h-4" weight="bold" />
-                                                                                </div>
-                                                                                <div>
-                                                                                    <div className="text-sm font-bold text-slate-950 leading-tight">
-                                                                                        {item.title}
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div className={`p-2 rounded-xl transition-colors ${isSelected ? "bg-slate-950 text-white" : "bg-slate-200/60 text-slate-700 group-hover:bg-slate-950 group-hover:text-white"
+                                                                                        }`}>
+                                                                                        <CategoryIcon className="w-4 h-4" weight="bold" />
                                                                                     </div>
-                                                                                    <div className="text-[11px] text-slate-500 font-medium mt-0.5 leading-snug">
-                                                                                        {item.subtitle}
-                                                                                    </div>
+                                                                                    <span className="font-bold text-sm">{item.title}</span>
                                                                                 </div>
-                                                                            </Link>
+                                                                                <CaretRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? "text-slate-950 translate-x-0.5" : "text-slate-400 opacity-0 group-hover:opacity-100"
+                                                                                    }`} weight="bold" />
+                                                                            </button>
                                                                         );
                                                                     })}
                                                                 </div>
                                                             </div>
+
+                                                            <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-2">
+                                                                <div className="flex items-center gap-2 text-teal-400 text-xs font-bold uppercase tracking-wider">
+                                                                    <Sparkle className="w-3.5 h-3.5" weight="fill" /> Custom Solutions
+                                                                </div>
+                                                                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                                                                    Need a tailored AI or software strategy for your enterprise?
+                                                                </p>
+                                                                <Link
+                                                                    href="/contact"
+                                                                    onClick={() => setMegaMenuOpen(false)}
+                                                                    className="inline-flex items-center gap-1.5 text-xs font-bold text-white hover:text-teal-300 transition-colors pt-1"
+                                                                >
+                                                                    Talk to an Expert <ArrowRight className="w-3.5 h-3.5" weight="bold" />
+                                                                </Link>
+                                                            </div>
                                                         </div>
 
-                                                        <div className="col-span-8">
-                                                            <div className="p-[2.5px] rounded-[24px] bg-gradient-to-tr from-amber-400 via-pink-400 to-indigo-500 shadow-lg h-full">
-                                                                <div className="bg-white rounded-[22px] p-7 h-full flex flex-col justify-between space-y-5">
-
-                                                                    <div className="space-y-1">
-                                                                        <div className="text-4xl font-extrabold text-slate-950 tracking-tight">
-                                                                            {currentData.statNumber}
-                                                                        </div>
-                                                                        <div className="text-sm font-bold text-slate-800">
-                                                                            {currentData.statLabel}
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="space-y-1">
-                                                                        <div className="text-xl font-extrabold text-slate-950 leading-tight">
+                                                        <div className="col-span-8 bg-white rounded-2xl p-6 border border-slate-200/60 flex flex-col justify-between space-y-6">
+                                                            <div className="space-y-4">
+                                                                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                                                                    <div>
+                                                                        <h4 className="text-xl font-extrabold text-slate-950 tracking-tight">
                                                                             {currentData.heading}
-                                                                        </div>
-                                                                        <div className="text-sm font-semibold text-slate-500 leading-snug">
+                                                                        </h4>
+                                                                        <p className="text-xs font-semibold text-slate-500 mt-0.5">
                                                                             {currentData.subheading}
-                                                                        </div>
+                                                                        </p>
                                                                     </div>
-
-                                                                    <div className="grid grid-cols-2 gap-2 my-1">
-                                                                        {currentData.subItems.map((subItem) => (
-                                                                            <div
-                                                                                key={subItem}
-                                                                                className="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-100/90 cursor-default"
-                                                                            >
-                                                                                <CheckCircle className="w-3.5 h-3.5 text-slate-700 shrink-0" weight="fill" />
-                                                                                <span className="text-xs font-bold text-slate-800 leading-snug">
-                                                                                    {subItem}
-                                                                                </span>
-                                                                            </div>
-                                                                        ))}
+                                                                    <div className="text-right shrink-0">
+                                                                        <span className="text-2xl font-black text-slate-950 tracking-tight block leading-none">
+                                                                            {currentData.statNumber}
+                                                                        </span>
+                                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                                                            {currentData.statLabel}
+                                                                        </span>
                                                                     </div>
-
-                                                                    <div className="pt-3">
-                                                                        <Link
-                                                                            href={currentData.href}
-                                                                            onClick={() => setMegaMenuOpen(false)}
-                                                                            className="bg-[#ECE9E3] hover:bg-[#DFDCD5] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs inline-flex items-center gap-2 transition-colors shadow-2xs"
-                                                                        >
-                                                                            {currentData.buttonText} <ArrowRight className="w-3.5 h-3.5" />
-                                                                        </Link>
-                                                                    </div>
-
                                                                 </div>
+
+                                                                <div className="grid grid-cols-2 gap-3 pt-1">
+                                                                    {currentData.subItems.map((sub, idx) => (
+                                                                        <div
+                                                                            key={idx}
+                                                                            className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/50 transition-colors cursor-pointer group/item"
+                                                                            onClick={() => {
+                                                                                setMegaMenuOpen(false);
+                                                                                router.push(`/services/${activeCategory}`);
+                                                                            }}
+                                                                        >
+                                                                            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" weight="fill" />
+                                                                            <span className="text-xs font-bold text-slate-800 group-hover/item:text-slate-950 transition-colors">
+                                                                                {sub}
+                                                                            </span>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                                                                <span className="text-xs text-slate-500 font-medium">
+                                                                    Ready to elevate your technology capabilities?
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setMegaMenuOpen(false);
+                                                                        router.push(`/services/${activeCategory}`);
+                                                                    }}
+                                                                    className="px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                                                                >
+                                                                    {currentData.buttonText}
+                                                                    <ArrowRight className="w-3.5 h-3.5" weight="bold" />
+                                                                </button>
                                                             </div>
                                                         </div>
 
@@ -303,17 +328,6 @@ export default function Navbar() {
                                                 </div>
                                             )}
                                         </div>
-                                    );
-                                }
-
-                                if (link.isUnlinked) {
-                                    return (
-                                        <span
-                                            key={link.name}
-                                            className="px-4 py-2.5 rounded-xl text-[15px] font-semibold text-slate-800 hover:text-slate-950 cursor-pointer transition-all"
-                                        >
-                                            {link.name}
-                                        </span>
                                     );
                                 }
 
@@ -328,22 +342,43 @@ export default function Navbar() {
                                                     }`}
                                             >
                                                 {link.name}
-                                                <CaretDown className="w-3.5 h-3.5 text-slate-600 group-hover/team:rotate-180 transition-transform" weight="bold" />
+                                                <CaretDown className="w-3.5 h-3.5 text-slate-600 group-hover/team:rotate-180 transition-transform" />
                                             </Link>
+
                                             <div className="absolute top-full left-0 pt-2 w-56 hidden group-hover/team:block z-50">
                                                 <div className="bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-xl rounded-2xl p-2 space-y-1">
-                                                    <div className="px-3 py-2 text-xs font-semibold text-slate-400 select-none cursor-default">
-                                                        Industry Experts
-                                                    </div>
-                                                    <Link
-                                                        href="/team"
-                                                        className="block px-3 py-2.5 rounded-xl text-sm font-bold text-slate-900 hover:bg-slate-100 transition-colors"
-                                                    >
-                                                        Scope
-                                                    </Link>
+                                                    {link.dropdownItems?.map((sub) => (
+                                                        sub.isUnlinked ? (
+                                                            <div
+                                                                key={sub.name}
+                                                                className="px-3 py-2 text-xs font-semibold text-slate-400 select-none cursor-default"
+                                                            >
+                                                                {sub.name}
+                                                            </div>
+                                                        ) : (
+                                                            <Link
+                                                                key={sub.name}
+                                                                href={sub.href}
+                                                                className="block px-3 py-2.5 rounded-xl text-sm font-bold text-slate-900 hover:bg-slate-100 transition-colors"
+                                                            >
+                                                                {sub.name}
+                                                            </Link>
+                                                        )
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
+                                    );
+                                }
+
+                                if (link.isUnlinked) {
+                                    return (
+                                        <span
+                                            key={link.name}
+                                            className="px-4 py-2.5 rounded-xl text-[15px] font-semibold text-slate-800 hover:text-slate-950 cursor-pointer transition-all"
+                                        >
+                                            {link.name}
+                                        </span>
                                     );
                                 }
 
@@ -365,15 +400,15 @@ export default function Navbar() {
 
                     {/* Right CTA */}
                     <div className="flex items-center gap-3">
-                        <span className="hidden sm:inline-flex bg-black text-white font-bold text-[14px] px-5 py-2.5 rounded-xl items-center gap-2 shadow-xs cursor-default">
+                        <span className="hidden lg:inline-flex bg-black text-white font-bold text-[14px] px-5 py-2.5 rounded-xl items-center gap-2 shadow-xs cursor-default">
                             Get in Touch <ChatTeardropText className="w-4 h-4 fill-white" />
                         </span>
 
-                        {/* Mobile Menu Toggle Button */}
+                        {/* Mobile & Tablet Menu Toggle Button */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             aria-label="Toggle Menu"
-                            className="md:hidden p-2 rounded-xl text-slate-800 hover:bg-slate-100 transition-colors"
+                            className="lg:hidden p-2 rounded-xl text-slate-800 hover:bg-slate-100 transition-colors"
                         >
                             {mobileMenuOpen ? <X className="w-6 h-6" /> : <List className="w-6 h-6" />}
                         </button>
@@ -382,9 +417,9 @@ export default function Navbar() {
                 </header>
             </div>
 
-            {/* Mobile Drawer (Clean Glassmorphism Floating Overlay) */}
+            {/* Mobile & Tablet Drawer */}
             {mobileMenuOpen && (
-                <div className="md:hidden fixed inset-x-4 top-20 z-50 bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-2xl rounded-3xl p-6 space-y-4 pointer-events-auto max-h-[85vh] overflow-y-auto">
+                <div className="lg:hidden fixed inset-x-4 top-20 z-50 bg-white/95 backdrop-blur-2xl border border-slate-200/90 shadow-2xl rounded-3xl p-6 space-y-4 pointer-events-auto max-h-[85vh] overflow-y-auto">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                         <SindhanAiLogo className="h-6" />
                         <button
