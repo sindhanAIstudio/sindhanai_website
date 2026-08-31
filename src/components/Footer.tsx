@@ -102,8 +102,8 @@ export default function Footer() {
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
                                 <EnvelopeSimple className="w-4 h-4 text-slate-900 shrink-0 mt-0.5" weight="bold" />
-                                <a href="mailto:sindhanai@kgisl.ac.in" className="hover:text-slate-950 transition-colors">
-                                    Contact us at sindhanai@kgisl.ac.in
+                                <a href="mailto:sathish.r@kgkite.ac.in" className="hover:text-slate-950 transition-colors">
+                                    Contact us at sathish.r@kgkite.ac.in
                                 </a>
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
@@ -125,7 +125,7 @@ export default function Footer() {
                 <div className="pt-5 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
                     <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
                         <EnvelopeSimple className="w-4 h-4" />
-                        <a href="mailto:sindhanai@kgisl.ac.in" className="hover:text-slate-900 transition-colors">sindhanai@kgisl.ac.in</a>
+                        <a href="mailto:sathish.r@kgkite.ac.in" className="hover:text-slate-900 transition-colors">sathish.r@kgkite.ac.in</a>
                     </div>
 
                     <div className="flex items-center gap-6 text-xs font-medium text-slate-500">
