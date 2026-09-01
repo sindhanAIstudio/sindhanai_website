@@ -1057,7 +1057,7 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
             }
 
             {/* <BrandTicker /> */}
-            <CTASection />
+            {/* <CTASection /> */}
         </div >
     );
 }
