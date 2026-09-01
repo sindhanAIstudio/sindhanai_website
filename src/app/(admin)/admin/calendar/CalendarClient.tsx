@@ -696,7 +696,7 @@ export default function CalendarClient() {
                             )}
 
                             <div className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200/80">
-                                Google Sheets Style Grid • Select slots to merge
+                                Select slots to merge
                             </div>
                         </div>
                     </div>

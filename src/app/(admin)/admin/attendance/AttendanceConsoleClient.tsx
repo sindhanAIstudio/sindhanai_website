@@ -99,12 +99,12 @@ export default function AttendanceConsoleClient() {
     const fetchSessions = useCallback(async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/admin/sessions");
+            const res = await fetch("/api/admin/sessions?todayOnly=true");
             const data = await res.json();
             if (res.ok && data.data) {
                 setSessions(data.data);
 
-                // Auto-select today's active session or first session automatically
+                // Auto-select today's active session or first session for today automatically
                 const active = data.data.find((s: any) => s.status === "ACTIVE") || data.data[0];
                 if (active) {
                     setActiveSession(active);

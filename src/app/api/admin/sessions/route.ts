@@ -22,6 +22,8 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const soiDomainIdParam = searchParams.get("soiDomainId") || undefined;
         const status = searchParams.get("status") || undefined;
+        const todayOnlyParam = searchParams.get("todayOnly");
+        const allParam = searchParams.get("all") === "true";
 
         // Auto-expire active sessions created on past calendar days
         const todayStart = new Date();
@@ -37,6 +39,9 @@ export async function GET(req: Request) {
 
         let whereClause: any = {
             ...(status ? { status } : {}),
+            ...(todayOnlyParam === "true" || (!allParam && todayOnlyParam !== "false")
+                ? { createdAt: { gte: todayStart } }
+                : {}),
         };
 
         if (userRole === "ADMIN" || userRole === "INSTRUCTOR") {
