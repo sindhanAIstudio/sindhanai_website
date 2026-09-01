@@ -269,7 +269,7 @@ export default function TeamClientView({ initialMembers }: TeamClientViewProps) 
                     {/* CENTERED SECTION HEADER */}
                     <div className="text-center space-y-2 pb-2 max-w-2xl mx-auto">
                         <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-slate-400">
-                            Leadership & Governance — Scroll to Explore
+                            Leadership & Governance
                         </span>
                         <h2 className="text-3xl sm:text-5xl font-black text-slate-950 tracking-tight">
                             Guiding Vision & AI Mentorship

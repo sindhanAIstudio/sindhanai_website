@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Clock, EnvelopeSimple, MapPin, CaretRight, ArrowUp, FacebookLogo, XLogo, InstagramLogo, DribbbleLogo, YoutubeLogo } from "@phosphor-icons/react";
+import { Clock, EnvelopeSimple, MapPin, ArrowUp, FacebookLogo, XLogo, InstagramLogo, DribbbleLogo, YoutubeLogo } from "@phosphor-icons/react";
 import SindhanAiLogo from "@/components/SindhanAiLogo";
 
 export default function Footer() {
@@ -17,10 +17,12 @@ export default function Footer() {
     const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
     return (
-        <footer className="w-full bg-white border-t border-slate-200 relative overflow-hidden" style={{ minHeight: "70vh" }}>
-            <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pt-20 pb-8 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-14 pb-14 border-b border-slate-200">
-                    <div className="md:col-span-4 space-y-5">
+        <footer className="w-full bg-white border-t border-slate-200 relative overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 pt-16 pb-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-slate-200">
+
+                    {/* Brand & Mission */}
+                    <div className="md:col-span-6 space-y-5">
                         <div className="flex items-center">
                             <Link
                                 href="/"
@@ -29,10 +31,6 @@ export default function Footer() {
                                 <SindhanAiLogo className="h-8 sm:h-9" />
                             </Link>
                         </div>
-
-                        <p className="text-base text-slate-600 font-normal leading-relaxed max-w-xs">
-                            Applied AI and Technology Lab bridging industry expertise, academic excellence, and modern software development.
-                        </p>
 
                         <div className="space-y-2.5">
                             <span className="text-xs font-bold text-slate-800 tracking-wider uppercase block">Certifications</span>
@@ -48,73 +46,30 @@ export default function Footer() {
                         </div>
                     </div>
 
-                    <div className="md:col-span-3 space-y-4">
-                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Services</h4>
-                        <ul className="space-y-2.5">
-                            {[
-                                { name: "AI & Technology", href: "/services/ai-technology" },
-                                { name: "Software Solutions", href: "/services/software-solutions" },
-                                { name: "Training & Up-Skilling", href: "/services/training" }
-                            ].map((item) => (
-                                <li key={item.name}>
-                                    <Link href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
-                                        <span>{item.name}</span>
-                                        <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {/* Contact & Address Information */}
+                    <div className="md:col-span-6 space-y-5 md:pl-8">
+                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Contact & Governance</h4>
 
-                    <div className="md:col-span-2 space-y-4">
-                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Menu</h4>
-                        <ul className="space-y-2.5">
-                            {[
-                                { label: "Home", href: "/", isUnlinked: false },
-                                { label: "About", href: "/about", isUnlinked: false },
-                                { label: "Services", href: "/services", isUnlinked: false },
-                                { label: "Team", href: "/team", isUnlinked: false },
-                                { label: "Contact", href: "", isUnlinked: true }
-                            ].map((item) => (
-                                <li key={item.label}>
-                                    {item.isUnlinked ? (
-                                        <span className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors cursor-pointer">
-                                            <span>{item.label}</span>
-                                        </span>
-                                    ) : (
-                                        <Link href={item.href} className="flex items-center gap-1.5 text-base font-semibold text-slate-700 hover:text-slate-950 transition-colors group">
-                                            <span>{item.label}</span>
-                                            <CaretRight className="w-3 h-3 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
-                                        </Link>
-                                    )}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    <div className="md:col-span-3 space-y-5">
-                        <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Get in Touch</h4>
-
-                        <ul className="space-y-3">
+                        <ul className="space-y-3.5">
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
-                                <Clock className="w-4 h-4 text-slate-900 shrink-0 mt-0.5" weight="bold" />
+                                <Clock className="w-5 h-5 text-slate-900 shrink-0 mt-0.5" weight="bold" />
                                 <span>Open 8am to 6pm, Monday to Friday</span>
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
-                                <EnvelopeSimple className="w-4 h-4 text-slate-900 shrink-0 mt-0.5" weight="bold" />
-                                <a href="mailto:sathish.r@kgkite.ac.in" className="hover:text-slate-950 transition-colors">
-                                    Contact us at sathish.r@kgkite.ac.in
+                                <EnvelopeSimple className="w-5 h-5 text-slate-900 shrink-0 mt-0.5" weight="bold" />
+                                <a href="mailto:sathish.r@kgkite.ac.in" className="hover:text-slate-950 font-bold transition-colors">
+                                    sathish.r@kgkite.ac.in
                                 </a>
                             </li>
                             <li className="flex items-start gap-2.5 text-base text-slate-700 font-medium">
-                                <MapPin className="w-4 h-4 text-slate-900 shrink-0 mt-0.5" weight="bold" />
-                                <span>KGISL SOI, Saravanampatti, Coimbatore</span>
+                                <MapPin className="w-5 h-5 text-slate-900 shrink-0 mt-0.5" weight="bold" />
+                                <span>KGISL SOI, Saravanampatti, Coimbatore, TN</span>
                             </li>
                         </ul>
 
                         <div className="inline-flex items-center gap-2 p-2 rounded-2xl bg-slate-100 border border-slate-200">
                             {[FacebookLogo, XLogo, InstagramLogo, DribbbleLogo, YoutubeLogo].map((Icon, i) => (
-                                <a key={i} href="#" className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-slate-900 hover:bg-slate-900 hover:text-white transition-all duration-150 shadow-sm">
+                                <a key={i} href="#" className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-slate-900 hover:bg-slate-900 hover:text-white transition-all duration-150 shadow-xs">
                                     <Icon className="w-4 h-4" weight="bold" />
                                 </a>
                             ))}
@@ -122,14 +77,15 @@ export default function Footer() {
                     </div>
                 </div>
 
-                <div className="pt-5 pb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
+                {/* Bottom Bar */}
+                <div className="pt-6 pb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative z-10">
                     <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
                         <EnvelopeSimple className="w-4 h-4" />
                         <a href="mailto:sathish.r@kgkite.ac.in" className="hover:text-slate-900 transition-colors">sathish.r@kgkite.ac.in</a>
                     </div>
 
                     <div className="flex items-center gap-6 text-xs font-medium text-slate-500">
-                        <span className="select-none text-slate-400">Get in Touch</span>
+                        <span className="select-none text-slate-400">SCOPE Directory</span>
                         <span>SindhanAI © All rights reserved</span>
                     </div>
                 </div>
