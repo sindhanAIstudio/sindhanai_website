@@ -12,27 +12,16 @@ export async function POST(req: Request) {
         }
 
         const normalizedEmail = email.trim().toLowerCase();
-        const user = await (prisma as any).user.findUnique({
+        const user = await prisma.user.findUnique({
             where: { email: normalizedEmail },
             include: { role: true },
         });
 
-        if (!user) {
+        if (!user || !user.role || !user.passwordHash) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        let isValidPassword = false;
-
-        // Check permanent hashed password if available
-        if (user.passwordHash) {
-            isValidPassword = await bcrypt.compare(password, user.passwordHash);
-        }
-
-        // Fallback: check temporary unencrypted password (for newly created onboarding users)
-        if (!isValidPassword && user.tempPassword && user.tempPassword === password) {
-            isValidPassword = true;
-        }
-
+        const isValidPassword = await bcrypt.compare(password, user.passwordHash);
         if (!isValidPassword) {
             return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }

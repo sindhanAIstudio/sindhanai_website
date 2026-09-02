@@ -152,21 +152,16 @@ export default function StudentScannerClient() {
                             <Camera className="w-8 h-8" />
                         </div>
                         <p className="text-xs text-slate-400 font-medium">
-                            Point your device camera at the lab screen OR paste live token below
+                            Point your mobile device camera at the live lab screen QR code
                         </p>
 
-                        <input
-                            type="text"
-                            value={scannedToken}
-                            onChange={(e) => {
-                                setScannedToken(e.target.value);
-                                if (e.target.value.length > 20) {
-                                    handleScanSubmit(e.target.value);
-                                }
-                            }}
-                            placeholder="Paste or Scan QR Payload Token..."
-                            className="w-full h-11 px-4 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono font-bold text-indigo-300 focus:outline-none focus:border-indigo-500 focus:bg-slate-800 text-center"
-                        />
+                        <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+                            <span className="flex items-center gap-1.5 text-indigo-400 font-semibold">
+                                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                                Anti-Proxy Lock:
+                            </span>
+                            <span className="text-emerald-400 font-bold">Hardware Camera Active</span>
+                        </div>
 
                         <button
                             onClick={() => handleScanSubmit()}

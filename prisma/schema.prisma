@@ -246,8 +246,7 @@ model User {
   email               String                 @unique // Institutional SOI Email
   personalEmail       String?
   name                String
-  passwordHash        String?                // Permanent hashed password
-  tempPassword        String?                // Stored temporary password (unencrypted for administrative record)
+  passwordHash        String?                // Hashed password
   mustChangePassword  Boolean                @default(true) // Redirect to /setup-password on first login
   rollNumber          String?
   registrationNumber  String?
@@ -271,6 +270,8 @@ model User {
   roleId              String
   role                Role                   @relation(fields: [roleId], references: [id])
   deviceFingerprint   String?                // Encrypted/Hashed device signature
+  deviceCredentialId  String?                // Hardware WebAuthn Passkey credential ID
+  devicePublicKey     String?                // Hardware WebAuthn public key
   sessionToken        String?
   batchId             String?
   batch               Batch?                 @relation(fields: [batchId], references: [id], onDelete: SetNull)

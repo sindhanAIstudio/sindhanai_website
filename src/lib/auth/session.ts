@@ -1,9 +1,12 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || "sindhanai_enterprise_super_secret_jwt_key_2026"
-);
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+    throw new Error("CRITICAL SECURITY ERROR: JWT_SECRET environment variable is missing in production!");
+}
+
+const rawJwtSecret = process.env.JWT_SECRET || "sindhanai_dev_only_jwt_secret_key_2026_change_in_prod";
+const JWT_SECRET = new TextEncoder().encode(rawJwtSecret);
 
 export const SESSION_COOKIE_NAME = "sindhanai_session";
 export const SESSION_DURATION_DAYS = 30;

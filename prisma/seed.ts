@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import path from "path";
+import bcrypt from "bcryptjs";
 
 const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
 const adapter = new PrismaBetterSqlite3({ url: dbPath });
@@ -220,16 +221,18 @@ async function main() {
     });
 
     // 10. SUPER ADMIN ACCOUNT
+    const defaultPasswordHash = bcrypt.hashSync("Sindhanai@2026", 10);
+
     await prisma.user.upsert({
         where: { email: "superadmin@sindhanai.in" },
         update: {
-            tempPassword: "Sindhanai@2026",
+            passwordHash: defaultPasswordHash,
         },
         create: {
             name: "Super Administrator",
             email: "superadmin@sindhanai.in",
             roleId: superAdminRole.id,
-            tempPassword: "Sindhanai@2026",
+            passwordHash: defaultPasswordHash,
             mustChangePassword: false,
         },
     });
@@ -323,7 +326,7 @@ async function main() {
                     linkedinUrl: `https://linkedin.com/in/student-${lab.short}-${s}`,
                     leetcodeUrl: `https://leetcode.com/u/student-${lab.short}-${s}`,
                     kaggleUrl: `https://kaggle.com/student-${lab.short}-${s}`,
-                    tempPassword: "Sindhanai@2026",
+                    passwordHash: defaultPasswordHash,
                     mustChangePassword: true,
                 },
             });

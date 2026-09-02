@@ -73,7 +73,7 @@ export function verifyDynamicQrToken(
             return { valid: false, error: "QR code expired (5s limit). Scan live code." };
         }
 
-        // 2. Re-calculate signature
+        // 2. Re-calculate signature & verify in constant time to prevent timing attacks
         const dataToSign = `${sessionId}:${timestamp}:${nonce}`;
         const expectedSignature = crypto
             .createHmac("sha256", sessionSecret)
@@ -81,7 +81,10 @@ export function verifyDynamicQrToken(
             .digest("hex")
             .substring(0, 16);
 
-        if (signature !== expectedSignature) {
+        const signatureBuf = Buffer.from(signature, "utf-8");
+        const expectedBuf = Buffer.from(expectedSignature, "utf-8");
+
+        if (signatureBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(signatureBuf, expectedBuf)) {
             return { valid: false, error: "Security signature mismatch (Spoofed QR)" };
         }
 
