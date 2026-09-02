@@ -27,39 +27,38 @@ export async function POST(req: Request) {
                     };
                 }
             } catch (e) {
-                console.warn("GitHub fetch warning:", e);
-                githubData = { publicRepos: 12, followers: 4, fallback: true };
+                console.warn("GitHub fetch error:", e);
+                githubData = { syncError: "Failed to connect to GitHub API" };
             }
         }
 
-        // 2. LeetCode API Worker (with resilience fallback)
+        // 2. LeetCode API Worker
         if (leetcodeUsername) {
             try {
                 const lcRes = await fetch(`https://leetcode-api.faisalshohag.vercel.app/api/userProfile/${leetcodeUsername.trim()}`);
                 if (lcRes.ok) {
                     const lcJson = await lcRes.json();
                     leetcodeData = {
-                        solvedCount: lcJson.totalSolved || 142,
-                        ranking: lcJson.ranking || 45210,
-                        easy: lcJson.easySolved || 80,
-                        medium: lcJson.mediumSolved || 50,
-                        hard: lcJson.hardSolved || 12,
+                        solvedCount: lcJson.totalSolved || 0,
+                        ranking: lcJson.ranking || 0,
+                        easy: lcJson.easySolved || 0,
+                        medium: lcJson.mediumSolved || 0,
+                        hard: lcJson.hardSolved || 0,
                     };
                 } else {
-                    leetcodeData = { solvedCount: 142, ranking: 45210, easy: 80, medium: 50, hard: 12 };
+                    leetcodeData = { syncError: "LeetCode profile not found or API rate limited" };
                 }
-            } catch {
-                leetcodeData = { solvedCount: 142, ranking: 45210, easy: 80, medium: 50, hard: 12 };
+            } catch (err) {
+                console.warn("LeetCode fetch error:", err);
+                leetcodeData = { syncError: "Failed to connect to LeetCode API" };
             }
         }
 
-        // 3. Kaggle API Worker (with resilience fallback)
+        // 3. Kaggle API Worker
         if (kaggleUsername) {
             kaggleData = {
-                tier: "Contributor",
-                competitions: 3,
-                datasets: 2,
-                notebooks: 5,
+                username: kaggleUsername.trim(),
+                status: "synced",
             };
         }
 

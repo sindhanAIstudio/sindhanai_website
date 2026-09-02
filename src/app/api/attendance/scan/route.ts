@@ -5,12 +5,15 @@ import { verifyDynamicQrToken, isIpInSubnet } from "@/lib/attendance/totp";
 import os from "os";
 
 function getClientIp(req: Request): string {
-    const forwarded = req.headers.get("x-forwarded-for");
-    if (forwarded) return forwarded.split(",")[0].trim();
-    const realIp = req.headers.get("x-real-ip");
-    if (realIp) return realIp.trim();
+    // Only trust X-Forwarded-For if explicitly running behind a verified reverse proxy (Nginx, Cloudflare, etc.)
+    if (process.env.TRUSTED_PROXY === "true") {
+        const forwarded = req.headers.get("x-forwarded-for");
+        if (forwarded) return forwarded.split(",")[0].trim();
+        const realIp = req.headers.get("x-real-ip");
+        if (realIp) return realIp.trim();
+    }
 
-    // Local loopback resolution: resolve ::1 or 127.0.0.1 to host machine's active network IPv4 address
+    // Default to direct socket connection or local IPv4 fallback
     try {
         const interfaces = os.networkInterfaces();
         for (const name in interfaces) {
@@ -59,7 +62,7 @@ export async function POST(req: Request) {
         }
 
         // Fetch classroom session
-        const classroomSession = await (prisma as any).classroomSession.findUnique({
+        const classroomSession = await prisma.classroomSession.findUnique({
             where: { id: payload.sessionId },
         });
 
@@ -82,12 +85,12 @@ export async function POST(req: Request) {
 
         // 3. Wi-Fi Whitelist Security Check
         const clientIp = getClientIp(req);
-        const activeWhitelists = await (prisma as any).wifiWhitelist.findMany({
+        const activeWhitelists = await prisma.wifiWhitelist.findMany({
             where: { isActive: true },
         });
 
         if (activeWhitelists.length > 0) {
-            const isIpAllowed = activeWhitelists.some((w: any) =>
+            const isIpAllowed = activeWhitelists.some((w) =>
                 isIpInSubnet(clientIp, w.ipAddressOrSubnet)
             );
 
@@ -102,7 +105,7 @@ export async function POST(req: Request) {
         }
 
         // 4. Hardware Device Binding Check & Anti-Proxy Security Rule
-        const student = await (prisma as any).user.findUnique({
+        const student = await prisma.user.findUnique({
             where: { id: userSession.userId },
         });
 
@@ -111,7 +114,7 @@ export async function POST(req: Request) {
         }
 
         // Anti-Proxy Rule: Ensure this device fingerprint is not already registered to ANOTHER student in the DB
-        const otherStudentWithSameDevice = await (prisma as any).user.findFirst({
+        const otherStudentWithSameDevice = await prisma.user.findFirst({
             where: {
                 deviceFingerprint,
                 id: { not: student.id },
@@ -132,7 +135,7 @@ export async function POST(req: Request) {
         const isLegacyFingerprint = student.deviceFingerprint && !student.deviceFingerprint.startsWith("DEV-");
         if (!student.deviceFingerprint || isLegacyFingerprint) {
             // First time scanning or upgrading legacy Mozilla userAgent fingerprint — lock stable DEV-xxxx device ID to student profile
-            await (prisma as any).user.update({
+            await prisma.user.update({
                 where: { id: student.id },
                 data: { deviceFingerprint },
             });
@@ -151,7 +154,7 @@ export async function POST(req: Request) {
             category = "EVENT";
         } else {
             // Check Special Activity threshold time (Default 16:30)
-            const config = await (prisma as any).specialActivityConfig.findFirst();
+            const config = await prisma.specialActivityConfig.findFirst();
             const thresholdTime = config?.startTime || "16:30";
             const [tHour, tMin] = thresholdTime.split(":").map(Number);
 
@@ -165,7 +168,7 @@ export async function POST(req: Request) {
         }
 
         // 5. Check if already scanned for this category today
-        const existingRecord = await (prisma as any).attendanceRecord.findFirst({
+        const existingRecord = await prisma.attendanceRecord.findFirst({
             where: {
                 sessionId: classroomSession.id,
                 studentId: student.id,
@@ -184,7 +187,7 @@ export async function POST(req: Request) {
         const nowTime = new Date();
 
         // Record Attendance as PRESENT (No LATE status)
-        const newRecord = await (prisma as any).attendanceRecord.create({
+        const newRecord = await prisma.attendanceRecord.create({
             data: {
                 sessionId: classroomSession.id,
                 studentId: student.id,

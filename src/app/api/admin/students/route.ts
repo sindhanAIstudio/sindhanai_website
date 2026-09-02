@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth/session";
 
@@ -152,15 +153,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "STUDENT role entity not initialized" }, { status: 500 });
         }
 
-        // Generate default temporary password if not provided
-        const generatedTempPassword = body.tempPassword || `Sindhanai@${Math.floor(1000 + Math.random() * 9000)}`;
+        // Generate and hash initial password
+        const rawPassword = body.password || body.tempPassword || `Sindhanai@${Math.floor(1000 + Math.random() * 9000)}`;
+        const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
-        const student = await (prisma as any).user.create({
+        const student = await prisma.user.create({
             data: {
                 name,
                 email: email.trim().toLowerCase(),
                 personalEmail: personalEmail || null,
-                tempPassword: generatedTempPassword,
+                passwordHash: hashedPassword,
                 mustChangePassword: true,
                 rollNumber: rollNumber || null,
                 registrationNumber: registrationNumber || null,
