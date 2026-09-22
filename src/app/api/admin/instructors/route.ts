@@ -120,6 +120,20 @@ export async function POST(req: Request) {
             profilePicUrl,
             linkedinUrl,
             githubUrl,
+            slug,
+            empId,
+            onePageCv,
+            workExperience,
+            pythonExperience,
+            cProgrammingExperience,
+            dsaDesignThinkingExperience,
+            xUrl,
+            leetcodeUrl,
+            hackerrankUrl,
+            mediumUrl,
+            slackUrl,
+            kaggleUrl,
+            selfIntroVideoUrl,
             statusNote,
         } = body;
 
@@ -147,6 +161,8 @@ export async function POST(req: Request) {
         const rawPassword = password && password.trim() ? password.trim() : "InstructorPass123!";
         const passwordHash = await bcrypt.hash(rawPassword, 10);
 
+        const instructorSlug = slug || name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+
         const instructor = await prisma.user.create({
             data: {
                 name: name.trim(),
@@ -164,6 +180,20 @@ export async function POST(req: Request) {
                 profilePicUrl: profilePicUrl || null,
                 linkedinUrl: linkedinUrl ? linkedinUrl.trim() : null,
                 githubUrl: githubUrl ? githubUrl.trim() : null,
+                slug: instructorSlug,
+                empId: empId || null,
+                onePageCv: onePageCv || null,
+                workExperience: workExperience || null,
+                pythonExperience: pythonExperience || null,
+                cProgrammingExperience: cProgrammingExperience || null,
+                dsaDesignThinkingExperience: dsaDesignThinkingExperience || null,
+                xUrl: xUrl || null,
+                leetcodeUrl: leetcodeUrl || null,
+                hackerrankUrl: hackerrankUrl || null,
+                mediumUrl: mediumUrl || null,
+                slackUrl: slackUrl || null,
+                kaggleUrl: kaggleUrl || null,
+                selfIntroVideoUrl: selfIntroVideoUrl || null,
                 statusNote: statusNote || null,
             },
             include: {

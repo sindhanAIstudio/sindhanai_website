@@ -32,6 +32,7 @@ export async function POST(req: Request) {
             email: user.email,
             name: user.name,
             role: user.role.name,
+            instructorType: user.instructorType,
             deviceFingerprint: user.deviceFingerprint,
         });
 
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
                 name: user.name,
                 email: user.email,
                 role: user.role.name,
+                instructorType: user.instructorType,
                 mustChangePassword: !!user.mustChangePassword,
             },
         });

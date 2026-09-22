@@ -1,0 +1,107 @@
+sessionNumber,title,duration,courseType,topicsOutline,pptResourceUrl,pptPublishedUrl,quizLink,activityLink
+1,"Session 1: Introduction to Python","1 Hour","THEORY","- What is Python? History and applications.
+- Interactive Mode vs. Script Mode.
+- Writing a simple ""Hello, World!"" script.","https://docs.google.com/presentation/d/1jUf6xCkagaFqiHNNyY2MaXtcAcFrxQUl/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes1Deck","",""
+2,"Session 2: Python IDEs & Numeric Types","1 Hour","THEORY","- Overview of Python IDEs (VS Code, Jupyter).
+- Numeric Data Types: int, float, complex.","https://docs.google.com/presentation/d/1JFwA2NowqKe6OSETRurB6uWauorq-qaT/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes2Deck","",""
+3,"Session 3: String Data Type","1 Hour","THEORY","- String creation, indexing, and slicing.
+- Common string methods (len(), upper(), lower(), title(), capitalize()).
+- String concatenation and formatting.","https://docs.google.com/presentation/d/1b2tLiHSMfA8Z7wkmEXFOGVSs7ZkdpYjU/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes3Deck","",""
+4,"Session 4: List Data Type","1 Hour","THEORY","- List creation, indexing, and modification.
+- List methods: append(), extend(), insert(), remove(), pop().
+- Slicing and copying lists.","https://docs.google.com/presentation/d/1FsKAXmrfZSURCzwrO1Dejl38GGpVccuQ/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes4Deck","",""
+5,"Session 5: Tuple & Set Data Types","1 Hour","THEORY","- Tuples: Immutability, packing, and unpacking.
+- Sets: Unordered collections, uniqueness.
+- Set operations: union(), intersection(), difference().","https://docs.google.com/presentation/d/11MdFqQmp7cPWMxXErb9oHGHfr4eaG0hx/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes5Deck","",""
+6,"Session 6: Dictionary Data Type","1 Hour","THEORY","- Dictionaries: Key-value pairs.
+- Creating, accessing, and modifying dictionary entries.
+- Iterating over keys, values, and items.","https://docs.google.com/presentation/d/1_ziwJI2wqw5JsiIIMJuzYj3KHeBL9Xxs/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes6Deck","",""
+7,"Session 7: Variables & Operators (Part 1)","1 Hour","THEORY","- Variable assignment and naming conventions.
+- Arithmetic Operators (+, -, *, /, %, //, **).
+- Relational/Comparison Operators (==, !=, >, <, >=, <=).","https://docs.google.com/presentation/d/1fpGZZN2bnszAHJt0G6wi3wTUBsNft6DA/edit?usp=sharing&ouid=100865951128847500378&rtpof=true&sd=true","http://tiny.cc/PySes7Deck","",""
+8,"Session 8: Variables & Operators (Part 2)","1 Hour","THEORY","- Logical Operators (and, or, not).
+- Bitwise Operators","https://docs.google.com/presentation/d/16sEbw1cez1b_r8eNBuEDBwyNpdXhqjKz/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes8Deck","",""
+9,"Session 9: Basic I/O Operations","1 Hour","THEORY","- Reading user input using input().
+- Displaying output using print().
+- Formatted output with f-strings.","https://docs.google.com/presentation/d/1pcBynYAMzpXQFdNDKCcnD6Qb89a0tFGz/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes9Deck","",""
+10,"Session 10: Boolean Values & if Statements","1 Hour","THEORY","- Boolean data type: True and False.
+- Simple conditional execution with if.
+- Indentation rules in Python.","https://docs.google.com/presentation/d/1ILbq78AD5zXwx0UqJFOBYn7vOB9jHE_D/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes10Deck","",""
+11,"Session 11: Advanced Conditional Execution","1 Hour","THEORY","- Handling multiple conditions with if-elif-else.
+- Writing programs with multiple branches of logic.","https://docs.google.com/presentation/d/14aGe_GfVF3EaqjuA507ryQsL9cvdH7EI/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes11Deck","",""
+12,"Session 12: Nested Conditions","1 Hour","THEORY","- Nesting if statements for complex logic.
+- Implementing multi-level decision-making.","https://docs.google.com/presentation/d/1b_oIDpkwyrDWEXI0jPP6c1zgjhwTiI6g/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes12Deck","",""
+13,"Session 13: for Loops","1 Hour","THEORY","- Iterating over sequences (lists, strings, tuples).
+- Using the range() function for controlled iteration.","https://docs.google.com/presentation/d/1KzLouoxdUGr7YeAnUx3VDgiLhT2gnLi_/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes13Deck","",""
+14,"Session 14: while Loops","1 Hour","THEORY","- Condition-based iteration with while.
+- break and continue statements.","https://docs.google.com/presentation/d/1DGNgSMHmwL3WTNe4qmiL1gv4yAeWvkmB/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes14Deck","",""
+15,"Session 15: Nested Loops & List Processing","1 Hour","THEORY","- Using loops inside other loops (e.g., for pattern printing).
+- Advanced list processing: sort(), reverse().","https://docs.google.com/presentation/d/1Yf1A0rRg2h_yD0KZauAOp2wpbrOwYox5/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes15Deck","",""
+16,"Session 16: Data Processing with Tuples & Dictionaries","1 Hour","THEORY","- Iterating efficiently over dictionaries.
+- Using tuple unpacking in loops.
+- Practical data processing examples.","https://docs.google.com/presentation/d/1KIM2SuAfC3pha-AOlJ88Weq4vT9II6VZ8O2jCGzFkSc/edit?usp=sharing","http://tiny.cc/PySes16Deck","",""
+17,"Session 17: String & Set Operations","1 Hour","THEORY","- Advanced string methods.
+- Practical applications of set operations (e.g., finding unique items).","https://docs.google.com/presentation/d/15ZVTXHbyKxscWtikTrgD94SxtnC-BGeP/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes17Deck","",""
+18,"Session 18: Logical & Bitwise Operations in Practice","1 Hour","THEORY","- Short-circuiting in logical operations.
+- Practical use cases for bitwise operations (e.g., flags).","https://docs.google.com/presentation/d/1e3E1J_z_bEiq-6VHfPQjqMgsPxIm6ahK/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes18Deck","",""
+19,"Session 19: Introduction to Functions","1 Hour","THEORY","- Defining functions with def.
+- Parameters and arguments.
+- The return statement.","https://docs.google.com/presentation/d/1vGpg7a7rEZyUHg-BZSlLg_LCDGV3itYF/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes19Deck","",""
+20,"Session 20: Function Arguments & Scope","1 Hour","THEORY","- Local vs. Global variable scope.
+- Default and keyword arguments.","https://docs.google.com/presentation/d/1Oo81AGeBcHqJ8vjNDt9Sa1G2688W9INK/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes20Deck","",""
+21,"Session 21: Multi-parameter Functions","1 Hour","THEORY","- Variable-length positional arguments (*args).
+- Variable-length keyword arguments (**kwargs).","https://docs.google.com/presentation/d/1BIO-TEm2G5LHyktP6c9NbheD0kINMUug/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes21Deck","",""
+22,"Session 22: Anonymous Functions (Lambda)","1 Hour","THEORY","- Syntax and use of lambda functions.
+- Using lambdas with functions like sorted() and filter().","https://docs.google.com/presentation/d/1vSfxhol4ecRLa48Yx_sPGaCnH-2qTCWY/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes22Deck","",""
+23,"Session 23: Functional Tools (map, reduce)","1 Hour","THEORY","- Applying a function to all items in an iterable with map().
+- Cumulatively applying a function with functools.reduce().","https://docs.google.com/presentation/d/1GyWtOq_GR33X_PRijskALU-M_qsU_xmKUZ3DQItLs0k/edit?usp=sharing","http://tiny.cc/PySes23Deck","",""
+24,"Session 24: Functional Tools (filter, zip, enumerate)","1 Hour","THEORY","- Filtering iterables with filter().
+- Combining iterables with zip().
+- Getting index and value with enumerate().","https://docs.google.com/presentation/d/19UtXxnvg_JE-_nsNmOEpuETizSK_Ve1r/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes24Deck","",""
+25,"Session 25: Iterators","1 Hour","THEORY","- The iterator protocol: iter() and next().
+- Understanding how for loops work internally.","https://docs.google.com/presentation/d/1ChhOnnmDttm0shxQGszzsprEnQKoyFTe-DN-pjXNcSg/edit?usp=sharing","http://tiny.cc/PySes25Deck","",""
+26,"Session 26: Generators","1 Hour","THEORY","- Creating generators with functions and the yield statement.
+- Memory efficiency of generators vs. lists.","https://docs.google.com/presentation/d/13oTY2ghOgUWwAva2xV558oPcfWBOiGgl/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes26Deck","",""
+27,"Session 27: List Comprehension","1 Hour","THEORY","- Concise syntax for creating lists.
+- Adding conditional logic to list comprehensions.
+- Nested list comprehensions.","https://docs.google.com/presentation/d/1ej2DdoZ02x6jvx9LdF5_JhKto6-IGuhS/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes27Deck","",""
+28,"Session 28: Reading & Writing Text Files","1 Hour","THEORY","- Opening files with open().
+- Reading from files (read(), readline(), readlines()).
+- Writing to files (write()).","https://docs.google.com/presentation/d/1oObkr9qc7uSMLKaR6pKODPHVF__MAO69/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes28Deck","",""
+29,"Session 29: File Modes & with Statement","1 Hour","THEORY","- File modes: 'r', 'w', 'a', 'r+', etc.
+- Automatic file closing with the with statement.","https://docs.google.com/presentation/d/18WEQzjoQGIKsZcCDAiCcGOrcVb-_KCwZ/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes29Deck","",""
+30,"Session 30: Working with Zip Files","1 Hour","THEORY","- Introduction to the zipfile module.
+- Compressing files into a zip archive.
+- Decompressing/extracting files from a zip archive.","https://docs.google.com/presentation/d/1z1R3Hdmcqn7_R_w_XZWazNnLLnrSv0m0/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes30Deck","",""
+31,"Session 31: Introduction to Exception Handling","1 Hour","THEORY","- Handling runtime errors with try...except blocks.
+- Catching specific exceptions (ValueError, FileNotFoundError).","https://docs.google.com/presentation/d/14jO0ysuYiIVWbknN86_zMBHyVpVaQkkS/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes31Deck","",""
+32,"Session 32: Advanced Exception Handling","1 Hour","THEORY","- Using the else block for code that runs when no exception occurs.
+- Using the finally block for cleanup code.","https://docs.google.com/presentation/d/12Uj1-zRIw2fdEx_iprNkhv1_51luJFk-/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes32Deck","",""
+33,"Session 33: Raising & User-Defined Exceptions","1 Hour","THEORY","- Raising exceptions with the raise keyword.
+- Creating custom exception classes.","https://docs.google.com/presentation/d/1bfv7Ad5I9WfTEqqXu7UHPKl5eNMi39zM/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes33Deck","",""
+34,"Session 34: Introduction to Modules","1 Hour","THEORY","- Organizing code into .py files (modules).
+- Importing modules: import and from...import.","https://docs.google.com/presentation/d/15J0ZX_x0IGIgQnPo6qwBUHEW53FrsI3D/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes34Deck","",""
+35,"Session 35: Introduction to Packages","1 Hour","THEORY","- Organizing modules into directories (packages).
+- The role of the __init__.py file.","https://docs.google.com/presentation/d/1LhjGiOaRyE83CjlUpfzd5UEnw7oygW9w/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes35Deck","",""
+36,"Session 36: Standard Library Modules","1 Hour","THEORY","- Exploring useful modules in the standard library.
+- Examples: math, random, sys.","https://docs.google.com/presentation/d/1QbkaG0MGGYGZ2nFvIEUeODQ39RIoAXeQ/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes36Deck","",""
+37,"Session 37: os Module (File & Directory Ops)","1 Hour","THEORY","- Interacting with the operating system.
+- File system operations: os.listdir(), os.mkdir(), os.rename().","https://docs.google.com/presentation/d/1D0RnBgtA64tR5XzuXR7dyx16LIyFnwKV/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes37Deck","",""
+38,"Session 38: os Module (Environment Variables)","1 Hour","THEORY","- Accessing system environment variables.
+- os.environ and os.getenv().","https://docs.google.com/presentation/d/1N_cLeNtFEnS_XcH5rurgfmFSR0fUBL3R/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes38Deck","",""
+39,"Session 39: datetime Module (Manipulation)","1 Hour","THEORY","- Working with dates and times (date, time, datetime).
+- Time differences with timedelta.","https://docs.google.com/presentation/d/1CwJKIZ_LO_aI7f8BI6g85t6WJT2eQ9RM/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes39Deck","",""
+40,"Session 40: datetime Module (Formatting)","1 Hour","THEORY","- Formatting datetime objects into strings (strftime()).
+- Parsing strings into datetime objects (strptime()).","https://docs.google.com/presentation/d/1QPNWCwMEZImYT1Ey4HgwFCQwss1aNOBx/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes40Deck","",""
+41,"Session 41: json Module (Parsing)","1 Hour","THEORY","- Introduction to JSON format.
+- Converting between Python objects and JSON (dumps(), loads()).","https://docs.google.com/presentation/d/1iNhLBeVFGgxrvTApHwzfSOTGxstwhqU0/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes41Deck","",""
+42,"Session 42: json Module (Nested Structures)","1 Hour","THEORY","- Working with complex, nested JSON data.
+- Reading from and writing to .json files (dump(), load()).","https://docs.google.com/presentation/d/17PD_jNLh5ztUzcDLFlu2B5ItqtIUB2bu/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes42Deck","",""
+43,"Session 43: Introduction to NumPy","1 Hour","THEORY","- NumPy ndarray objects.
+- Array creation and basic operations.
+- Introduction to linear algebra with NumPy.","https://docs.google.com/presentation/d/1aE1XwhU65rxAFEBPHei5nQHtYkPFkUJo/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes43Deck","",""
+44,"Session 44: Introduction to Pandas (Part 1)","1 Hour","THEORY","- Core Pandas data structures: Series and DataFrame.
+- Creating DataFrames from dictionaries or lists.","https://docs.google.com/presentation/d/1Hd0olAzM6nl2kJaZJTzgQLJtnarJhuVI/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes44Deck","",""
+45,"Session 45: Introduction to Pandas (Part 2)","1 Hour","THEORY","- Reading data from CSV files with pd.read_csv().
+- Writing DataFrames to CSV files with df.to_csv().
+- Course wrap-up and review.","https://docs.google.com/presentation/d/195g57pkg8eXiPX9Sd1uPHAdFoSI-Y5l5/edit?usp=sharing&ouid=105041515872396582483&rtpof=true&sd=true","http://tiny.cc/PySes45Deck","",""

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     Buildings,
     UsersThree,
@@ -9,6 +9,7 @@ import {
     Briefcase,
     GraduationCap,
     Target,
+    BookOpen,
     PencilSimple,
     Trash,
     MagnifyingGlass,
@@ -18,6 +19,7 @@ import {
     ArrowClockwise,
     ToggleLeft,
     ToggleRight,
+    CaretLeft,
 } from "@phosphor-icons/react";
 import ConfirmationModal, { ConfirmationModalProps } from "@/components/ui/ConfirmationModal";
 import ToastNotification, { ToastProps } from "@/components/ui/ToastNotification";
@@ -31,6 +33,7 @@ interface MetadataManagementClientProps {
         domainPlacements: any[];
         batches: any[];
         interestedRoles: any[];
+        subjects?: any[];
     };
 }
 
@@ -41,7 +44,8 @@ type MetadataCategory =
     | "soiDomains"
     | "domainPlacements"
     | "batches"
-    | "interestedRoles";
+    | "interestedRoles"
+    | "subjects";
 
 type StatusTab = "active" | "inactive" | "trashed";
 
@@ -53,14 +57,28 @@ export default function MetadataManagementClient({
     const [activeStatusTab, setActiveStatusTab] = useState<StatusTab>("active");
     const [searchQuery, setSearchQuery] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+    const itemsPerPage = 5;
+
+    // Server-side Drawer State
+    const [drawerItems, setDrawerItems] = useState<any[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const [drawerLoading, setDrawerLoading] = useState(false);
+    const [statusCounts, setStatusCounts] = useState<{ active: number; inactive: number; trashed: number }>({
+        active: 0,
+        inactive: 0,
+        trashed: 0,
+    });
+    const [cardCounts, setCardCounts] = useState<Record<string, number>>({});
 
     // Form state inside drawer
     const [editingItem, setEditingItem] = useState<any | null>(null);
     const [formName, setFormName] = useState("");
     const [formCode, setFormCode] = useState("");
-    const [formStartYear, setFormStartYear] = useState("2021");
-    const [formEndYear, setFormEndYear] = useState("2025");
+    const [formBatchId, setFormBatchId] = useState("");
+    const [formDepartmentId, setFormDepartmentId] = useState("");
+    const [formStartYear, setFormStartYear] = useState("2023");
+    const [formEndYear, setFormEndYear] = useState("2027");
     const [formIsActive, setFormIsActive] = useState(true);
     const [saving, setSaving] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -148,7 +166,54 @@ export default function MetadataManagementClient({
             codePlaceholder: "e.g. ROLE_FULLSTACK (Unique Code Mandatory)",
             codeRequired: true,
         },
+        subjects: {
+            title: "Academic Subjects",
+            description: "Subjects & courses (e.g. Python Programming, Data Structures)",
+            icon: BookOpen,
+            color: "text-indigo-600 bg-indigo-50 border-indigo-200",
+            namePlaceholder: "e.g. Python Programming",
+            codePlaceholder: "e.g. CS101 (Unique Code Mandatory)",
+            codeRequired: true,
+        },
     };
+
+    // Server-side drawer data fetcher
+    const fetchCategoryData = useCallback(async () => {
+        if (!activeDrawer) return;
+        setDrawerLoading(true);
+        try {
+            const params = new URLSearchParams();
+            params.set("category", activeDrawer);
+            params.set("status", activeStatusTab);
+            if (searchQuery) params.set("search", searchQuery);
+            params.set("page", currentPage.toString());
+            params.set("pageSize", itemsPerPage.toString());
+
+            const res = await fetch(`/api/admin/metadata?${params.toString()}`);
+            const data = await res.json();
+            if (data.success) {
+                setDrawerItems(data.data || []);
+                if (data.pagination) {
+                    setTotalCount(data.pagination.total || 0);
+                    setTotalPages(data.pagination.totalPages || 1);
+                }
+                if (data.counts) {
+                    setStatusCounts(data.counts);
+                    setCardCounts((prev) => ({ ...prev, [activeDrawer]: data.counts.active }));
+                }
+            }
+        } catch (err) {
+            console.error("Fetch metadata error:", err);
+        } finally {
+            setDrawerLoading(false);
+        }
+    }, [activeDrawer, activeStatusTab, searchQuery, currentPage]);
+
+    useEffect(() => {
+        if (activeDrawer) {
+            fetchCategoryData();
+        }
+    }, [activeDrawer, activeStatusTab, searchQuery, currentPage, fetchCategoryData]);
 
     const openDrawer = (catKey: MetadataCategory) => {
         setActiveDrawer(catKey);
@@ -156,18 +221,21 @@ export default function MetadataManagementClient({
         setSearchQuery("");
         setCurrentPage(1);
         resetForm();
-        refreshMetadata(catKey, "all");
     };
 
     // Inline field validation errors
     const [nameError, setNameError] = useState<string | null>(null);
     const [codeError, setCodeError] = useState<string | null>(null);
     const [yearError, setYearError] = useState<string | null>(null);
+    const [batchError, setBatchError] = useState<string | null>(null);
+    const [deptError, setDeptError] = useState<string | null>(null);
 
     const resetForm = () => {
         setEditingItem(null);
         setFormName("");
         setFormCode("");
+        setFormBatchId("");
+        setFormDepartmentId("");
         setFormStartYear("2023");
         setFormEndYear("2027");
         setFormIsActive(true);
@@ -175,6 +243,8 @@ export default function MetadataManagementClient({
         setNameError(null);
         setCodeError(null);
         setYearError(null);
+        setBatchError(null);
+        setDeptError(null);
     };
 
     const startEdit = (item: any) => {
@@ -182,6 +252,8 @@ export default function MetadataManagementClient({
         setFormName(item.name || "");
         const fallbackCode = item.code || (item.startYear ? `BATCH_${item.startYear}_${item.endYear}` : item.name.toUpperCase().replace(/[^A-Z0-9_]/g, "_"));
         setFormCode(fallbackCode);
+        setFormBatchId(item.batchId || "");
+        setFormDepartmentId(item.departmentId || "");
         setFormStartYear(item.startYear ? item.startYear.toString() : "2023");
         setFormEndYear(item.endYear ? item.endYear.toString() : "2027");
         setFormIsActive(item.isActive !== false);
@@ -189,18 +261,8 @@ export default function MetadataManagementClient({
         setNameError(null);
         setCodeError(null);
         setYearError(null);
-    };
-
-    const refreshMetadata = async (catKey: MetadataCategory, status: string = "all") => {
-        try {
-            const res = await fetch(`/api/admin/metadata?category=${catKey}&status=${status}`);
-            const data = await res.json();
-            if (res.ok) {
-                setMetadata((prev) => ({ ...prev, [catKey]: data.data || [] }));
-            }
-        } catch (err) {
-            console.error("Refresh failed:", err);
-        }
+        setBatchError(null);
+        setDeptError(null);
     };
 
     const handleStatusTabChange = (tab: StatusTab) => {
@@ -215,6 +277,8 @@ export default function MetadataManagementClient({
         setNameError(null);
         setCodeError(null);
         setYearError(null);
+        setBatchError(null);
+        setDeptError(null);
         setErrorMsg(null);
 
         let isValid = true;
@@ -229,6 +293,17 @@ export default function MetadataManagementClient({
         if (!trimmedCode || trimmedCode.length < 2 || trimmedCode.length > 20) {
             setCodeError("Unique Code must be 2 to 20 uppercase alphanumeric characters/underscores");
             isValid = false;
+        }
+
+        if (activeDrawer === "classGroups") {
+            if (!formBatchId) {
+                setBatchError("Batch is mandatory");
+                isValid = false;
+            }
+            if (!formDepartmentId) {
+                setDeptError("Department is mandatory");
+                isValid = false;
+            }
         }
 
         let sYear = parseInt(formStartYear);
@@ -260,6 +335,8 @@ export default function MetadataManagementClient({
                 id: editingItem?.id,
                 name: trimmedName,
                 code: trimmedCode,
+                batchId: formBatchId || null,
+                departmentId: formDepartmentId || null,
                 startYear: sYear,
                 endYear: eYear,
                 isActive: formIsActive,
@@ -284,7 +361,7 @@ export default function MetadataManagementClient({
                 `Successfully saved ${trimmedName}`
             );
             resetForm();
-            refreshMetadata(activeDrawer, "all");
+            fetchCategoryData();
         } catch {
             setErrorMsg("Network error saving metadata");
             showToast("error", "Network Error", "Unable to connect to server.");
@@ -296,13 +373,6 @@ export default function MetadataManagementClient({
     const handleToggleStatus = async (item: any) => {
         if (!activeDrawer) return;
         const newStatus = !item.isActive;
-
-        setMetadata((prev) => ({
-            ...prev,
-            [activeDrawer]: prev[activeDrawer].map((it: any) =>
-                it.id === item.id ? { ...it, isActive: newStatus } : it
-            ),
-        }));
 
         try {
             const res = await fetch("/api/admin/metadata", {
@@ -323,13 +393,12 @@ export default function MetadataManagementClient({
                     `Status Changed to ${newStatus ? "Active" : "Inactive"}`,
                     `${item.name} is now ${newStatus ? "Active" : "Inactive"}.`
                 );
+                fetchCategoryData();
             } else {
                 showToast("error", "Action Blocked", data.error || "Failed to update status.");
-                refreshMetadata(activeDrawer, "all");
             }
         } catch (err) {
             console.error("Toggle status failed:", err);
-            refreshMetadata(activeDrawer, "all");
         }
     };
 
@@ -337,7 +406,7 @@ export default function MetadataManagementClient({
         if (!activeDrawer) return;
         setConfirmModalConfig({
             title: "Move to Trash?",
-            description: `Are you sure you want to soft delete "${item.name}"? It will be moved to the Trashed tab and can be restored anytime.`,
+            description: `Are you sure you want to delete "${item.name}"? It will be moved to the Trashed tab and can be restored anytime.`,
             variant: "warning",
             confirmText: "Move to Trash",
             onConfirm: async () => {
@@ -350,13 +419,6 @@ export default function MetadataManagementClient({
     const executeSoftDelete = async (id: string, name: string) => {
         if (!activeDrawer) return;
 
-        setMetadata((prev) => ({
-            ...prev,
-            [activeDrawer]: prev[activeDrawer].map((it: any) =>
-                it.id === id ? { ...it, deletedAt: new Date().toISOString(), isActive: false } : it
-            ),
-        }));
-
         try {
             const res = await fetch(`/api/admin/metadata?category=${activeDrawer}&id=${id}`, {
                 method: "DELETE",
@@ -364,25 +426,17 @@ export default function MetadataManagementClient({
             const data = await res.json();
             if (res.ok) {
                 showToast("info", "Moved to Trash", `"${name}" was moved to Trashed tab.`);
+                fetchCategoryData();
             } else {
-                showToast("error", "Soft Delete Failed", data.error || "Failed to soft delete record.");
-                refreshMetadata(activeDrawer, "all");
+                showToast("error", "Delete Failed", data.error || "Failed to delete record.");
             }
         } catch (err) {
-            console.error("Soft delete failed:", err);
-            refreshMetadata(activeDrawer, "all");
+            console.error("Delete failed:", err);
         }
     };
 
     const handleRestoreItem = async (id: string, name: string) => {
         if (!activeDrawer) return;
-
-        setMetadata((prev) => ({
-            ...prev,
-            [activeDrawer]: prev[activeDrawer].map((it: any) =>
-                it.id === id ? { ...it, deletedAt: null, isActive: true } : it
-            ),
-        }));
 
         try {
             const res = await fetch("/api/admin/metadata", {
@@ -398,44 +452,17 @@ export default function MetadataManagementClient({
 
             if (res.ok) {
                 showToast("success", "Record Restored", `"${name}" restored to Active tab.`);
+                fetchCategoryData();
             } else {
                 showToast("error", "Restore Failed", data.error || "Failed to restore record.");
-                refreshMetadata(activeDrawer, "all");
             }
         } catch (err) {
             console.error("Restore failed:", err);
-            refreshMetadata(activeDrawer, "all");
         }
     };
 
-    // Filter & Paginate items STRICTLY by tab status & search query
-    const getDrawerItems = () => {
-        if (!activeDrawer) return [];
-        const rawList = metadata[activeDrawer] || [];
-        const query = searchQuery.toLowerCase();
-
-        return rawList.filter((item: any) => {
-            if (activeStatusTab === "active") {
-                if (item.deletedAt || item.isActive === false) return false;
-            } else if (activeStatusTab === "inactive") {
-                if (item.deletedAt || item.isActive !== false) return false;
-            } else if (activeStatusTab === "trashed") {
-                if (!item.deletedAt) return false;
-            }
-
-            if (!query) return true;
-            return (
-                item.name.toLowerCase().includes(query) ||
-                (item.code && item.code.toLowerCase().includes(query))
-            );
-        });
-    };
-
-    const drawerItems = getDrawerItems();
-    const totalPages = Math.ceil(drawerItems.length / itemsPerPage) || 1;
-    const paginatedItems = drawerItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
     const getActiveCount = (catKey: MetadataCategory) => {
+        if (cardCounts[catKey] !== undefined) return cardCounts[catKey];
         const list = metadata[catKey] || [];
         return list.filter((it: any) => !it.deletedAt && it.isActive !== false).length;
     };
@@ -445,10 +472,10 @@ export default function MetadataManagementClient({
             {/* Header Title */}
             <div>
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight">Institutional Metadata Console</h1>
-                <p className="text-xs text-slate-500">Configure departments, sections, slot timings, SOI labs, domain placements, and graduation batches.</p>
+                <p className="text-xs text-slate-500">Configure departments, sections, slot timings, SOI labs, domain placements, subjects, and graduation batches.</p>
             </div>
 
-            {/* Metadata Category Cards Grid (Clean layout without item preview list as requested) */}
+            {/* Metadata Category Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {(Object.keys(categoriesConfig) as MetadataCategory[]).map((catKey) => {
                     const cat = categoriesConfig[catKey];
@@ -489,7 +516,7 @@ export default function MetadataManagementClient({
                 })}
             </div>
 
-            {/* SIDE DRAWER MODAL FOR CATEGORY MANAGEMENT */}
+            {/* SIDE DRAWER MODAL FOR CATEGORY MANAGEMENT WITH SERVER-SIDE PAGINATION */}
             {activeDrawer && (
                 <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex justify-end">
                     <div className="w-full max-w-lg bg-white h-full border-l border-slate-200 p-6 space-y-6 overflow-y-auto shadow-2xl flex flex-col justify-between">
@@ -500,7 +527,7 @@ export default function MetadataManagementClient({
                                     <h2 className="text-base font-bold text-slate-900 capitalize">
                                         Manage {categoriesConfig[activeDrawer].title}
                                     </h2>
-                                    <p className="text-xs text-slate-500">Create, edit, toggle active status, soft-delete, or restore items.</p>
+                                    <p className="text-xs text-slate-500">Create, edit, toggle active status, delete, or restore items.</p>
                                 </div>
                                 <button
                                     type="button"
@@ -564,6 +591,43 @@ export default function MetadataManagementClient({
                                             />
                                             {codeError && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{codeError}</p>}
                                         </div>
+
+                                        {activeDrawer === "classGroups" && (
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label className="text-[11px] font-bold text-slate-700">Batch * (Mandatory)</label>
+                                                    <select
+                                                        value={formBatchId}
+                                                        onChange={(e) => setFormBatchId(e.target.value)}
+                                                        className={`w-full px-3 py-1.5 rounded-xl bg-white border text-xs focus:outline-none focus:border-indigo-600 ${batchError ? "border-rose-400 bg-rose-50/30" : "border-slate-200"}`}
+                                                    >
+                                                        <option value="">-- Select Batch * --</option>
+                                                        {(metadata.batches || []).map((b: any) => (
+                                                            <option key={b.id} value={b.id}>
+                                                                {b.name} ({b.startYear}-{b.endYear})
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {batchError && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{batchError}</p>}
+                                                </div>
+                                                <div>
+                                                    <label className="text-[11px] font-bold text-slate-700">Department * (Mandatory)</label>
+                                                    <select
+                                                        value={formDepartmentId}
+                                                        onChange={(e) => setFormDepartmentId(e.target.value)}
+                                                        className={`w-full px-3 py-1.5 rounded-xl bg-white border text-xs focus:outline-none focus:border-indigo-600 ${deptError ? "border-rose-400 bg-rose-50/30" : "border-slate-200"}`}
+                                                    >
+                                                        <option value="">-- Select Department * --</option>
+                                                        {(metadata.departments || []).map((d: any) => (
+                                                            <option key={d.id} value={d.id}>
+                                                                {d.name} {d.code ? `(${d.code})` : ""}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {deptError && <p className="text-[10px] font-semibold text-rose-600 mt-0.5">{deptError}</p>}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {activeDrawer === "batches" && (
                                             <div>
@@ -633,7 +697,7 @@ export default function MetadataManagementClient({
                                             : "border-transparent text-slate-500 hover:text-slate-700"
                                             }`}
                                     >
-                                        Active ({metadata[activeDrawer]?.filter((it: any) => !it.deletedAt && it.isActive !== false).length || 0})
+                                        Active ({statusCounts.active})
                                     </button>
                                     <button
                                         type="button"
@@ -643,7 +707,7 @@ export default function MetadataManagementClient({
                                             : "border-transparent text-slate-500 hover:text-slate-700"
                                             }`}
                                     >
-                                        Inactive ({metadata[activeDrawer]?.filter((it: any) => !it.deletedAt && it.isActive === false).length || 0})
+                                        Inactive ({statusCounts.inactive})
                                     </button>
                                     <button
                                         type="button"
@@ -653,14 +717,14 @@ export default function MetadataManagementClient({
                                             : "border-transparent text-slate-500 hover:text-slate-700"
                                             }`}
                                     >
-                                        Trashed ({metadata[activeDrawer]?.filter((it: any) => Boolean(it.deletedAt)).length || 0})
+                                        Trashed ({statusCounts.trashed})
                                     </button>
                                 </div>
 
                                 {/* Search Bar inside list */}
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xs font-bold text-slate-800 capitalize">
-                                        {activeStatusTab} Records ({drawerItems.length})
+                                        {activeStatusTab} Records ({totalCount})
                                     </h3>
                                     <div className="relative w-44">
                                         <MagnifyingGlass className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
@@ -677,10 +741,15 @@ export default function MetadataManagementClient({
                                     </div>
                                 </div>
 
-                                {/* Items List Rendering */}
-                                {paginatedItems.length > 0 ? (
+                                {/* Items List Rendering with Loading State */}
+                                {drawerLoading ? (
+                                    <div className="py-12 text-center space-y-2">
+                                        <div className="w-6 h-6 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin mx-auto" />
+                                        <p className="text-xs font-semibold text-slate-400">Loading {activeStatusTab} records...</p>
+                                    </div>
+                                ) : drawerItems.length > 0 ? (
                                     <div className="space-y-2">
-                                        {paginatedItems.map((item: any) => (
+                                        {drawerItems.map((item: any) => (
                                             <div
                                                 key={item.id}
                                                 className="p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between hover:border-slate-300 transition-colors"
@@ -699,9 +768,21 @@ export default function MetadataManagementClient({
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-[11px] text-slate-400 font-mono">
-                                                        {item.code || (item.startYear ? `${item.startYear} - ${item.endYear}` : `ID: ${item.id.substring(0, 8)}`)}
-                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <p className="text-[11px] text-slate-400 font-mono">
+                                                            {item.code || (item.startYear ? `${item.startYear} - ${item.endYear}` : `ID: ${item.id.substring(0, 8)}`)}
+                                                        </p>
+                                                        {item.batch && (
+                                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                                Batch: {item.batch.name}
+                                                            </span>
+                                                        )}
+                                                        {item.department && (
+                                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+                                                                Dept: {item.department.code || item.department.name}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
 
                                                 <div className="flex items-center gap-1">
@@ -731,7 +812,7 @@ export default function MetadataManagementClient({
                                                                 type="button"
                                                                 onClick={() => promptSoftDelete(item)}
                                                                 className="p-1.5 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors cursor-pointer"
-                                                                title="Soft Delete (Move to Trash)"
+                                                                title="Delete (Move to Trash)"
                                                             >
                                                                 <Trash className="w-4 h-4" />
                                                             </button>
@@ -756,28 +837,33 @@ export default function MetadataManagementClient({
                             </div>
                         </div>
 
-                        {/* Pagination Footer */}
-                        {totalPages > 1 && (
-                            <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                        {/* SERVER-SIDE PAGINATION FOOTER (5 PER PAGE) */}
+                        {totalCount > 0 && (
+                            <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-600 font-semibold">
                                 <span className="text-[11px] text-slate-500">
-                                    Page {currentPage} of {totalPages}
+                                    Showing <strong className="text-slate-900">{((currentPage - 1) * itemsPerPage) + 1}</strong> to{" "}
+                                    <strong className="text-slate-900">{Math.min(currentPage * itemsPerPage, totalCount)}</strong> of{" "}
+                                    <strong className="text-slate-900">{totalCount}</strong> entries (5 per page)
                                 </span>
-                                <div className="flex gap-1">
+                                <div className="flex items-center gap-1.5">
                                     <button
                                         type="button"
                                         disabled={currentPage === 1}
                                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 disabled:opacity-40 cursor-pointer"
+                                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1 cursor-pointer"
                                     >
-                                        Prev
+                                        <CaretLeft className="w-3 h-3" /> Prev
                                     </button>
+                                    <span className="px-2.5 py-1 rounded-lg bg-slate-900 text-white font-bold text-[11px]">
+                                        {currentPage} / {totalPages}
+                                    </span>
                                     <button
                                         type="button"
-                                        disabled={currentPage === totalPages}
+                                        disabled={currentPage >= totalPages}
                                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 disabled:opacity-40 cursor-pointer"
+                                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1 cursor-pointer"
                                     >
-                                        Next
+                                        Next <CaretRight className="w-3 h-3" />
                                     </button>
                                 </div>
                             </div>

@@ -11,7 +11,11 @@ export default async function AdminsPage() {
         prisma.soiDomain.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
         prisma.department.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
         prisma.user.findMany({
-            where: { role: { name: "INSTRUCTOR" }, deletedAt: null },
+            where: {
+                role: { name: "INSTRUCTOR" },
+                instructorType: "SOI",
+                deletedAt: null,
+            },
             select: { id: true, name: true, email: true, designation: true, soiDomainId: true },
             orderBy: { name: "asc" },
         }),

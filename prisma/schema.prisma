@@ -51,15 +51,17 @@ model EventRegistration {
 }
 
 model DynamicForm {
-  id          String           @id @default(uuid())
-  title       String
-  slug        String           @unique
-  description String?
-  fields      String           // JSON string of array of fields [{name, label, type, required, options}]
-  submissions FormSubmission[]
-  active      Boolean          @default(true)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id               String           @id @default(uuid())
+  title            String
+  slug             String           @unique
+  description      String?
+  fields           String           // Form.io JSON schema definition string
+  submissions      FormSubmission[]
+  active           Boolean          @default(true)
+  viewsCount       Int              @default(0)
+  submissionsCount Int              @default(0)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model FormSubmission {
@@ -68,7 +70,9 @@ model FormSubmission {
   form      DynamicForm? @relation(fields: [formId], references: [id], onDelete: Cascade)
   name      String?
   email     String?
-  responses String       // JSON string storing field key-value responses
+  responses String       // Form.io submission data JSON string
+  requestIp String?
+  userAgent String?
   createdAt DateTime     @default(now())
 }
 
@@ -108,16 +112,18 @@ model GalleryItem {
 
 // 1. Dynamic Metadata Category Entities
 model Batch {
-  id        String    @id @default(uuid())
-  name      String    @unique // e.g. "2023-2027"
-  code      String    @unique // e.g. "BATCH_2023_2027"
-  startYear Int
-  endYear   Int
-  isActive  Boolean   @default(true)
-  deletedAt DateTime?
-  users     User[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          String           @id @default(uuid())
+  name        String           @unique // e.g. "2023-2027"
+  code        String           @unique // e.g. "BATCH_2023_2027"
+  startYear   Int
+  endYear     Int
+  isActive    Boolean          @default(true)
+  deletedAt   DateTime?
+  users       User[]
+  classGroups ClassGroup[]
+  dailyPlans  ScopeDailyPlan[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model AcademicYear {
@@ -132,14 +138,18 @@ model AcademicYear {
 }
 
 model Department {
-  id        String    @id @default(uuid())
-  name      String    @unique // e.g. "Computer Science & Engineering"
-  code      String    @unique // e.g. "CSE"
-  isActive  Boolean   @default(true)
-  deletedAt DateTime?
-  users     User[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String                @id @default(uuid())
+  name         String                @unique // e.g. "Computer Science & Engineering"
+  code         String                @unique // e.g. "CSE"
+  isActive     Boolean               @default(true)
+  deletedAt    DateTime?
+  users        User[]
+  classGroups  ClassGroup[]
+  syllabi      SyllabusItem[]
+  miniProjects MiniProjectSyllabus[]
+  dailyPlans   ScopeDailyPlan[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 }
 
 model SoiDomain {
@@ -165,14 +175,21 @@ model DomainPlacement {
 }
 
 model ClassGroup {
-  id        String    @id @default(uuid())
-  name      String    @unique // e.g. "Section A"
-  code      String    @unique // e.g. "CLASS_A"
-  isActive  Boolean   @default(true)
-  deletedAt DateTime?
-  users     User[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id           String                @id @default(uuid())
+  name         String                @unique // e.g. "Section A"
+  code         String                @unique // e.g. "CLASS_A"
+  batchId      String?
+  batch        Batch?                @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  departmentId String?
+  department   Department?           @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  isActive     Boolean               @default(true)
+  deletedAt    DateTime?
+  users        User[]
+  syllabi      SyllabusItem[]
+  miniProjects MiniProjectSyllabus[]
+  dailyPlans   ScopeDailyPlan[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 }
 
 model SlotTiming {
@@ -242,62 +259,75 @@ model RolePermission {
 
 // 3. User Entity & Metadata Relationships
 model User {
-  id                  String                 @id @default(uuid())
-  email               String                 @unique // Institutional SOI Email
-  personalEmail       String?
-  name                String
-  passwordHash        String?                // Hashed password
-  mustChangePassword  Boolean                @default(true) // Redirect to /setup-password on first login
-  rollNumber          String?
-  registrationNumber  String?
-  yearOfPassing       Int?
-  mobileNumber        String?                // e.g. +919876543210
-  tenthPercentage     Float?
-  twelfthPercentage   Float?
-  currentCgpa         Float?
-  githubUrl           String?
-  kaggleUrl           String?
-  leetcodeUrl         String?
-  linkedinUrl         String?
-  residentialStatus   String?                // "Dayscholar" | "Hosteller"
-  address             String?
-  resumeUrl           String?
-  profilePicUrl       String?
-  instructorType      String?                // "SOI" | "Scope"
-  experienceYears     Float?                 // e.g. 5.5
-  bio                 String?                // Profile bio summary
-  designation         String?                // e.g. "Senior Domain Mentor"
-  roleId              String
-  role                Role                   @relation(fields: [roleId], references: [id])
-  deviceFingerprint   String?                // Encrypted/Hashed device signature
-  deviceCredentialId  String?                // Hardware WebAuthn Passkey credential ID
-  devicePublicKey     String?                // Hardware WebAuthn public key
-  sessionToken        String?
-  batchId             String?
-  batch               Batch?                 @relation(fields: [batchId], references: [id], onDelete: SetNull)
-  academicYearId      String?
-  academicYear        AcademicYear?          @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
-  departmentId        String?
-  department          Department?            @relation(fields: [departmentId], references: [id], onDelete: SetNull)
-  soiDomainId         String?
-  soiDomain           SoiDomain?             @relation(fields: [soiDomainId], references: [id], onDelete: SetNull)
-  domainPlacementId   String?
-  domainPlacement     DomainPlacement?       @relation(fields: [domainPlacementId], references: [id], onDelete: SetNull)
-  classGroupId        String?
-  classGroup          ClassGroup?            @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
-  slotTimingId        String?
-  slotTiming          SlotTiming?            @relation(fields: [slotTimingId], references: [id], onDelete: SetNull)
-  interestedRoles     InterestedRole[]
-  skills              StudentSkill[]         @relation("StudentSkills")
-  endorsedSkills      StudentSkill[]         @relation("InstructorSkillEndorsements")
-  classroomSessions   ClassroomSession[]     @relation("InstructorSessions")
-  attendanceRecords   AttendanceRecord[]     @relation("StudentAttendance")
-  worklogs            FacultyWorklog[]       @relation("FacultyWorklogs")
-  platformProfile     StudentPlatformProfile?
-  statusNote          String?                // Optional reason/note for active or inactive status
-  deletedAt           DateTime?              // Soft delete timestamp
-  createdAt           DateTime               @default(now())
-  updatedAt           DateTime               @updatedAt
+  id                          String                 @id @default(uuid())
+  email                       String                 @unique // Institutional SOI Email
+  personalEmail               String?
+  name                        String
+  passwordHash                String?                // Hashed password
+  mustChangePassword          Boolean                @default(true) // Redirect to /setup-password on first login
+  rollNumber                  String?
+  registrationNumber          String?
+  yearOfPassing               Int?
+  mobileNumber                String?                // e.g. +919876543210
+  tenthPercentage             Float?
+  twelfthPercentage           Float?
+  currentCgpa                 Float?
+  githubUrl                   String?
+  kaggleUrl                   String?
+  leetcodeUrl                 String?
+  linkedinUrl                 String?
+  residentialStatus           String?                // "Dayscholar" | "Hosteller"
+  address                     String?
+  resumeUrl                   String?
+  profilePicUrl               String?
+  instructorType              String?                // "SOI" | "Scope"
+  experienceYears             Float?                 // e.g. 5.5
+  bio                         String?                // Profile bio summary
+  designation                 String?                // e.g. "Senior Domain Mentor"
+  slug                        String?                @unique // Slug for public profile e.g. /team/maruthupandi-v
+  empId                       String?                // Employee ID e.g. 905535
+  onePageCv                   String?                // Google Drive / PDF link to 1-page CV
+  workExperience              String?                // Text representation e.g. "6 Years"
+  pythonExperience            String?                // Python exp text e.g. "3"
+  cProgrammingExperience     String?                // C programming exp text e.g. "3"
+  dsaDesignThinkingExperience String?                // DSA exp text e.g. "2"
+  xUrl                        String?                // Twitter / X URL
+  hackerrankUrl               String?                // HackerRank profile URL
+  mediumUrl                   String?                // Medium blog profile URL
+  slackUrl                    String?                // Slack profile URL
+  selfIntroVideoUrl           String?                // YouTube / Drive intro video URL
+  roleId                      String
+  role                        Role                   @relation(fields: [roleId], references: [id])
+  deviceFingerprint           String?                // Encrypted/Hashed device signature
+  deviceCredentialId          String?                // Hardware WebAuthn Passkey credential ID
+  devicePublicKey             String?                // Hardware WebAuthn public key
+  sessionToken                String?
+  batchId                     String?
+  batch                       Batch?                 @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  academicYearId              String?
+  academicYear                AcademicYear?          @relation(fields: [academicYearId], references: [id], onDelete: SetNull)
+  departmentId                String?
+  department                  Department?            @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  soiDomainId                 String?
+  soiDomain                   SoiDomain?             @relation(fields: [soiDomainId], references: [id], onDelete: SetNull)
+  domainPlacementId           String?
+  domainPlacement             DomainPlacement?       @relation(fields: [domainPlacementId], references: [id], onDelete: SetNull)
+  classGroupId                String?
+  classGroup                  ClassGroup?            @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
+  slotTimingId                String?
+  slotTiming                  SlotTiming?            @relation(fields: [slotTimingId], references: [id], onDelete: SetNull)
+  interestedRoles             InterestedRole[]
+  skills                      StudentSkill[]         @relation("StudentSkills")
+  endorsedSkills              StudentSkill[]         @relation("InstructorSkillEndorsements")
+  classroomSessions           ClassroomSession[]     @relation("InstructorSessions")
+  attendanceRecords           AttendanceRecord[]     @relation("StudentAttendance")
+  worklogs                    FacultyWorklog[]       @relation("FacultyWorklogs")
+  scopeDailyPlans             ScopeDailyPlan[]
+  platformProfile             StudentPlatformProfile?
+  statusNote                  String?                // Optional reason/note for active or inactive status
+  deletedAt                   DateTime?              // Soft delete timestamp
+  createdAt                   DateTime               @default(now())
+  updatedAt                   DateTime               @updatedAt
 }
 
 // 4. Anti-Spoofing Dynamic QR Attendance Engine & Smart Calendar Models
@@ -398,4 +428,101 @@ model StudentPlatformProfile {
   lastSyncedAt     DateTime?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
+}
+
+// 6. Academic Micro-Management, Syllabus Engine & Smart Calendar Models
+model AcademicPeriodConfig {
+  id           String   @id @default(uuid())
+  periodNumber Int      @unique // 1 to 8
+  periodName   String   // e.g. "Period 1"
+  startTime    String   // e.g. "08:30"
+  endTime      String   // e.g. "09:30"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Subject {
+  id           String                @id @default(uuid())
+  name         String                @unique
+  code         String?               @unique
+  description  String?
+  isActive     Boolean               @default(true)
+  isDeleted    Boolean               @default(false)
+  deletedAt    DateTime?
+  syllabi      SyllabusItem[]
+  miniProjects MiniProjectSyllabus[]
+  dailyPlans   ScopeDailyPlan[]
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+}
+
+model SyllabusItem {
+  id              String           @id @default(uuid())
+  sessionNumber   Int?
+  title           String
+  duration        String?          // e.g. "1 Hour" or "2 Hours"
+  topicsOutline   String?          // Topics / Content Outline
+  pptResourceUrl  String?          // PPT Resource URL
+  pptPublishedUrl String?          // Published PPT URL
+  quizLink        String?          // Quiz Link
+  activityLink    String?          // Activity Link
+  courseType      String           @default("THEORY") // "THEORY" | "LAB"
+  subjectId       String?
+  subject         Subject?         @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  departmentId    String?
+  department      Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  classGroupId    String?
+  classGroup      ClassGroup?      @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
+  dailyPlans      ScopeDailyPlan[]
+  isDeleted       Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model MiniProjectSyllabus {
+  id           String           @id @default(uuid())
+  title        String
+  language     String           // e.g. "Python", "TypeScript", "C++"
+  description  String?
+  link         String?
+  subjectId    String?
+  subject      Subject?         @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  departmentId String?
+  department   Department?      @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  classGroupId String?
+  classGroup   ClassGroup?      @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
+  dailyPlans   ScopeDailyPlan[]
+  isDeleted    Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model ScopeDailyPlan {
+  id                    String               @id @default(uuid())
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                  String               // Format: YYYY-MM-DD
+  periodNumber          Int                  // 1 to 8
+  courseType            String               @default("THEORY") // "THEORY" | "LAB" | "MINI_PROJECT"
+  subjectId             String?
+  subject               Subject?             @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  syllabusItemId        String?
+  syllabusItem          SyllabusItem?        @relation(fields: [syllabusItemId], references: [id], onDelete: SetNull)
+  syllabusItemIds       String?              // Comma-separated or JSON string of multi-selected syllabus item IDs
+  miniProjectSyllabusId String?
+  miniProjectSyllabus   MiniProjectSyllabus? @relation(fields: [miniProjectSyllabusId], references: [id], onDelete: SetNull)
+  departmentId          String?
+  department            Department?          @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+  classGroupId          String?
+  classGroup            ClassGroup?          @relation(fields: [classGroupId], references: [id], onDelete: SetNull)
+  batchId               String?
+  batch                 Batch?               @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  plannedTopicTitle     String?
+  status                String               @default("PLANNED") // "PLANNED" | "COMPLETED" | "PARTIALLY_COMPLETED" | "NOT_COMPLETED"
+  completedTopicIds     String?              // Comma-separated or JSON string of completed syllabus item IDs for todo strikeout
+  notes                 String?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@unique([userId, date, periodNumber])
 }

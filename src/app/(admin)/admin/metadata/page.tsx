@@ -19,6 +19,7 @@ export default async function MetadataPage() {
         domainPlacements,
         batches,
         interestedRoles,
+        subjects,
     ] = await Promise.all([
         prisma.department.findMany({ orderBy: { name: "asc" } }),
         prisma.classGroup.findMany({ orderBy: { name: "asc" } }),
@@ -27,6 +28,7 @@ export default async function MetadataPage() {
         prisma.domainPlacement.findMany({ orderBy: { name: "asc" } }),
         prisma.batch.findMany({ orderBy: { name: "asc" } }),
         prisma.interestedRole.findMany({ orderBy: { name: "asc" } }),
+        prisma.subject.findMany({ orderBy: { name: "asc" } }),
     ]);
 
     return (
@@ -39,6 +41,7 @@ export default async function MetadataPage() {
                 domainPlacements,
                 batches,
                 interestedRoles,
+                subjects,
             }}
         />
     );

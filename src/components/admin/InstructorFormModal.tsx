@@ -56,6 +56,20 @@ export default function InstructorFormModal({
         profilePicUrl: "",
         linkedinUrl: "",
         githubUrl: "",
+        slug: "",
+        empId: "",
+        onePageCv: "",
+        workExperience: "",
+        pythonExperience: "",
+        cProgrammingExperience: "",
+        dsaDesignThinkingExperience: "",
+        xUrl: "",
+        leetcodeUrl: "",
+        hackerrankUrl: "",
+        mediumUrl: "",
+        slackUrl: "",
+        kaggleUrl: "",
+        selfIntroVideoUrl: "",
         statusNote: "",
     });
 
@@ -97,6 +111,20 @@ export default function InstructorFormModal({
                 profilePicUrl: editingInstructor.profilePicUrl || "",
                 linkedinUrl: editingInstructor.linkedinUrl || "",
                 githubUrl: editingInstructor.githubUrl || "",
+                slug: editingInstructor.slug || "",
+                empId: editingInstructor.empId || "",
+                onePageCv: editingInstructor.onePageCv || "",
+                workExperience: editingInstructor.workExperience || "",
+                pythonExperience: editingInstructor.pythonExperience || "",
+                cProgrammingExperience: editingInstructor.cProgrammingExperience || "",
+                dsaDesignThinkingExperience: editingInstructor.dsaDesignThinkingExperience || "",
+                xUrl: editingInstructor.xUrl || "",
+                leetcodeUrl: editingInstructor.leetcodeUrl || "",
+                hackerrankUrl: editingInstructor.hackerrankUrl || "",
+                mediumUrl: editingInstructor.mediumUrl || "",
+                slackUrl: editingInstructor.slackUrl || "",
+                kaggleUrl: editingInstructor.kaggleUrl || "",
+                selfIntroVideoUrl: editingInstructor.selfIntroVideoUrl || "",
                 statusNote: editingInstructor.statusNote || "",
             });
         } else {
@@ -117,6 +145,20 @@ export default function InstructorFormModal({
                 profilePicUrl: "",
                 linkedinUrl: "",
                 githubUrl: "",
+                slug: "",
+                empId: "",
+                onePageCv: "",
+                workExperience: "",
+                pythonExperience: "",
+                cProgrammingExperience: "",
+                dsaDesignThinkingExperience: "",
+                xUrl: "",
+                leetcodeUrl: "",
+                hackerrankUrl: "",
+                mediumUrl: "",
+                slackUrl: "",
+                kaggleUrl: "",
+                selfIntroVideoUrl: "",
                 statusNote: "",
             });
         }
@@ -244,6 +286,20 @@ export default function InstructorFormModal({
                 profilePicUrl: formData.profilePicUrl || null,
                 linkedinUrl: formData.linkedinUrl.trim() || null,
                 githubUrl: formData.githubUrl.trim() || null,
+                slug: formData.slug.trim() || null,
+                empId: formData.empId.trim() || null,
+                onePageCv: formData.onePageCv.trim() || null,
+                workExperience: formData.workExperience.trim() || null,
+                pythonExperience: formData.pythonExperience.trim() || null,
+                cProgrammingExperience: formData.cProgrammingExperience.trim() || null,
+                dsaDesignThinkingExperience: formData.dsaDesignThinkingExperience.trim() || null,
+                xUrl: formData.xUrl.trim() || null,
+                leetcodeUrl: formData.leetcodeUrl.trim() || null,
+                hackerrankUrl: formData.hackerrankUrl.trim() || null,
+                mediumUrl: formData.mediumUrl.trim() || null,
+                slackUrl: formData.slackUrl.trim() || null,
+                kaggleUrl: formData.kaggleUrl.trim() || null,
+                selfIntroVideoUrl: formData.selfIntroVideoUrl.trim() || null,
                 statusNote: formData.statusNote.trim() || null,
             };
 
@@ -565,6 +621,28 @@ export default function InstructorFormModal({
                                 />
 
                                 <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">Employee ID (EmpId)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.empId}
+                                        onChange={(e) => handleInputChange("empId", e.target.value)}
+                                        placeholder="e.g. 905535"
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">One-Page CV URL</label>
+                                    <input
+                                        type="url"
+                                        value={formData.onePageCv}
+                                        onChange={(e) => handleInputChange("onePageCv", e.target.value)}
+                                        placeholder="https://drive.google.com/file/d/..."
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
                                     <label className="text-xs font-bold text-slate-700 block mb-1 flex items-center gap-1">
                                         <LinkedinLogo className="w-4 h-4 text-sky-600" /> LinkedIn Profile URL
                                     </label>
@@ -600,6 +678,107 @@ export default function InstructorFormModal({
                                     placeholder="Specializes in AI/ML model deployment, computer vision, and Python fullstack development..."
                                     className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all resize-none"
                                 />
+                            </div>
+                        </div>
+
+                        {/* SECTION 5: EXTENDED EXPERIENCE & DEVELOPER PLATFORMS */}
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">
+                                3. Technical Experience & Coding Platforms
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">Work Experience Text</label>
+                                    <input
+                                        type="text"
+                                        value={formData.workExperience}
+                                        onChange={(e) => handleInputChange("workExperience", e.target.value)}
+                                        placeholder="e.g. 6 Years or 4+ years"
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">Python Experience</label>
+                                    <input
+                                        type="text"
+                                        value={formData.pythonExperience}
+                                        onChange={(e) => handleInputChange("pythonExperience", e.target.value)}
+                                        placeholder="e.g. 3 or 3 Years"
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">C Programming Experience</label>
+                                    <input
+                                        type="text"
+                                        value={formData.cProgrammingExperience}
+                                        onChange={(e) => handleInputChange("cProgrammingExperience", e.target.value)}
+                                        placeholder="e.g. 3 or 1 Year"
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">DSA / Design Thinking Exp</label>
+                                    <input
+                                        type="text"
+                                        value={formData.dsaDesignThinkingExperience}
+                                        onChange={(e) => handleInputChange("dsaDesignThinkingExperience", e.target.value)}
+                                        placeholder="e.g. 2 or 1 time"
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">Self Intro Video URL</label>
+                                    <input
+                                        type="url"
+                                        value={formData.selfIntroVideoUrl}
+                                        onChange={(e) => handleInputChange("selfIntroVideoUrl", e.target.value)}
+                                        placeholder="https://youtube.com/shorts/..."
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">LeetCode URL</label>
+                                    <input
+                                        type="url"
+                                        value={formData.leetcodeUrl}
+                                        onChange={(e) => handleInputChange("leetcodeUrl", e.target.value)}
+                                        placeholder="https://leetcode.com/u/..."
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">HackerRank URL</label>
+                                    <input
+                                        type="url"
+                                        value={formData.hackerrankUrl}
+                                        onChange={(e) => handleInputChange("hackerrankUrl", e.target.value)}
+                                        placeholder="https://hackerrank.com/..."
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 block mb-1">Kaggle URL</label>
+                                    <input
+                                        type="url"
+                                        value={formData.kaggleUrl}
+                                        onChange={(e) => handleInputChange("kaggleUrl", e.target.value)}
+                                        placeholder="https://kaggle.com/..."
+                                        className="w-full h-10 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-800 font-semibold focus:outline-none focus:border-indigo-600 focus:bg-white transition-all"
+                                    />
+                                </div>
                             </div>
                         </div>
 

@@ -13,7 +13,11 @@ export default async function AdminDashboardPage() {
     }
 
     if (session.role === "INSTRUCTOR") {
-        redirect("/admin/attendance");
+        if (session.instructorType?.toLowerCase() === "scope") {
+            redirect("/admin/scheduler");
+        } else {
+            redirect("/admin/attendance");
+        }
     }
 
     if (session.role !== "SUPER_ADMIN" && session.role !== "ADMIN") {

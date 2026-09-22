@@ -9,6 +9,9 @@ export const metadata = {
 
 export default async function AttendancePage() {
     const session = await getSession();
+    if (session?.instructorType?.toLowerCase() === "scope") {
+        redirect("/admin/scheduler");
+    }
     if (session?.role === "SUPER_ADMIN") {
         redirect("/admin");
     }

@@ -13,12 +13,22 @@ import {
     Briefcase,
     Sparkle,
     CheckCircle,
+    FileText,
+    PlayCircle,
+    PhoneCall,
+    Code,
+    Article,
+    SlackLogo,
+    Database,
+    User,
 } from "@phosphor-icons/react";
 import { TeamMember } from "@/data/teamData";
 import BrandTicker from "@/components/BrandTicker";
 import CTASection from "@/components/CTASection";
 
 export default function TeamProfileClientView({ member }: { member: TeamMember }) {
+    const scope = member.scopeData;
+
     return (
         <div className="w-full space-y-12 py-8 md:py-14">
 
@@ -43,6 +53,9 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                                 <img
                                     src={member.avatar}
                                     alt={member.name}
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&background=0F172A&color=fff&size=300`;
+                                    }}
                                     className="w-40 h-40 md:w-52 md:h-52 rounded-3xl object-cover border-4 border-white/20 shadow-2xl"
                                 />
                                 <div className="absolute bottom-2 right-2 px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold uppercase tracking-wider shadow-md">
@@ -53,8 +66,15 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
 
                         {/* Information Column (8 Cols) */}
                         <div className="md:col-span-8 space-y-5 text-center md:text-left">
-                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
-                                <Sparkle className="w-3.5 h-3.5 text-white" /> {member.category}
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider">
+                                    <Sparkle className="w-3.5 h-3.5 text-white" /> {member.category}
+                                </div>
+                                {scope?.empId && (
+                                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/30 backdrop-blur-md border border-indigo-400/40 text-indigo-100 text-xs font-extrabold uppercase tracking-wider">
+                                        <User className="w-3.5 h-3.5 text-indigo-300" /> Emp ID: {scope.empId}
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -71,7 +91,7 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                             </p>
 
                             {/* Location & Lab Meta */}
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-5 pt-2 text-xs text-white/70 font-semibold">
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-5 pt-1 text-xs text-white/70 font-semibold">
                                 <div className="flex items-center gap-1.5">
                                     <GraduationCap className="w-4 h-4 text-indigo-300" />
                                     <span>{member.lab}</span>
@@ -86,15 +106,52 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                                 </div>
                             </div>
 
-                            {/* Social Icons */}
-                            <div className="flex items-center justify-center md:justify-start gap-3 pt-3">
+                            {/* Quick Action CV / Intro Video Buttons */}
+                            {(scope?.onePageCv || scope?.selfIntroVideo) && (
+                                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
+                                    {scope?.onePageCv && scope.onePageCv.startsWith("http") && (
+                                        <a
+                                            href={scope.onePageCv}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2.5 rounded-xl bg-white text-slate-950 hover:bg-indigo-50 font-extrabold text-xs inline-flex items-center gap-2 transition-all shadow-md"
+                                        >
+                                            <FileText className="w-4 h-4 text-indigo-600" weight="bold" /> View One-Page CV
+                                        </a>
+                                    )}
+                                    {scope?.selfIntroVideo && scope.selfIntroVideo.startsWith("http") && (
+                                        <a
+                                            href={scope.selfIntroVideo}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs inline-flex items-center gap-2 transition-all shadow-md border border-indigo-400/40"
+                                        >
+                                            <PlayCircle className="w-4.5 h-4.5 text-white" weight="fill" /> Watch Self Intro Video
+                                        </a>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Social & Platform Links */}
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5 pt-3">
                                 {member.email && (
                                     <a
                                         href={`mailto:${member.email}`}
-                                        className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
+                                        className="h-10 px-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center gap-2 text-white text-xs font-bold transition-all"
                                         title="Email"
                                     >
                                         <EnvelopeSimple className="w-4 h-4" />
+                                        <span className="hidden sm:inline">{member.email}</span>
+                                    </a>
+                                )}
+                                {scope?.phone && (
+                                    <a
+                                        href={`tel:${scope.phone}`}
+                                        className="h-10 px-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center gap-2 text-white text-xs font-bold transition-all"
+                                        title="Phone"
+                                    >
+                                        <PhoneCall className="w-4 h-4" />
+                                        <span className="hidden sm:inline">{scope.phone}</span>
                                     </a>
                                 )}
                                 {member.social.linkedin && (
@@ -105,7 +162,7 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                                         className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
                                         title="LinkedIn"
                                     >
-                                        <LinkedinLogo className="w-4 h-4" />
+                                        <LinkedinLogo className="w-4.5 h-4.5" />
                                     </a>
                                 )}
                                 {member.social.github && (
@@ -116,18 +173,18 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                                         className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
                                         title="GitHub"
                                     >
-                                        <GithubLogo className="w-4 h-4" />
+                                        <GithubLogo className="w-4.5 h-4.5" />
                                     </a>
                                 )}
-                                {member.social.twitter && (
+                                {member.social.twitter && member.social.twitter !== "-" && (
                                     <a
                                         href={member.social.twitter}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all"
-                                        title="Twitter"
+                                        title="Twitter / X"
                                     >
-                                        <TwitterLogo className="w-4 h-4" />
+                                        <TwitterLogo className="w-4.5 h-4.5" />
                                     </a>
                                 )}
                             </div>
@@ -144,6 +201,34 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
 
                     {/* Left Column: Stats & Technical Skills (5 Cols) */}
                     <div className="lg:col-span-5 space-y-8">
+
+                        {/* Subject Experience Breakdown (for SCOPE Faculty) */}
+                        {scope && (
+                            <div className="bg-white rounded-[28px] border border-slate-200/80 p-7 space-y-5 shadow-xs">
+                                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+                                    Teaching & Work Experience
+                                </h3>
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                        <span className="block text-[11px] font-bold text-slate-500">Overall Work Exp</span>
+                                        <span className="text-base font-black text-slate-950 mt-0.5 block">{scope.workExperience || "N/A"}</span>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                        <span className="block text-[11px] font-bold text-slate-500">Python Teaching</span>
+                                        <span className="text-base font-black text-slate-950 mt-0.5 block">{scope.pythonExperience || "-"}</span>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                        <span className="block text-[11px] font-bold text-slate-500">C Programming</span>
+                                        <span className="text-base font-black text-slate-950 mt-0.5 block">{scope.cProgrammingExperience || "-"}</span>
+                                    </div>
+                                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                                        <span className="block text-[11px] font-bold text-slate-500">DSA / Design Thinking</span>
+                                        <span className="text-base font-black text-slate-950 mt-0.5 block">{scope.dsaDesignThinkingExperience || "-"}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Impact Stats Grid */}
                         <div className="bg-white rounded-[28px] border border-slate-200/80 p-7 space-y-5 shadow-xs">
@@ -201,9 +286,71 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                             </div>
                         </div>
 
+                        {/* Developer & Coding Profiles Card */}
+                        {scope && (scope.leetcode || scope.hackerrank || scope.medium || scope.slack || scope.kaggle) && (
+                            <div className="bg-white rounded-[28px] border border-slate-200/80 p-7 space-y-4 shadow-xs">
+                                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+                                    Coding & Developer Profiles
+                                </h3>
+
+                                <div className="flex flex-wrap gap-2">
+                                    {scope.leetcode && scope.leetcode.startsWith("http") && (
+                                        <a
+                                            href={scope.leetcode}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 transition-all"
+                                        >
+                                            <Code className="w-4 h-4 text-amber-600" weight="bold" /> LeetCode
+                                        </a>
+                                    )}
+                                    {scope.hackerrank && scope.hackerrank.startsWith("http") && (
+                                        <a
+                                            href={scope.hackerrank}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 transition-all"
+                                        >
+                                            <Code className="w-4 h-4 text-emerald-600" weight="bold" /> HackerRank
+                                        </a>
+                                    )}
+                                    {scope.medium && scope.medium.startsWith("http") && (
+                                        <a
+                                            href={scope.medium}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 transition-all"
+                                        >
+                                            <Article className="w-4 h-4 text-slate-800" weight="bold" /> Medium
+                                        </a>
+                                    )}
+                                    {scope.slack && scope.slack.startsWith("http") && (
+                                        <a
+                                            href={scope.slack}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 transition-all"
+                                        >
+                                            <SlackLogo className="w-4 h-4 text-rose-600" weight="bold" /> Slack Workspace
+                                        </a>
+                                    )}
+                                    {scope.kaggle && scope.kaggle.startsWith("http") && (
+                                        <a
+                                            href={scope.kaggle}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs inline-flex items-center gap-2 transition-all"
+                                        >
+                                            <Database className="w-4 h-4 text-sky-600" weight="bold" /> Kaggle
+                                        </a>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
 
-                    {/* Right Column: Bio, Quote, Highlights (7 Cols) */}
+                    {/* Right Column: Bio, Quote, Asset Cards, Highlights (7 Cols) */}
                     <div className="lg:col-span-7 space-y-8">
 
                         {/* Full Bio */}
@@ -215,6 +362,55 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
                                 {member.fullBio}
                             </p>
                         </div>
+
+                        {/* Self Introduction Video Showcase Box */}
+                        {scope?.selfIntroVideo && scope.selfIntroVideo.startsWith("http") && (
+                            <div className="bg-gradient-to-br from-indigo-900 to-slate-950 rounded-[28px] p-8 text-white space-y-4 shadow-lg border border-indigo-800/40 relative overflow-hidden">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/50 backdrop-blur-md flex items-center justify-center border border-indigo-400/30">
+                                        <PlayCircle className="w-7 h-7 text-white" weight="fill" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-extrabold text-white">Self Introduction Video</h3>
+                                        <p className="text-xs text-indigo-200 font-medium">Watch personal introduction and teaching vision</p>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-white/70 font-medium">
+                                    Faculty mentor introduction video recorded for SindhanAI SCOPE program.
+                                </p>
+                                <a
+                                    href={scope.selfIntroVideo}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-slate-950 hover:bg-indigo-50 font-extrabold text-xs transition-all shadow-md"
+                                >
+                                    <PlayCircle className="w-4 h-4 text-indigo-600" weight="fill" /> Watch Video Presentation
+                                </a>
+                            </div>
+                        )}
+
+                        {/* One-Page CV Showcase Box */}
+                        {scope?.onePageCv && scope.onePageCv.startsWith("http") && (
+                            <div className="bg-slate-50 rounded-[28px] p-8 border border-slate-200/90 space-y-4 shadow-xs">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center">
+                                        <FileText className="w-6 h-6" weight="bold" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-extrabold text-slate-950">Faculty One-Page CV</h3>
+                                        <p className="text-xs text-slate-500 font-medium">Verified academic resume & credentials document</p>
+                                    </div>
+                                </div>
+                                <a
+                                    href={scope.onePageCv}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-950 text-white hover:bg-slate-800 font-extrabold text-xs transition-all shadow-xs"
+                                >
+                                    <FileText className="w-4 h-4 text-indigo-300" weight="bold" /> Open Google Drive Resume
+                                </a>
+                            </div>
+                        )}
 
                         {/* Inspiring Quote (if present) */}
                         {member.quote && (
@@ -264,3 +460,4 @@ export default function TeamProfileClientView({ member }: { member: TeamMember }
         </div>
     );
 }
+

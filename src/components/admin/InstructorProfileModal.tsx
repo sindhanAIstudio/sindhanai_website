@@ -148,33 +148,78 @@ export default function InstructorProfileModal({
 
                             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
                                 <p className="font-bold text-slate-900 flex items-center gap-2">
-                                    <Briefcase className="w-4 h-4 text-emerald-600" /> Developer Profiles
+                                    <Briefcase className="w-4 h-4 text-emerald-600" /> Developer & Academic Links
                                 </p>
-                                <div className="flex items-center gap-3 pt-1">
-                                    {instructor.linkedinUrl ? (
+                                <div className="flex flex-wrap items-center gap-2 pt-1">
+                                    {instructor.onePageCv && (
+                                        <a
+                                            href={instructor.onePageCv}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-bold transition-colors"
+                                        >
+                                            📄 One-Page CV
+                                        </a>
+                                    )}
+                                    {instructor.linkedinUrl && (
                                         <a
                                             href={instructor.linkedinUrl}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="px-3 py-1.5 rounded-xl bg-sky-100 text-sky-700 hover:bg-sky-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                                            className="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-700 text-[11px] font-bold transition-colors flex items-center gap-1"
                                         >
-                                            <LinkedinLogo className="w-4 h-4" /> LinkedIn
+                                            <LinkedinLogo className="w-3.5 h-3.5" /> LinkedIn
                                         </a>
-                                    ) : (
-                                        <span className="text-slate-400 font-medium">No LinkedIn</span>
                                     )}
-
-                                    {instructor.githubUrl ? (
+                                    {instructor.githubUrl && (
                                         <a
                                             href={instructor.githubUrl}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="px-3 py-1.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                                            className="px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[11px] font-bold transition-colors flex items-center gap-1"
                                         >
-                                            <GithubLogo className="w-4 h-4" /> GitHub
+                                            <GithubLogo className="w-3.5 h-3.5" /> GitHub
                                         </a>
-                                    ) : (
-                                        <span className="text-slate-400 font-medium">No GitHub</span>
+                                    )}
+                                    {instructor.leetcodeUrl && (
+                                        <a
+                                            href={instructor.leetcodeUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 text-[11px] font-bold transition-colors"
+                                        >
+                                            🧠 LeetCode
+                                        </a>
+                                    )}
+                                    {instructor.hackerrankUrl && (
+                                        <a
+                                            href={instructor.hackerrankUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-900 text-[11px] font-bold transition-colors"
+                                        >
+                                            💚 HackerRank
+                                        </a>
+                                    )}
+                                    {instructor.kaggleUrl && (
+                                        <a
+                                            href={instructor.kaggleUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-2.5 py-1 rounded-lg bg-cyan-100 text-cyan-900 text-[11px] font-bold transition-colors"
+                                        >
+                                            📊 Kaggle
+                                        </a>
+                                    )}
+                                    {instructor.mediumUrl && (
+                                        <a
+                                            href={instructor.mediumUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="px-2.5 py-1 rounded-lg bg-slate-200 text-slate-900 text-[11px] font-bold transition-colors"
+                                        >
+                                            ✍️ Medium
+                                        </a>
                                     )}
                                 </div>
                             </div>

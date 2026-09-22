@@ -38,8 +38,6 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-    const clientLogos = await prisma.clientLogo.findMany();
-
     // Marquee images from sindhanai template assets
     const marqueeImages = [
         "/images/sindhanai/image-15.webp",

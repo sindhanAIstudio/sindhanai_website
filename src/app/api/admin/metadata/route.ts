@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth/session";
 
+function getModelDelegate(category: string) {
+    switch (category) {
+        case "departments": return prisma.department;
+        case "classGroups": return prisma.classGroup;
+        case "slotTimings": return prisma.slotTiming;
+        case "soiDomains": return prisma.soiDomain;
+        case "domainPlacements": return prisma.domainPlacement;
+        case "batches": return prisma.batch;
+        case "interestedRoles": return prisma.interestedRole;
+        case "subjects": return prisma.subject;
+        default: return null;
+    }
+}
+
 export async function GET(req: NextRequest) {
     try {
         const session = await getSession();
@@ -11,7 +25,16 @@ export async function GET(req: NextRequest) {
 
         const { searchParams } = new URL(req.url);
         const category = searchParams.get("category") || "departments";
-        const status = searchParams.get("status") || "active"; // active, inactive, trashed
+        const status = searchParams.get("status") || "active"; // active, inactive, trashed, all
+        const search = (searchParams.get("search") || "").trim();
+        const page = parseInt(searchParams.get("page") || "1");
+        const pageSize = parseInt(searchParams.get("pageSize") || "5"); // Default 5 per page
+        const isAll = searchParams.get("all") === "true";
+
+        const model: any = getModelDelegate(category);
+        if (!model) {
+            return NextResponse.json({ error: "Invalid metadata category" }, { status: 400 });
+        }
 
         let whereClause: any = {};
         if (status === "active") {
@@ -22,40 +45,66 @@ export async function GET(req: NextRequest) {
             whereClause = { deletedAt: { not: null } };
         }
 
-        let data: any[] = [];
-        switch (category) {
-            case "departments":
-                data = await prisma.department.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "classGroups":
-                data = await prisma.classGroup.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "slotTimings":
-                data = await prisma.slotTiming.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "soiDomains":
-                data = await prisma.soiDomain.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "domainPlacements":
-                data = await prisma.domainPlacement.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "batches":
-                data = await prisma.batch.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            case "interestedRoles":
-                data = await prisma.interestedRole.findMany({ where: whereClause, orderBy: { name: "asc" } });
-                break;
-            default:
-                return NextResponse.json({ error: "Invalid metadata category" }, { status: 400 });
+        if (search) {
+            whereClause.AND = [
+                {
+                    OR: [
+                        { name: { contains: search } },
+                        { code: { contains: search } },
+                    ],
+                },
+            ];
         }
 
-        return NextResponse.json({ success: true, data });
+        const queryOptions: any = {
+            where: whereClause,
+            orderBy: { name: "asc" },
+            skip: isAll ? undefined : (page - 1) * pageSize,
+            take: isAll ? undefined : pageSize,
+        };
+        if (category === "classGroups") {
+            queryOptions.include = {
+                batch: true,
+                department: true,
+            };
+        }
+
+        const [activeCount, inactiveCount, trashedCount, total, items] = await Promise.all([
+            model.count({ where: { isActive: true, deletedAt: null } }),
+            model.count({ where: { isActive: false, deletedAt: null } }),
+            model.count({ where: { deletedAt: { not: null } } }),
+            model.count({ where: whereClause }),
+            model.findMany(queryOptions),
+        ]);
+
+        return NextResponse.json({
+            success: true,
+            data: items,
+            pagination: {
+                total,
+                page,
+                pageSize: isAll ? total : pageSize,
+                totalPages: isAll ? 1 : (Math.ceil(total / pageSize) || 1),
+            },
+            counts: {
+                active: activeCount,
+                inactive: inactiveCount,
+                trashed: trashedCount,
+            },
+        });
     } catch (err: any) {
+        console.error("GET Metadata API Error:", err);
         return NextResponse.json({ error: err.message || "Server Error" }, { status: 500 });
     }
 }
 
 async function getBoundStudentCount(category: string, id: string): Promise<number> {
+    if (category === "subjects") {
+        const syllabusCount = await prisma.syllabusItem.count({ where: { subjectId: id, isDeleted: false } });
+        const miniProjectCount = await prisma.miniProjectSyllabus.count({ where: { subjectId: id, isDeleted: false } });
+        return syllabusCount + miniProjectCount;
+    }
+
     const fieldMap: Record<string, string> = {
         departments: "departmentId",
         classGroups: "classGroupId",
@@ -85,7 +134,7 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { category, id, name, code, isActive = true, action, startYear, endYear } = body;
+        const { category, id, name, code, isActive = true, action, startYear, endYear, batchId, departmentId } = body;
 
         if (!category) {
             return NextResponse.json({ error: "Category is required" }, { status: 400 });
@@ -94,7 +143,7 @@ export async function POST(req: NextRequest) {
         // Action: Restore from trash
         if (action === "restore" && id) {
             let restored;
-            const updatePayload = { deletedAt: null, isActive: true };
+            const updatePayload = { deletedAt: null, isActive: true, isDeleted: false };
             switch (category) {
                 case "departments":
                     restored = await prisma.department.update({ where: { id }, data: updatePayload });
@@ -116,6 +165,9 @@ export async function POST(req: NextRequest) {
                     break;
                 case "interestedRoles":
                     restored = await prisma.interestedRole.update({ where: { id }, data: updatePayload });
+                    break;
+                case "subjects":
+                    restored = await prisma.subject.update({ where: { id }, data: updatePayload });
                     break;
             }
             return NextResponse.json({ success: true, data: restored });
@@ -155,6 +207,9 @@ export async function POST(req: NextRequest) {
                     break;
                 case "interestedRoles":
                     toggled = await prisma.interestedRole.update({ where: { id }, data: { isActive } as any });
+                    break;
+                case "subjects":
+                    toggled = await prisma.subject.update({ where: { id }, data: { isActive } as any });
                     break;
             }
             return NextResponse.json({ success: true, data: toggled });
@@ -202,7 +257,17 @@ export async function POST(req: NextRequest) {
                     result = await prisma.department.update({ where: { id }, data: { name: trimmedName, code: generatedCode, isActive } as any });
                     break;
                 case "classGroups":
-                    result = await prisma.classGroup.update({ where: { id }, data: { name: trimmedName, code: generatedCode, isActive } as any });
+                    result = await prisma.classGroup.update({
+                        where: { id },
+                        data: {
+                            name: trimmedName,
+                            code: generatedCode,
+                            batchId: batchId || null,
+                            departmentId: departmentId || null,
+                            isActive,
+                        } as any,
+                        include: { batch: true, department: true },
+                    });
                     break;
                 case "slotTimings":
                     result = await prisma.slotTiming.update({ where: { id }, data: { name: trimmedName, code: generatedCode, isActive } as any });
@@ -222,6 +287,9 @@ export async function POST(req: NextRequest) {
                 case "interestedRoles":
                     result = await prisma.interestedRole.update({ where: { id }, data: { name: trimmedName, code: generatedCode, isActive } as any });
                     break;
+                case "subjects":
+                    result = await prisma.subject.update({ where: { id }, data: { name: trimmedName, code: generatedCode, isActive } as any });
+                    break;
             }
         } else {
             // Create new
@@ -230,7 +298,16 @@ export async function POST(req: NextRequest) {
                     result = await prisma.department.create({ data: { name: trimmedName, code: generatedCode, isActive } as any });
                     break;
                 case "classGroups":
-                    result = await prisma.classGroup.create({ data: { name: trimmedName, code: generatedCode, isActive } as any });
+                    result = await prisma.classGroup.create({
+                        data: {
+                            name: trimmedName,
+                            code: generatedCode,
+                            batchId: batchId || null,
+                            departmentId: departmentId || null,
+                            isActive,
+                        } as any,
+                        include: { batch: true, department: true },
+                    });
                     break;
                 case "slotTimings":
                     result = await prisma.slotTiming.create({ data: { name: trimmedName, code: generatedCode, isActive } as any });
@@ -248,6 +325,9 @@ export async function POST(req: NextRequest) {
                     break;
                 case "interestedRoles":
                     result = await prisma.interestedRole.create({ data: { name: trimmedName, code: generatedCode, isActive } as any });
+                    break;
+                case "subjects":
+                    result = await prisma.subject.create({ data: { name: trimmedName, code: generatedCode, isActive } as any });
                     break;
             }
         }
@@ -311,11 +391,14 @@ export async function DELETE(req: NextRequest) {
                     case "interestedRoles":
                         await prisma.interestedRole.delete({ where: { id } });
                         break;
+                    case "subjects":
+                        await prisma.subject.delete({ where: { id } });
+                        break;
                 }
             } catch (err: any) {
                 if (err.code === "P2003") {
                     return NextResponse.json(
-                        { error: "Cannot permanently purge this metadata because it is referenced by student records." },
+                        { error: "Cannot permanently purge this metadata because it is referenced by other records." },
                         { status: 400 }
                     );
                 }
@@ -323,7 +406,7 @@ export async function DELETE(req: NextRequest) {
             }
         } else {
             // Soft Delete
-            const softPayload = { deletedAt: new Date(), isActive: false };
+            const softPayload = { deletedAt: new Date(), isActive: false, isDeleted: true };
             switch (category) {
                 case "departments":
                     await prisma.department.update({ where: { id }, data: softPayload });
@@ -345,6 +428,9 @@ export async function DELETE(req: NextRequest) {
                     break;
                 case "interestedRoles":
                     await prisma.interestedRole.update({ where: { id }, data: softPayload });
+                    break;
+                case "subjects":
+                    await prisma.subject.update({ where: { id }, data: softPayload });
                     break;
             }
         }

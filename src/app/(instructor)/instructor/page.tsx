@@ -10,5 +10,9 @@ export default async function InstructorPage() {
         redirect("/login");
     }
 
+    if (session.instructorType?.toLowerCase() === "scope") {
+        redirect("/admin/scheduler");
+    }
+
     redirect("/admin/attendance");
 }

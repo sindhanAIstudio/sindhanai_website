@@ -34,15 +34,18 @@ export default async function AdminLayout({
 
                     {/* Horizontal Navigation Items */}
                     <div className="flex-1 flex justify-center overflow-visible">
-                        <AdminSidebarNav userRole={session.role} />
+                        <AdminSidebarNav userRole={session.role} instructorType={session.instructorType} />
                     </div>
 
                     {/* User Profile & Sign Out */}
                     <div className="flex items-center gap-4 shrink-0">
-                        <div className="text-right hidden sm:block">
-                            <p className="text-xs font-bold text-slate-900">{session.name || "Administrator"}</p>
+                        <Link
+                            href="/admin/profile"
+                            className="text-right hidden sm:block group p-1.5 rounded-xl hover:bg-slate-100 transition-colors"
+                        >
+                            <p className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">{session.name || "Administrator"}</p>
                             <p className="text-[11px] text-slate-500 font-medium">{session.email} ({session.role})</p>
-                        </div>
+                        </Link>
                         <SignOutButton />
                     </div>
                 </div>

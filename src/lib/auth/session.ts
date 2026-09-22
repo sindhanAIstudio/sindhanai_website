@@ -17,6 +17,7 @@ export interface SessionPayload {
     email: string;
     name: string;
     role: string;
+    instructorType?: string | null;
     deviceFingerprint?: string | null;
 }
 

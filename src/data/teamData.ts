@@ -111,6 +111,81 @@ const mappedScopeMembers: TeamMember[] = SCOPE_FACULTY_LIST.map((fac) => {
 
 export const TEAM_MEMBERS: TeamMember[] = mappedScopeMembers;
 
+export function mapUserToTeamMember(user: any): TeamMember {
+    const skills: string[] = [];
+    if (user.pythonExperience && user.pythonExperience !== "-") skills.push(`Python (${user.pythonExperience})`);
+    if (user.cProgrammingExperience && user.cProgrammingExperience !== "-") skills.push(`C Prog (${user.cProgrammingExperience})`);
+    if (user.dsaDesignThinkingExperience && user.dsaDesignThinkingExperience !== "-") skills.push(`DSA (${user.dsaDesignThinkingExperience})`);
+    if (user.workExperience) skills.push(`Exp: ${user.workExperience}`);
+    if (skills.length === 0) skills.push("Faculty Mentor", "Programming Excellence");
+
+    const fallbackBio = `${user.name} is a SCOPE Faculty Mentor at KGISL Institute of Technology specializing in core programming, technical training, and student mentorship.`;
+    const cleanBio = user.bio && user.bio.trim().length > 0 ? user.bio : fallbackBio;
+
+    const scopeData: ScopeFacultyMember = {
+        id: user.id,
+        sNo: user.empId || "1",
+        empId: user.empId || "",
+        name: user.name,
+        slug: user.slug || user.id,
+        role: user.designation || "SCOPE Faculty Mentor",
+        about: user.bio || "",
+        category: "SCOPE Team",
+        email: user.email || "",
+        phone: user.mobileNumber || "",
+        onePageCv: user.onePageCv || "",
+        workExperience: user.workExperience || "",
+        pythonExperience: user.pythonExperience || "",
+        cProgrammingExperience: user.cProgrammingExperience || "",
+        dsaDesignThinkingExperience: user.dsaDesignThinkingExperience || "",
+        linkedin: user.linkedinUrl || "",
+        github: user.githubUrl || "",
+        xId: user.xUrl || "",
+        leetcode: user.leetcodeUrl || "",
+        hackerrank: user.hackerrankUrl || "",
+        medium: user.mediumUrl || "",
+        slack: user.slackUrl || "",
+        kaggle: user.kaggleUrl || "",
+        selfIntroVideo: user.selfIntroVideoUrl || "",
+        avatar: user.profilePicUrl || "/sindhanai-logo.png",
+    };
+
+    return {
+        id: user.id,
+        slug: user.slug || user.id,
+        name: user.name,
+        role: user.designation || "SCOPE Faculty Mentor",
+        category: "SCOPE Team",
+        lab: user.soiDomain?.name || "School of Computer Science & Engineering (SCOPE)",
+        avatar: user.profilePicUrl || "/sindhanai-logo.png",
+        bio: cleanBio.length > 140 ? cleanBio.substring(0, 140) + "..." : cleanBio,
+        fullBio: cleanBio,
+        quote: "Empowering students through applied technical excellence and industry-aligned mentorship.",
+        skills: skills,
+        experience: user.workExperience || (user.experienceYears ? `${user.experienceYears} Years` : "Faculty Mentor"),
+        location: "Coimbatore, TN",
+        email: user.email,
+        social: {
+            linkedin: user.linkedinUrl || undefined,
+            github: user.githubUrl || undefined,
+            twitter: user.xUrl || undefined,
+        },
+        stats: {
+            projectsCount: 12,
+            studentsMentored: 300,
+            yearsExp: user.workExperience || (user.experienceYears ? `${user.experienceYears}+` : "5+"),
+        },
+        highlights: [
+            {
+                title: "Academic & Project Mentorship",
+                description: cleanBio,
+            },
+        ],
+        scopeData: scopeData,
+    };
+}
+
 export function getTeamMemberBySlug(slug: string): TeamMember | undefined {
     return TEAM_MEMBERS.find((m) => m.slug === slug);
 }
+

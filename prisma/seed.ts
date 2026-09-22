@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import path from "path";
 import bcrypt from "bcryptjs";
+import scopeFacultyRaw from "../src/data/scopeFacultyData.json";
 
 const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
 const adapter = new PrismaBetterSqlite3({ url: dbPath });
@@ -59,6 +60,8 @@ async function main() {
         createdDepartments.push(d);
     }
 
+    const aidsDepartment = createdDepartments.find((d) => d.code === "AIDS") || createdDepartments[0];
+
     // 3. CLASS GROUPS / SECTIONS (3)
     const sectionsData = [
         { name: "Section A", code: "CLASS_A" },
@@ -115,6 +118,8 @@ async function main() {
         });
         createdLabs.push({ ...l, short: lab.short });
     }
+
+    const aidsDomain = createdLabs.find((l) => l.code === "AIDS_LAB") || createdLabs[0];
 
     // 6. DOMAIN PLACEMENTS (7)
     const domainPlacementsData = [
@@ -239,7 +244,78 @@ async function main() {
 
     console.log("👤 Created Super Admin (superadmin@sindhanai.in)");
 
-    // 11. GENERATE 1 ADMIN & 10 INSTRUCTORS & 10 STUDENTS PER LAB (9 LABS)
+    // 11. SEED SCOPE FACULTY MEMBERS (12 Members) UNDER AIDS SOI DOMAIN & DEPARTMENT
+    let scopeCount = 0;
+    for (const fac of scopeFacultyRaw as any[]) {
+        const email = fac.email && fac.email.trim() ? fac.email.trim() : `${fac.slug}@kgkite.ac.in`;
+        const phone = fac.phone ? `+91 ${fac.phone.trim()}` : null;
+
+        await prisma.user.upsert({
+            where: { email: email },
+            update: {
+                name: fac.name,
+                slug: fac.slug,
+                empId: fac.empId,
+                designation: fac.role || "SCOPE Faculty Mentor",
+                instructorType: "Scope",
+                roleId: instructorRole.id,
+                soiDomainId: aidsDomain.id,
+                departmentId: aidsDepartment.id,
+                bio: fac.about || "",
+                profilePicUrl: fac.avatar,
+                mobileNumber: phone,
+                onePageCv: fac.onePageCv,
+                workExperience: fac.workExperience,
+                pythonExperience: fac.pythonExperience,
+                cProgrammingExperience: fac.cProgrammingExperience,
+                dsaDesignThinkingExperience: fac.dsaDesignThinkingExperience,
+                linkedinUrl: fac.linkedin && fac.linkedin !== "-" ? fac.linkedin : null,
+                githubUrl: fac.github && fac.github !== "-" ? fac.github : null,
+                xUrl: fac.xId && fac.xId !== "-" ? fac.xId : null,
+                leetcodeUrl: fac.leetcode && fac.leetcode !== "-" ? fac.leetcode : null,
+                hackerrankUrl: fac.hackerrank && fac.hackerrank !== "-" ? fac.hackerrank : null,
+                mediumUrl: fac.medium && fac.medium !== "-" ? fac.medium : null,
+                slackUrl: fac.slack && fac.slack !== "-" ? fac.slack : null,
+                kaggleUrl: fac.kaggle && fac.kaggle !== "-" ? fac.kaggle : null,
+                selfIntroVideoUrl: fac.selfIntroVideo && fac.selfIntroVideo !== "-" ? fac.selfIntroVideo : null,
+                mustChangePassword: false,
+            },
+            create: {
+                name: fac.name,
+                email: email,
+                slug: fac.slug,
+                empId: fac.empId,
+                designation: fac.role || "SCOPE Faculty Mentor",
+                instructorType: "Scope",
+                roleId: instructorRole.id,
+                soiDomainId: aidsDomain.id,
+                departmentId: aidsDepartment.id,
+                bio: fac.about || "",
+                profilePicUrl: fac.avatar,
+                mobileNumber: phone,
+                onePageCv: fac.onePageCv,
+                workExperience: fac.workExperience,
+                pythonExperience: fac.pythonExperience,
+                cProgrammingExperience: fac.cProgrammingExperience,
+                dsaDesignThinkingExperience: fac.dsaDesignThinkingExperience,
+                linkedinUrl: fac.linkedin && fac.linkedin !== "-" ? fac.linkedin : null,
+                githubUrl: fac.github && fac.github !== "-" ? fac.github : null,
+                xUrl: fac.xId && fac.xId !== "-" ? fac.xId : null,
+                leetcodeUrl: fac.leetcode && fac.leetcode !== "-" ? fac.leetcode : null,
+                hackerrankUrl: fac.hackerrank && fac.hackerrank !== "-" ? fac.hackerrank : null,
+                mediumUrl: fac.medium && fac.medium !== "-" ? fac.medium : null,
+                slackUrl: fac.slack && fac.slack !== "-" ? fac.slack : null,
+                kaggleUrl: fac.kaggle && fac.kaggle !== "-" ? fac.kaggle : null,
+                selfIntroVideoUrl: fac.selfIntroVideo && fac.selfIntroVideo !== "-" ? fac.selfIntroVideo : null,
+                passwordHash: defaultPasswordHash,
+                mustChangePassword: false,
+            },
+        });
+        scopeCount++;
+    }
+    console.log(`✅ Seeded ${scopeCount} SCOPE Faculty Members under AI & Data Science`);
+
+    // 12. GENERATE 1 ADMIN & 10 INSTRUCTORS & 10 STUDENTS PER LAB (9 LABS)
     let studentCount = 0;
     let instructorCount = 0;
     let adminCount = 0;
@@ -263,6 +339,7 @@ async function main() {
                 soiDomainId: lab.id,
                 departmentId: dept.id,
                 designation: `${lab.name} Lab Administrator`,
+                instructorType: "SOI",
                 mustChangePassword: false,
             },
         });
@@ -281,6 +358,7 @@ async function main() {
                     soiDomainId: lab.id,
                     departmentId: dept.id,
                     designation: `Senior Technical Mentor (${lab.name})`,
+                    instructorType: "SOI",
                     experienceYears: 3 + i,
                     mustChangePassword: false,
                 },
@@ -296,7 +374,6 @@ async function main() {
             const section = createdSections[s % createdSections.length];
             const slotTiming = createdSlotTimings[s % createdSlotTimings.length];
 
-            // Assign placement track to first 6 students, leave last 4 unallocated to demonstrate optional placement
             const domainPlacementId = s <= 6 ? placementTrack.id : null;
 
             await prisma.user.upsert({

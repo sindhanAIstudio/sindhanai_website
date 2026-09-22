@@ -403,7 +403,7 @@ export default function CalendarClient() {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Smart_Calendar_Report_${year}_${month}.csv`);
+        link.setAttribute("download", `Calendar_Report_${year}_${month}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -437,7 +437,7 @@ export default function CalendarClient() {
                 <div>
                     <h1 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
                         <Calendar className="w-6 h-6 text-indigo-600" />
-                        <span>Smart Institutional Calendar & Worklog Hub</span>
+                        <span>Institutional Calendar & Worklog Hub</span>
                     </h1>
                     <p className="text-xs text-slate-500 font-medium">
                         Holiday management, special events, and daily faculty worklog tracking
@@ -475,7 +475,7 @@ export default function CalendarClient() {
                         className={`px-5 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${activeTab === "CALENDAR" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" : "text-slate-600 hover:bg-slate-50"}`}
                     >
                         <Calendar className="w-4 h-4" />
-                        <span>Smart Calendar</span>
+                        <span>Calendar</span>
                     </button>
                     <button
                         onClick={() => setActiveTab("WORKLOG")}
