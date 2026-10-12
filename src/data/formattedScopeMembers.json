@@ -558,56 +558,6 @@
     }
   },
   {
-    "id": "scope-905664",
-    "slug": "dhayanithi-t",
-    "name": "Dhayanithi T",
-    "role": "SCOPE Faculty Mentor (Emp #905664)",
-    "category": "SCOPE Team",
-    "lab": "School of Computer Science & Engineering (SCOPE)",
-    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
-    "bio": "Dhayanithi T is a faculty mentor in SCOPE. Python: 2, C: -.",
-    "fullBio": "Dhayanithi T serves as a SCOPE Faculty Mentor at KGISL. Expertise includes Python Programming (2), C Programming (-), and DSA / Design Thinking (-). Contact: dhayanithi.t@kgkite.ac.in.",
-    "quote": "Empowering students through applied technical excellence and industry-aligned mentorship.",
-    "skills": [
-      "Python: 2",
-      "C/C++: -",
-      "DSA/Design Thinking: -",
-      "Work Exp: 2 Years"
-    ],
-    "experience": "2 Years",
-    "location": "Coimbatore, TN",
-    "email": "dhayanithi.t@kgkite.ac.in",
-    "social": {
-      "linkedin": "https://www.linkedin.com/in/dhayanithi-t-52b1a0320/",
-      "github": "https://github.com/TDhayanithi"
-    },
-    "stats": {
-      "projectsCount": 10,
-      "studentsMentored": 300,
-      "yearsExp": "2 Years"
-    },
-    "highlights": [
-      {
-        "title": "Work & Academic Experience",
-        "description": "2 Years"
-      },
-      {
-        "title": "One Page CV",
-        "description": "Dhayanithi.T"
-      }
-    ],
-    "extraDetails": {
-      "empId": "905664",
-      "phone": "7604998619",
-      "leetcode": "https://leetcode.com/u/Dhayanithi_T_/",
-      "hackerrank": "https://www.hackerrank.com/profile/dhayanithi_t14",
-      "medium": "https://medium.com/@dhayanithi.t14",
-      "slack": "https://app.slack.com/client/T0BRLPS4PJQ/C0BRK29E61F?entry_point=default_oauth&geocode=en-in",
-      "kaggle": "https://www.kaggle.com/dhayanithit14",
-      "selfIntroVideo": "https://drive.google.com/file/d/1WUZJ2CW1eijTUEd0Blm9oqEUBkxJUGWf/view?usp=sharing"
-    }
-  },
-  {
     "id": "scope-905666",
     "slug": "ashwing",
     "name": "Ashwin.G",
